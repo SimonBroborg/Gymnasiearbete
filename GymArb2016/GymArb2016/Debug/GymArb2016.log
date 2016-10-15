@@ -1,15 +1,16 @@
 ﻿  Timer.cpp
   Texture.cpp
-d:\users\simon\github\gymnasiearbete\gymarb2016\gymarb2016\texture.cpp(37): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-d:\users\simon\github\gymnasiearbete\gymarb2016\gymarb2016\texture.cpp(38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarb2016\gymarb2016\texture.cpp(37): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarb2016\gymarb2016\texture.cpp(38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
   Player.cpp
-d:\users\simon\github\gymnasiearbete\gymarb2016\gymarb2016\player.cpp(70): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-d:\users\simon\github\gymnasiearbete\gymarb2016\gymarb2016\player.cpp(75): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-d:\users\simon\github\gymnasiearbete\gymarb2016\gymarb2016\player.cpp(80): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-d:\users\simon\github\gymnasiearbete\gymarb2016\gymarb2016\player.cpp(85): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarb2016\gymarb2016\player.cpp(70): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarb2016\gymarb2016\player.cpp(75): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarb2016\gymarb2016\player.cpp(80): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarb2016\gymarb2016\player.cpp(85): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
   main.cpp
   GameManager.cpp
   Generating Code...
-d:\users\simon\github\gymnasiearbete\gymarb2016\gymarb2016\gamemanager.cpp(120): warning C4715: 'GameManager::initSystems': not all control paths return a value
-  GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\GymArb2016\Debug\GymArb2016.exe
-  GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\GymArb2016\Debug\GymArb2016.pdb (Partial PDB)
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarb2016\gymarb2016\gamemanager.cpp(120): warning C4715: 'GameManager::initSystems': not all control paths return a value
+  LINK : C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArb2016\Debug\GymArb2016.exe not found or not built by the last incremental link; performing full link
+  GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArb2016\Debug\GymArb2016.exe
+  GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArb2016\Debug\GymArb2016.pdb (Partial PDB)
