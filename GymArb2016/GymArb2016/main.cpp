@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
 
 	while (isRunning)
 	{
+		std::cout << "TEST" << std::endl;
 		prevTime = currentTime;
 		currentTime = SDL_GetTicks();
 		deltaTime = (currentTime - prevTime) / 1000.0f;
