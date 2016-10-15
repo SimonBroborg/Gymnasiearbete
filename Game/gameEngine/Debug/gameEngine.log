@@ -1,12 +1,20 @@
 ﻿  Manager.cpp
-c:\users\simon.broborg\documents\visual studio 2015\projects\game\gameengine\manager.cpp(82): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\simon.broborg\documents\visual studio 2015\projects\game\gameengine\manager.cpp(86): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\simon.broborg\documents\visual studio 2015\projects\game\gameengine\manager.cpp(126): warning C4018: '<': signed/unsigned mismatch
-c:\users\simon.broborg\documents\visual studio 2015\projects\game\gameengine\manager.cpp(134): warning C4018: '<': signed/unsigned mismatch
-c:\users\simon.broborg\documents\visual studio 2015\projects\game\gameengine\manager.cpp(143): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\visual studio 2015\projects\game\gameengine\manager.cpp(144): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\visual studio 2015\projects\game\gameengine\manager.cpp(145): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\visual studio 2015\projects\game\gameengine\manager.cpp(146): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\visual studio 2015\projects\game\gameengine\manager.cpp(160): warning C4018: '<': signed/unsigned mismatch
-  gameEngine.vcxproj -> C:\Users\Simon.Broborg\Documents\Visual Studio 2015\Projects\Game\Debug\gameEngine.exe
-  gameEngine.vcxproj -> C:\Users\Simon.Broborg\Documents\Visual Studio 2015\Projects\Game\Debug\gameEngine.pdb (Partial PDB)
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(82): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(86): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(127): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(135): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(144): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(145): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(146): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(147): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(162): warning C4018: '<': signed/unsigned mismatch
+  Circle.cpp
+d:\users\simon\github\gymnasiearbete\game\gameengine\circle.cpp(40): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\circle.cpp(58): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\circle.cpp(59): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\circle.cpp(86): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\circle.cpp(87): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\circle.cpp(89): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
+  gameEngine.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\Game\Debug\gameEngine.exe
+  gameEngine.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\Game\Debug\gameEngine.pdb (Partial PDB)

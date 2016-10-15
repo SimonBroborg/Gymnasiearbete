@@ -88,14 +88,14 @@ void Manager::gameLoop()
 				case SDL_KEYDOWN:
 					switch (evnt.key.keysym.scancode) {
 					case SDL_SCANCODE_LEFT:
-						circle.m_velX = -10;
+						circle.m_velX = -2;
 						break;
 					case SDL_SCANCODE_RIGHT:
-						circle.m_velX = 10;
+						circle.m_velX = 2;
 						break;
 
 					case SDL_SCANCODE_SPACE:
-						circle.m_velY = -10;
+						circle.m_velY = -6;
 						break;
 					}
 			}

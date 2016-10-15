@@ -83,7 +83,8 @@ void Manager::run() {
 
 	for (int i = 0; i < 1; i++)
 	{
-		Circle *circle = new Circle(globalRenderer, SCREEN_WIDTH/2 , SCREEN_HEIGHT / 2, 30, 90);
+		Circle *circle = new Circle(globalRenderer,		SCREEN_WIDTH/2 , SCREEN_HEIGHT/2, 40, 40);
+		
 		circles.push_back(*circle);
 	}
 
@@ -104,10 +105,10 @@ void Manager::run() {
 			case SDL_KEYDOWN:
 				switch (evnt.key.keysym.scancode) {
 					case SDL_SCANCODE_LEFT:
-						circles[0].m_velX = -10;
+						circles[0].m_velX = -5;
 						break;
 					case SDL_SCANCODE_RIGHT:
-						circles[0].m_velX = 10;
+						circles[0].m_velX = 5;
 						break;
 
 					case SDL_SCANCODE_SPACE:
@@ -144,6 +145,7 @@ void Manager::run() {
 					float newVelY1 = (circles[i].m_velY * (circles[i].m_radi - circles[j].m_radi) + (2 * circles[j].m_radi * circles[j].m_velY)) / (circles[i].m_radi + circles[j].m_radi);
 					float newVelX2 = (circles[j].m_velX * (circles[j].m_radi - circles[i].m_radi) + (2 * circles[i].m_radi * circles[i].m_velX)) / (circles[j].m_radi + circles[i].m_radi);
 					float newVelY2 = (circles[j].m_velY * (circles[j].m_radi - circles[i].m_radi) + (2 * circles[i].m_radi * circles[i].m_velY)) / (circles[j].m_radi + circles[i].m_radi);
+
 
 					circles[i].m_velX = newVelX1;
 					circles[i].m_velY = newVelY1;
