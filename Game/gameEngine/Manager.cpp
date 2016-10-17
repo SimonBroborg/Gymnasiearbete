@@ -3,7 +3,6 @@
 Manager::Manager()
 {
 	bIsRunning = true;
-
 }
 
 
@@ -81,6 +80,7 @@ void Manager::run() {
 
 	srand(time(NULL));
 
+	//creates the circles
 	for (int i = 0; i < 1; i++)
 	{
 		Circle *circle = new Circle(globalRenderer,		SCREEN_WIDTH/2 , SCREEN_HEIGHT/2, 40, 40);
@@ -88,6 +88,10 @@ void Manager::run() {
 		circles.push_back(*circle);
 	}
 
+	rect.w = SCREEN_WIDTH / 3;
+	rect.h = 50;
+	rect.x = SCREEN_WIDTH / 2;
+	rect.y = SCREEN_HEIGHT - rect.h;
 
 
 	SDL_Event evnt;
@@ -98,10 +102,13 @@ void Manager::run() {
 		while (SDL_PollEvent(&evnt))
 		{
 			switch (evnt.type) {
+				//when the x button in the top right corner is pressed, the game closes
 			case SDL_QUIT:
 				bIsRunning = false;
 				break;
 
+
+				//makes it possible to move the ball to the left / right and jump
 			case SDL_KEYDOWN:
 				switch (evnt.key.keysym.scancode) {
 					case SDL_SCANCODE_LEFT:
@@ -121,12 +128,56 @@ void Manager::run() {
 			
 		}
 
+
+		//sets the draw color to white
 		SDL_SetRenderDrawColor(globalRenderer, 255, 255, 255, 255);
+		//clear the renderer with the set draw color 
 		SDL_RenderClear(globalRenderer);
 
+		SDL_SetRenderDrawColor(globalRenderer, 255, 0, 0, 255);
+		SDL_RenderFillRect(globalRenderer, &rect);
+
+		SDL_RenderCopy(globalRenderer, nullptr, &rect, NULL);
+
+
+
+
+		//  circle collision with circle
 		for (int i = 0; i < circles.size(); i++)
 		{
+			//moves every circle
 			circles[i].move();
+
+			for (int k = 0; k < circles.size(); k++)
+			{
+				Circle *circle = &circles[k];
+
+				if (checkCollision(rect, circle))
+				{
+
+					//collision from above
+					if (circle->m_yPos < rect.y)
+					{
+						circle->m_yPos = rect.y - circle->m_radi;
+						circle->m_velY = 0;
+					}
+
+					//collision from the left
+					else if (circle->m_xPos < rect.x)
+					{
+						circle->m_velX = -circle->m_velX;
+					}
+
+					//collisionfrom the right
+					else if (circle->m_xPos > rect.x + rect.w)
+					{
+						circle->m_velX = -circle->m_velX;
+					}
+
+				
+				}
+				
+			}
 
 
 			float distance;
@@ -135,21 +186,25 @@ void Manager::run() {
 			for (int j = 0; j < circles.size(); j++)
 			{
 				
-
+				//the distance between the center points of the circles
 				distance = sqrt(pow(circles[i].m_xPos - circles[j].m_xPos, 2) + pow(circles[i].m_yPos - circles[j].m_yPos, 2));
+
+				//the lowest possible distance before collision between the ball
 				radiDistance = circles[i].m_radi + circles[j].m_radi;
 
 				if (distance < radiDistance) {
 
+					//calculation of elastic collision for x and y 
 					float newVelX1 = (circles[i].m_velX * (circles[i].m_radi - circles[j].m_radi) + (2 * circles[j].m_radi * circles[j].m_velX)) / (circles[i].m_radi + circles[j].m_radi);
 					float newVelY1 = (circles[i].m_velY * (circles[i].m_radi - circles[j].m_radi) + (2 * circles[j].m_radi * circles[j].m_velY)) / (circles[i].m_radi + circles[j].m_radi);
 					float newVelX2 = (circles[j].m_velX * (circles[j].m_radi - circles[i].m_radi) + (2 * circles[i].m_radi * circles[i].m_velX)) / (circles[j].m_radi + circles[i].m_radi);
 					float newVelY2 = (circles[j].m_velY * (circles[j].m_radi - circles[i].m_radi) + (2 * circles[i].m_radi * circles[i].m_velY)) / (circles[j].m_radi + circles[i].m_radi);
 
-
+					//applies the new x and y velocities for circle 1
 					circles[i].m_velX = newVelX1;
 					circles[i].m_velY = newVelY1;
 
+					//applies the new x and y velocities for circle 2
 					circles[j].m_velX = newVelX2;
 					circles[j].m_velY = newVelY2;
 
@@ -158,13 +213,47 @@ void Manager::run() {
 			}
 		}
 	
-
+		//draws every circle to the screen
 		for (int i = 0; i < circles.size(); i++)
 		{
 			circles[i].drawCircle();
 		}
 
+		//presents the renderer with all rendered obejcts
 		SDL_RenderPresent(globalRenderer);
 
 	}
+}
+
+
+bool Manager::checkCollision(SDL_Rect rect, Circle *circle)
+{
+	int cX, cY;
+
+	//find the closest x offset
+	if (circle->m_xPos + circle->m_velX< rect.x)
+		cX = rect.x;
+	else if (circle->m_xPos + circle->m_velX > rect.x + rect.w)
+		cX = rect.x + rect.w;
+	else
+		cX = circle->m_xPos;
+
+	//fins the closest y offset
+	if (circle->m_yPos + circle->m_velY < rect.y)
+		cY = rect.y;
+
+	else if (circle->m_yPos + circle->m_velY> rect.y + rect.h)
+		cY = rect.y + rect.h;
+	else
+		cY = circle->m_yPos;
+
+	//if the closest point is inside the circle
+	if (((cX - circle->m_xPos) * (cX - circle->m_xPos) + (cY - circle->m_yPos) * (cY - circle->m_yPos)) < circle->m_radi * circle->m_radi)
+	{
+		//This rect and the circle have collided
+		return true;
+	}
+
+	//if the shaes have no collided
+	return false;
 }

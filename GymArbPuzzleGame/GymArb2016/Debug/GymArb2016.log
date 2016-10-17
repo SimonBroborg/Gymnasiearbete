@@ -1,6 +1,16 @@
-﻿  Manager.cpp
-d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(62): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(84): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
-d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(85): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
+﻿  Circle.cpp
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(9): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(11): warning C4305: '=': truncation from 'double' to 'float'
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(50): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(52): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(53): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(94): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(95): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(97): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(106): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(121): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(168): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\circle.cpp(177): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
   GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.exe
   GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.pdb (Partial PDB)

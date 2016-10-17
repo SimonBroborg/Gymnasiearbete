@@ -34,6 +34,7 @@ public:
 	float m_speed;
 	float m_scaleX, m_scaleY;
 
+
 private:
 
 	SDL_Rect m_imgRect;

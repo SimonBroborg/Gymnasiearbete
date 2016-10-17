@@ -47,17 +47,17 @@ Circle::~Circle()
 
 
 void Circle::drawCircle() {
-	/*for (int i = 0; i < 360; i += m_step)
+	for (int i = 0; i < 360; i += m_step)
 	{
 	int x = m_xPos + m_radi * cos(i);
 	int y = m_yPos + m_radi * sin(i);
 	SDL_SetRenderDrawColor(m_gameRenderer, 255, 0, 0, 255);
 	SDL_RenderDrawPoint(m_gameRenderer, x, y);
 	}
-	*/
-	//sets the circle pic on the circle
+	
+	/*//sets the circle pic on the circle
 	m_imgRect.x = m_xPos - m_radi;
-	m_imgRect.y = m_yPos - m_radi;
+	m_imgRect.y = m_yPos - m_radi;*/
 
 	//puts the circle on the renderer
 	SDL_RenderCopyEx(m_gameRenderer, texture, NULL, &m_imgRect, m_angle, NULL, SDL_FLIP_NONE);
@@ -112,26 +112,41 @@ void Circle::move(std::vector<SDL_Rect> &rects)
 		{
 			if (checkCollision(rect))
 			{
-				//if the rect is on the right of the block
-				if (m_xPos > rect.x + rect.w)
-					m_velX = -m_velX;
-
-				//if the circle is on the left of the block
-				if (m_xPos < rect.x)
-					m_velX = -m_velX;
 
 				//if the circle is above the rectange
 				if (m_yPos < rect.y)
 				{
-					//checks the y speed of the circle
-					if (m_velY >= 1.3)
-						m_velY = -m_velY * 0.5;
-					else
-						m_velY = 0;
+					//checks if the x position of the circle is inside the rectangle
+					if (m_xPos <= rect.x + rect.w && m_xPos > rect.x) {
+						m_yPos = rect.y - m_radi;
+
+						//checks the y speed of the circle
+						if (m_velY >= 1.3)
+							m_velY = -m_velY * 0.5;
+						else
+							m_velY = 0;
+					}
+
+					else if(m_yPos > rect.y - m_radi + 10)
+					{
+						m_velX = 5;
+					}
 				}
 
+				//if the rect is on the right of the block
+				else if (m_xPos > rect.x + rect.w) {
+					m_velX = -m_velX;
+				}
+
+				//if the circle is on the left of the block
+				else if (m_xPos < rect.x)
+					m_velX = -m_velX;
+
+				
+
 				//if the circle is under the rectangle
-				if (m_yPos > rect.y + rect.h)
+				else if (m_yPos > rect.y + rect.h)
+
 					m_velY = -m_velY;
 			}
 		}

@@ -6,7 +6,6 @@
 #include <string>
 #include <SDL\SDL_ttf.h>
 #include <math.h>
-#include "Manager.h"
 class Circle
 {
 public:
