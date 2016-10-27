@@ -2,8 +2,7 @@
 #include <SDL/SDL_image.h>
 #include <iostream>
 
-
-Player::Player(SDL_Renderer *renderer, std::string filePath, int x, int y, int framesX, int framesY, int windowWidth, int windowHeight)
+Player::Player(SDL_Renderer *renderer, std::string filePath, float x, float y, float framesX, float framesY, float windowWidth, float windowHeight)
 {
 	SDL_Surface *surface = IMG_Load(filePath.c_str());
 	if (surface == nullptr)
@@ -35,12 +34,12 @@ Player::Player(SDL_Renderer *renderer, std::string filePath, int x, int y, int f
 
 	//Set the width and height of the frames and rects equal to each other
 	m_frameWidth = posRect.w = cropRect.w;
-	m_frameHeight = posRect.h = cropRect.h;
+	m_frameHeight = posRect.h = cropRect.h = 30;
 
-	m_leftSpeed = 137; //players velocity to the left
-	m_rightSpeed = 180; //players velocity to the right
-	m_jumpSpeed = 400.0f; //the speed or power that the player jumps with
-	m_gravity = 1600.0f; //gravity which pushes the player downwards
+	m_leftSpeed = -180.0f * 0.7; //players velocity to the left
+	m_rightSpeed = 180.0f * 0.7; //players velocity to the right
+	m_jumpSpeed = 200.0f; //the speed or power that the player jumps with
+	m_gravity = 400.0f; //gravity which pushes the player downwards
 
 	bJumping = false; //The player is not jumping when the game starts
 	bMoving = false; //The player is not moving when the game starts
@@ -50,7 +49,6 @@ Player::Player(SDL_Renderer *renderer, std::string filePath, int x, int y, int f
 	m_windowWidth = windowWidth;
 
 	m_jumpHeight = 0;
-	
 }
 
 
@@ -79,7 +77,7 @@ void Player::processInput(SDL_Event &evnt, float delta)
 			break;
 
 		case SDL_SCANCODE_LEFT:
-			m_velX = -m_leftSpeed;
+			m_velX = m_leftSpeed;
 			bMoving = true;
 			break;
 
@@ -130,15 +128,18 @@ void Player::move(float delta, std::vector<SDL_Rect> rects)
 		m_xPos = posRect.x;
 		m_yPos = posRect.y;
 
-		//moves the player's x coord equal to the x velocity times delta
+		
+		//moves the player's x coordinate equal to the x velocity times delta
 		posRect.x += m_velX * delta;
 
 		//moves the player equal to the velocity
 		posRect.y += m_velY * delta;
-		
+
 		//changes the velocity so slowly fall down again
 		m_velY += m_gravity * delta;
+		
 
+		
 		//Makes sure the player stays inside the games borders, and falls through the bottom
 		keepInsideBorder();
 
@@ -189,14 +190,16 @@ void Player::move(float delta, std::vector<SDL_Rect> rects)
 					if (rect.h == 32)
 					{
 						posRect.y = rect.y + rect.h;
-						m_velY += 200;
+						m_velY += -m_velY;
 					}
 				}
 			}
 		}	
 
 		if (bJumping)
-			std::cout << m_velY << std::endl;
+			std::cout << m_yPos << std::endl;
+
+		
 }
 
 //returns true if there is a collision, otherwise it returns false
@@ -205,10 +208,10 @@ bool Player::checkCollision(const SDL_Rect& posRect, const SDL_Rect& obj)
 	//sets up variables which keeps track of the different parts of the rect
 	//which makes it easier to understand the collision check 
 	//posRect is the players coordinates, height and width, and obj for the object the player collides with
-	int playerLeft, objLeft;
-	int playerRight, objRight;
-	int playerTop, objTop;
-	int playerBottom, objBottom;
+	float playerLeft, objLeft;
+	float playerRight, objRight;
+	float playerTop, objTop;
+	float playerBottom, objBottom;
 
 	playerLeft = posRect.x;
 	playerRight = posRect.x + posRect.w;
@@ -219,7 +222,6 @@ bool Player::checkCollision(const SDL_Rect& posRect, const SDL_Rect& obj)
 	objRight = obj.x + obj.w;
 	objTop = obj.y;
 	objBottom = obj.y + obj.h;
-
 
 	//if none of the proceeding if-statements is true, there is a collision
 	if (playerBottom <= objTop)
@@ -244,15 +246,14 @@ void Player::keepInsideBorder()
 	if (posRect.x < 0)
 		posRect.x = 0;
 
-	//majes sure the player cant go outside the window on the right
+	//makes sure the player cant go outside the window on the right
 	if (posRect.x + posRect.w >= m_windowWidth)
 		posRect.x = m_windowWidth - posRect.w;
 
 	//the player cant fall through the bottom of the window
 	if (posRect.y + posRect.h > m_windowHeight)
 	{
-		posRect.y = 100;
-		posRect.x = 100;
+		posRect.y = m_windowHeight - posRect.h;
 		bJumping = false;
 		bOnGround = true;
 		m_velY = 0;
@@ -261,4 +262,12 @@ void Player::keepInsideBorder()
 	//the player cant move outside the top of the window
 	if (posRect.y < 0)
 		posRect.y = 0;
+}
+
+float Player::getVelX() {
+	return m_velX;
+}
+
+float Player::getVelY() {
+	return m_velY;
 }

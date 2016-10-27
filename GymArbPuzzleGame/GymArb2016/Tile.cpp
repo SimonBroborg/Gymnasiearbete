@@ -2,7 +2,7 @@
 #include <SDL\SDL_image.h>
 #include "Manager.h"
 #include <iostream>
-
+#include "Player.h"
 Tile::Tile()
 {
 }

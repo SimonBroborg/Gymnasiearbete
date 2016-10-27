@@ -16,14 +16,15 @@ public:
 
 	void drawCircle();
 
-	void move(std::vector<SDL_Rect> &rects);
+	void move(std::vector<SDL_Rect> &rects, SDL_Rect &player, float playerVelX);
 
 	bool checkCollision(SDL_Rect &rect);
+	bool playerCollision(SDL_Rect &player, float playerVelX);
 
 	float m_xPos, m_yPos;
 	float m_theta;
 	float m_step;
-	int m_radi;
+	float m_radi;
 	float m_gravity;
 
 	float t;

@@ -12,8 +12,8 @@ Manager::Manager()
 	window = nullptr;
 	renderer = nullptr;
 	bIsRunning = true;
-	m_windowHeight = 480;
-	m_windowWidth = 640;
+	m_windowHeight = 545;
+	m_windowWidth = 1235;
 }
 
 
@@ -30,7 +30,7 @@ void Manager::run()
 
 void Manager::gameLoop()
 {
-	Player player(renderer, "player.png", 0, m_windowHeight - 100, 1, 1, m_windowWidth, m_windowHeight);
+	Player player(renderer, "man2.png", 0, m_windowHeight - 100, 1, 1, m_windowWidth, m_windowHeight);
 	Tile tile;
 
 
@@ -46,18 +46,18 @@ void Manager::gameLoop()
 		{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
 		{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0 },
-		{ 0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0 },
-		{ 0,3,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0 },
-		{ 0,0,2,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0 },
-		{ 1,1,1,2,2,2,0,0,1,1,1,1,1,1,1,1,1,1,1,1 }
+		{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+		{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+		{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+		{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 },
+		{ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } 
 	};
 	
 	tile.createMap(renderer, map, rects);
 
 	Mix_Music *bgm = Mix_LoadMUS("backgroundMusic.mp3");
 
-	loadBackground("");
+	backgroundTexture =loadBackground("kjellsbg.png");
 
 	Circle circle(renderer, m_windowWidth / 2, m_windowHeight / 2, 10, 90);
 
@@ -67,10 +67,14 @@ void Manager::gameLoop()
 		m_prevTime = m_currentTime;
 		m_currentTime = SDL_GetTicks();
 		m_deltaTime = (m_currentTime - m_prevTime) / 1000.0f;
+		
+		if (m_deltaTime < 0.03f)
+			m_deltaTime = 0.03f;
 
 		//plays the background music when the game starts
-		if (!Mix_PlayingMusic())
+		if (!Mix_PlayingMusic()) {
 			//Mix_PlayMusic(bgm, 0);
+		}
 
 		while (SDL_PollEvent(&evnt))
 		{
@@ -86,6 +90,16 @@ void Manager::gameLoop()
 					break;
 
 				case SDL_KEYDOWN:
+					switch (evnt.key.keysym.scancode)
+					{
+					case SDL_SCANCODE_ESCAPE:
+						bIsRunning = false;
+						break;
+					}
+					break;
+
+
+				/*case SDL_KEYDOWN:
 					switch (evnt.key.keysym.scancode) {
 					case SDL_SCANCODE_LEFT:
 						circle.m_velX = -2;
@@ -97,9 +111,9 @@ void Manager::gameLoop()
 					case SDL_SCANCODE_SPACE:
 						circle.m_velY = -6;
 						break;
-					}
+					}*/
 			}
-			//player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
+			player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
 
 		}
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -109,8 +123,7 @@ void Manager::gameLoop()
 
 		player.move(m_deltaTime, rects); //movement function for the player, calculates the new position of the player and checks collision
 
-		circle.move(rects);
-
+		circle.move(rects, player.posRect, player.getVelX() * m_deltaTime);
 
 		rects.clear(); //Clears the vector "rects" to avoid lag caused by to much memory use
 
@@ -122,7 +135,6 @@ void Manager::gameLoop()
 
 		SDL_RenderPresent(renderer); //prints out everything on the window
 
-		system("cls");
 	}
 
 }

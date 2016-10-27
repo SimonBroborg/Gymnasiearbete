@@ -42,11 +42,11 @@ private:
 	SDL_Renderer *renderer;
 
 	//Width and height of the game window
-	int m_windowHeight, m_windowWidth;
+	float m_windowHeight, m_windowWidth;
 
 	float m_frameTime = 0;
-	int m_prevTime = 0;
-	int m_currentTime = 0;
+	float m_prevTime = 0;
+	float m_currentTime = 0;
 	float m_deltaTime = 0;
 
 	SDL_Texture * backgroundTexture;

@@ -6,7 +6,7 @@ class Player
 {
 public:
 	//creates the player sprite, x and y position and the number of frames for the player when the game starts
-	Player(SDL_Renderer *renderer, std::string filePath, int x, int y, int framesX, int framesY, int windowWidth, int windowHeight);
+	Player(SDL_Renderer *renderer, std::string filePath, float x, float y, float framesX, float framesY, float windowWidth, float windowHeight);
 	~Player();
 
 	//Renders the player texture based on the position
@@ -19,6 +19,12 @@ public:
 	void move(float delta, std::vector<SDL_Rect> rects);
 
 	void keepInsideBorder();
+
+	//Keeps track of the players position
+	SDL_Rect posRect;
+
+	float getVelX();
+	float getVelY();
 
 private:
 	//checks the collision between the player and another rect. Returns true if there is a collision.
@@ -37,10 +43,9 @@ private:
 	double m_leftSpeed, m_rightSpeed, m_jumpSpeed;
 
 	//the players gravity
-	int m_gravity;
+	float m_gravity;
 
-	//Keeps track of the players position
-	SDL_Rect posRect;
+	
 
 	//Shows the current frame of the player on the sprite sheet
 	SDL_Rect cropRect;
@@ -48,19 +53,19 @@ private:
 	//Checks which the active frame is
 	float m_frameCounter;
 
-	//the dimensions of the player. Will help chosing the right part of the players sprite sheet
-	int m_frameWidth, m_frameHeight;
+	//the dimensions of the player. Will help choosing the right part of the players sprite sheet
+	float m_frameWidth, m_frameHeight;
 
 	//width of the whole texture
-	int m_textureWidth;
+	float m_textureWidth;
 
-	int m_acceleration;
+	float m_acceleration;
 
-	//keeps track of the x and y coords before any movement. Used to know from which side the collision is from. 
+	//keeps track of the x and y coordinates before any movement. Used to know from which side the collision is from. 
 	float m_xPos, m_yPos;
 
-	int m_windowWidth, m_windowHeight;
+	float m_windowWidth, m_windowHeight;
 
-	int m_jumpHeight;
+	float m_jumpHeight;
 };
 
