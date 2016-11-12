@@ -1,10 +1,25 @@
 #include "Tile.h"
 #include <SDL\SDL_image.h>
-#include "Manager.h"
 #include <iostream>
+#include "Sprite.h"
 #include "Player.h"
-Tile::Tile()
+#include <fstream>
+
+
+
+Tile::Tile(int x, int y, int tileType)
 {
+	//get the offsets
+	m_box.x = x;
+	m_box.y = y;
+
+	//set the collision box
+	m_box.w = TILE_WIDTH;
+	m_box.h = TILE_HEIGHT;
+
+
+	//get the tile type
+	m_type = tileType;
 }
 
 
@@ -13,18 +28,43 @@ Tile::~Tile()
 }
 
 
+void Tile::render(SDL_Rect &camera, Sprite &tileTexture, SDL_Renderer* gameRenderer)
+{
+	SDL_Rect renderQuad = { 0,0,80,80 };
+	//the the tile is on screen
+	if (checkCollision(camera, m_box)) {
+		//show the tile
+		tileTexture.render(m_box.x - camera.x, m_box.y - camera.y, &tileClips[m_type]);
+	}
+
+	if (tileTexture.m_texture == nullptr)
+		std::cout << "tileTexture.m_texture == nullptr";
+	SDL_RenderCopy(gameRenderer, tileTexture.m_texture, &renderQuad, &renderQuad);
+
+}
+
+int Tile::getType()
+{
+	return m_type;
+}
+
+SDL_Rect Tile::getBox()
+{
+	return m_box;
+}
+
+/*
 SDL_Texture * Tile::loadTile(SDL_Renderer *renderer, std::string path)
 {
-	SDL_Texture *tile= IMG_LoadTexture(renderer, path.c_str()); //loads sprite from file path
-	return  tile;
+SDL_Texture * m_texture = IMG_LoadTexture(renderer, path.c_str()); //loads sprite from file path
+return  m_texture;
 }
 
 
-void Tile::createMap(SDL_Renderer *renderer, int map[15][20], std::vector<SDL_Rect> &rRects)
+
+void Tile::createMap(SDL_Renderer *renderer, int map[10][18], std::vector<SDL_Rect> &rRects)
 {
 	Manager game;
-
-	//loops through each possible tile position 
 	for (int i = 0; i < X_TILES; i++)
 	{
 		for (int j = 0; j < Y_TILES; j++)
@@ -34,53 +74,45 @@ void Tile::createMap(SDL_Renderer *renderer, int map[15][20], std::vector<SDL_Re
 			{
 				//block which the player collides with from all sides
 			case 1:
-				tileSprite = loadTile(renderer, "block.png");
-				tileRect.w = 32;
-				tileRect.h = 32;
-				tileRect.x = 32 * i;
-				tileRect.y = 32 * j;
+				tileSprite = loadTile(renderer, "tiles/box.png");
+				SDL_QueryTexture(tileSprite, NULL, NULL, &tileRect.w, &tileRect.h);
 
-				rRects.push_back(tileRect); //takes the created rect and puts it into the rects vector
+				tileRect.x = TILE_WIDTH * i;
+				tileRect.y = TILE_HEIGHT * j;
 
-				SDL_RenderCopy(renderer, tileSprite, NULL, &tileRect);
-
-				SDL_DestroyTexture(tileSprite);
 
 				break;
 
 				//platform in the upper part of the tile which the player only collides with from the top
-			case 2: 
-				tileSprite = loadTile(renderer, "platform.png");
-				tileRect.w = 32;
-				tileRect.h = 8;
-				tileRect.x = 32 * i;
-				tileRect.y = 32 * j;
+			case 2:
+				tileSprite = loadTile(renderer, "tiles/bridge.png");
+				SDL_QueryTexture(tileSprite, NULL, NULL, &tileRect.w, &tileRect.h);
 
-				rRects.push_back(tileRect); //takes the created rect and puts it into the rects vector
+				tileRect.x = TILE_WIDTH * i;
+				tileRect.y = TILE_HEIGHT * j;
 
-				SDL_RenderCopy(renderer, tileSprite, NULL, &tileRect);
-
-				SDL_DestroyTexture(tileSprite);
-
+			
 				break;
 
 				//platform in the lower part of the tile which the player only collides with from the top
 			case 3:
-				tileSprite = loadTile(renderer, "platform.png");
-				tileRect.w = 32;
-				tileRect.h = 8;
-				tileRect.x = 32 * i;
-				tileRect.y = 32 * j + 16;
+				tileSprite = loadTile(renderer, "tiles/bridge.png");
+				SDL_QueryTexture(tileSprite, NULL, NULL, &tileRect.w, &tileRect.h);
 
-				rRects.push_back(tileRect); //takes the created rect and puts it into the rects vector
+				tileRect.x = TILE_WIDTH * i;
+				tileRect.y = TILE_HEIGHT * j;
 
-				SDL_RenderCopy(renderer, tileSprite, NULL, &tileRect);
-
-				SDL_DestroyTexture(tileSprite);
-
+				system("CLS");
 				break;
 
 			}
+
+			rRects.push_back(tileRect); //takes the created rect and puts it into the rects vector
+
+			tileRect = { 0,0,0,0 };
 		}
 	}
-}
+
+}*/
+
+

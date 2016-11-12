@@ -2,15 +2,17 @@
 #include <SDL\SDL.h>
 #include <string>
 #include <vector>
+#include "Sprite.h"
+
 class Player
 {
 public:
 	//creates the player sprite, x and y position and the number of frames for the player when the game starts
-	Player(SDL_Renderer *renderer, std::string filePath, float x, float y, float framesX, float framesY, float windowWidth, float windowHeight);
+	Player(SDL_Renderer* renderer, float framesX, float framesY);
 	~Player();
 
 	//Renders the player texture based on the position
-	void render(SDL_Renderer *renderer);
+	void draw();
 
 	//takes the players inputs and calculates the movement of the player
 	void processInput(SDL_Event &evnt, float delta);
@@ -26,12 +28,11 @@ public:
 	float getVelX();
 	float getVelY();
 
+	void setUp();
+
 private:
 	//checks the collision between the player and another rect. Returns true if there is a collision.
 	bool checkCollision(const SDL_Rect& posRect, const SDL_Rect& obj);
-
-	//The player sprite
-	SDL_Texture *texture;
 
 	//Booleans which checks movement, jumping and if the player is on the ground
 	bool bJumping, bMoving, bOnGround, bFallThrough;
@@ -45,7 +46,6 @@ private:
 	//the players gravity
 	float m_gravity;
 
-	
 
 	//Shows the current frame of the player on the sprite sheet
 	SDL_Rect cropRect;
@@ -59,13 +59,14 @@ private:
 	//width of the whole texture
 	float m_textureWidth;
 
-	float m_acceleration;
-
 	//keeps track of the x and y coordinates before any movement. Used to know from which side the collision is from. 
 	float m_xPos, m_yPos;
 
 	float m_windowWidth, m_windowHeight;
 
-	float m_jumpHeight;
+	SDL_Renderer* m_gameRenderer; 
+
+
+
 };
 

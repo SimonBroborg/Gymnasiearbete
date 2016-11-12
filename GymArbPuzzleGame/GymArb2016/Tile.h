@@ -2,27 +2,31 @@
 #include <SDL\SDL.h>
 #include <string>
 #include <vector>
+#include "Engine.h"
+#include "Sprite.h"
 
-class Tile
+class Tile : public Engine
 {
 public:
-	Tile();
+
+	//initializes position and type
+	Tile(int x, int y, int tileType);
+	
 	~Tile();
 
-	//Loads the tile texture from a file path
-	SDL_Texture* loadTile(SDL_Renderer *renderer, std::string path);
+	//shows the tile
+	void render(SDL_Rect& camera, Sprite &tileTexture, SDL_Renderer* gameRenderer);
 
-	//The amount of vertical and horizontal tiles
-	const int X_TILES = 20;
-	const int Y_TILES = 15;
+	//get the tile type
+	int getType();
 
-	//creates the map based on the tiles inside the vector rects
-	void createMap(SDL_Renderer *renderer, int map[15][20], std::vector<SDL_Rect> &rRects);
+	//get the collision box
+	SDL_Rect getBox();
 
-	//tile texture
-	SDL_Texture *tileSprite;
+private:
+	//the attributes of the tile
+	SDL_Rect m_box;
 
-	SDL_Rect tileRect;
-
+	//the tile type
+	int m_type;
 };
-

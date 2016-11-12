@@ -11,17 +11,19 @@
 class Circle
 {
 public:
-	Circle(SDL_Renderer *renderer, float xPos, float yPos, float radi, float angle);
+	Circle() {
+
+	}
+	Circle(SDL_Renderer *renderer,float radi, float angle);
 	~Circle();
 
-	void drawCircle();
+	void draw();
 
 	void move(std::vector<SDL_Rect> &rects, SDL_Rect &player, float playerVelX);
 
 	bool checkCollision(SDL_Rect &rect);
 	bool playerCollision(SDL_Rect &player, float playerVelX);
 
-	float m_xPos, m_yPos;
 	float m_theta;
 	float m_step;
 	float m_radi;
@@ -41,7 +43,5 @@ private:
 	SDL_Rect m_imgRect;
 
 	SDL_Renderer *m_gameRenderer;
-
-	SDL_Texture *texture;
 };
 

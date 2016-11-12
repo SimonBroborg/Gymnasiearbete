@@ -1,40 +1,31 @@
-#include "Player.h"
+/*#include "Player.h"
 #include <SDL/SDL_image.h>
 #include <iostream>
 
-Player::Player(SDL_Renderer *renderer, std::string filePath, float x, float y, float framesX, float framesY, float windowWidth, float windowHeight)
+Player::Player(SDL_Renderer* renderer, float framesX, float framesY)
 {
-	SDL_Surface *surface = IMG_Load(filePath.c_str());
-	if (surface == nullptr)
-		std::cout << "Error: " << SDL_GetError() << std::endl;
+	m_gameRenderer = renderer;
 	
-	else
-	{
-		texture = SDL_CreateTextureFromSurface(renderer, surface);
-		if (texture == nullptr)
-			std::cout << "Error: " << SDL_GetError() << std::endl;
-	}
+	screenHeight = 700;
+	screenWidth = 1280;
+}
 
-	SDL_FreeSurface(surface);
 
-	SDL_QueryTexture(texture, nullptr, nullptr, &cropRect.w, &cropRect.h);
+Player::~Player()
+{
+	SDL_DestroyTexture(m_texture);
+}
+
+void Player::setUp() {
+	SDL_QueryTexture(m_texture, nullptr, nullptr, &cropRect.w, &cropRect.h);
 
 	//Displays the player on chosen coordinates
-	posRect.x = x;
-	posRect.y = y;
-
-	//sets the width of the cropRect which will display the different frames of the movement animation
-	m_textureWidth = cropRect.w;
-	
-	//sets the width of each frame
-	cropRect.w /= framesX;
-
-	//set the height of each frame
-	cropRect.h /= framesY;
+	posRect.x = xPos;
+	posRect.y = yPos;
 
 	//Set the width and height of the frames and rects equal to each other
 	m_frameWidth = posRect.w = cropRect.w;
-	m_frameHeight = posRect.h = cropRect.h = 30;
+	m_frameHeight = posRect.h = cropRect.h;
 
 	m_leftSpeed = -180.0f * 0.7; //players velocity to the left
 	m_rightSpeed = 180.0f * 0.7; //players velocity to the right
@@ -44,23 +35,10 @@ Player::Player(SDL_Renderer *renderer, std::string filePath, float x, float y, f
 	bJumping = false; //The player is not jumping when the game starts
 	bMoving = false; //The player is not moving when the game starts
 	bFallThrough = false; //checks if it is possible to fall through block
-
-	m_windowHeight = windowHeight;
-	m_windowWidth = windowWidth;
-
-	m_jumpHeight = 0;
 }
-
-
-Player::~Player()
+void Player::draw()
 {
-	SDL_DestroyTexture(texture);
-}
-
-
-void Player::render(SDL_Renderer *renderer)
-{
-	SDL_RenderCopy(renderer, texture, &cropRect, &posRect);
+	SDL_RenderCopy(m_gameRenderer, m_texture, &cropRect, &posRect);
 }
 
 
@@ -247,13 +225,13 @@ void Player::keepInsideBorder()
 		posRect.x = 0;
 
 	//makes sure the player cant go outside the window on the right
-	if (posRect.x + posRect.w >= m_windowWidth)
-		posRect.x = m_windowWidth - posRect.w;
+	if (posRect.x + posRect.w >= screenWidth)
+		posRect.x = screenWidth - posRect.w;
 
 	//the player cant fall through the bottom of the window
-	if (posRect.y + posRect.h > m_windowHeight)
+	if (posRect.y + posRect.h > screenHeight)
 	{
-		posRect.y = m_windowHeight - posRect.h;
+		posRect.y = screenHeight - posRect.h;
 		bJumping = false;
 		bOnGround = true;
 		m_velY = 0;
@@ -271,3 +249,5 @@ float Player::getVelX() {
 float Player::getVelY() {
 	return m_velY;
 }
+
+*/

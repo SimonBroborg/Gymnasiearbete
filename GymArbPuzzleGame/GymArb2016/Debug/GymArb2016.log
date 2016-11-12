@@ -1,9 +1,6 @@
 ﻿  Manager.cpp
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(68): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(88): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(89): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(172): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(194): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(199): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(59): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(293): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(298): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
   GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.exe
   GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.pdb (Partial PDB)
