@@ -3,22 +3,24 @@
 #include <string>
 #include <vector>
 #include "Sprite.h"
+#include "Engine.h"
+#include "Tile.h"
 
-class Player
+class Player : public Engine
 {
 public:
 	//creates the player sprite, x and y position and the number of frames for the player when the game starts
-	Player(SDL_Renderer* renderer, float framesX, float framesY);
+	Player(SDL_Renderer* renderer, Sprite &playerTexture, float framesX, float framesY);
 	~Player();
 
 	//Renders the player texture based on the position
-	void draw();
+	void render(Sprite &playerTexture, SDL_Renderer* renderer);
 
 	//takes the players inputs and calculates the movement of the player
 	void processInput(SDL_Event &evnt, float delta);
 
 	//moves the player based on the posRect's x and y coordinates. Also calls the checkCollision() function
-	void move(float delta, std::vector<SDL_Rect> rects);
+	void move(float delta, Tile* tiles[]);
 
 	void keepInsideBorder();
 
@@ -65,6 +67,7 @@ private:
 	float m_windowWidth, m_windowHeight;
 
 	SDL_Renderer* m_gameRenderer; 
+
 
 
 

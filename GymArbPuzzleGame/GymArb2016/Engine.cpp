@@ -15,7 +15,6 @@ Engine::~Engine()
 
 bool Engine::checkCollision(SDL_Rect a, SDL_Rect b)
 {
-	std::cout << "collision" << std::endl;
 	//The sides of the rectangles
 	int leftA, leftB;
 	int rightA, rightB;
@@ -58,6 +57,11 @@ bool Engine::checkCollision(SDL_Rect a, SDL_Rect b)
 	//If none of the sides from A are outside B
 	return true;
 }
+
+
+
+
+
 
 void Engine::initSystems()
 {

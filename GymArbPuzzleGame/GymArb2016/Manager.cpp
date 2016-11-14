@@ -29,10 +29,12 @@ void Manager::run()
 
 void Manager::gameLoop()
 {
-	//Player player(renderer, 1, 1);
+	Player player = new Player(renderer, playerTexture, 4, 4);
 	Tile* tileSet[TOTAL_TILES];
 
-	if (!loadMedia(tileSet, renderer)) {
+	SDL_Rect tileClips[TOTAL_TILE_SPRITES];
+
+	if (!loadMedia(tileSet, renderer, tileClips)) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
 
@@ -42,17 +44,12 @@ void Manager::gameLoop()
 
 	Mix_Music *bgm = Mix_LoadMUS("backgroundMusic.mp3");
 
-	backgroundTexture = loadBackground("kjellsbg.png");
+	backgroundTexture = loadBackground("snowMountain.png");
 
 
 	//Circle circle(renderer, 70, 90);
 
 	//circle.loadSprite(renderer, "circle2.png", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-
-
-	//player.loadSprite(renderer, "gameCharacter.png", 0, SCREEN_HEIGHT / 2);
-	//player.setUp();
-	std::cout << tileClips[2].x << " " << tileClips[2].y << " " << tileClips[2].h;
 	while (bIsRunning)
 	{
 		m_prevTime = m_currentTime;
@@ -78,8 +75,8 @@ void Manager::gameLoop()
 			case SDL_MOUSEBUTTONDOWN:
 				/*circle.xPos = evnt.button.x;
 				circle.yPos = evnt.button.y;*/
-				//player.posRect.x = evnt.button.x;
-				//player.posRect.y = evnt.button.x;
+				player.posRect.x = evnt.button.x;
+				player.posRect.y = evnt.button.y;
 				break;
 
 			case SDL_KEYDOWN:
@@ -103,7 +100,7 @@ void Manager::gameLoop()
 
 
 			}
-			//player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
+			player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
 
 		}
 
@@ -113,23 +110,19 @@ void Manager::gameLoop()
 		
 		SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL); //copies the background to the renderer
 
-		//player.move(m_deltaTime, rects); //movement function for the player, calculates the new position of the player and checks collision
-
+		player.move(m_deltaTime, tileSet); //movement function for the player, calculates the new position of the player and checks collision
 		//circle.move(rects, player.posRect, player.getVelX() * m_deltaTime);
-
-		//rects.clear(); //Clears the vector "rects" to avoid lag caused by to much memory use
-
 
 
  		//render level
- 		for (int i = 0; i < TOTAL_TILES; i++)
- 		{
-			tileSet[i]->render(camera, tileTexture, renderer); //renders the tiles to the renderer from the tile set vector
-		}
-
+		for (int i = 0; i < TOTAL_TILES; i++)
+		{
+			tileSet[i]->render(camera, tileTexture, renderer, tileClips); //renders the tiles to the renderer from the tile set vector
+		}		
 
 		//circle.draw();
-		//player.draw(); //renders the player
+		player.render(playerTexture, renderer); //renders the player
+
 		SDL_RenderPresent(renderer); //prints out everything on the window
 	}
 	close(tileSet);
@@ -145,21 +138,24 @@ SDL_Texture *Manager::loadBackground(std::string path)
 }
 
 
-
-
-bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer)
+bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES])
 {
 	//loading success flag
 	bool success = true;
 
 	//load tile texture
-	if (!tileTexture.loadFromFile("tiles.png", renderer)) {
+	if (!tileTexture.loadFromFile("assets/tiles/tileSpriteSheet.png", renderer)) {
 		std::cout << "Failed to load tile set texture!" << std::endl;
 		success = false;
 	}
 
+	if (!playerTexture.loadFromFile("assets/player/p1_front.png", renderer)) {
+		std::cout << "Failed to load player texture" << std::endl;
+		success = false;
+	}
+
 	//Load tile map
-	if (!setTiles(tiles)) {
+	if (!setTiles(tiles, tileClips, "lazy.map")) {
 		std::cout << "Failed to load tile set ! " << std::endl;
 		success = false;
 	}
@@ -197,13 +193,11 @@ void Manager::close(Tile* tiles[])
 		//quit SDL subsystems
 		IMG_Quit();
 		SDL_Quit();
-	
-
 }
 
 
 
-bool Manager::setTiles(Tile* tiles[])
+bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES], std::string mapPath)
 {
 	//success flag
 	bool tilesLoaded = true;
@@ -213,7 +207,7 @@ bool Manager::setTiles(Tile* tiles[])
 	int y = 0;
 
 	//open the map
-	std::ifstream map("lazy.map");
+	std::ifstream map(mapPath.c_str());
 
 	//if the map couldn't be loaded 
 	if (!map.is_open()) {
@@ -229,6 +223,7 @@ bool Manager::setTiles(Tile* tiles[])
 
 			//red tile from map file
 			map >> tileType;
+
 
 			//if there was a problem reading the map
 			if (map.fail()) {
@@ -261,23 +256,27 @@ bool Manager::setTiles(Tile* tiles[])
 				y += TILE_HEIGHT;
 			}
 		}
-		std::cout << tilesLoaded << std::endl;
 		//clips the sprite sheet
 		if (tilesLoaded) {
-			tileClips[TILE_RED].x = 0;
-			tileClips[TILE_RED].y = 0;
-			tileClips[TILE_RED].w = TILE_WIDTH;
-			tileClips[TILE_RED].h = TILE_HEIGHT;
+			tileClips[TILE_NONE].x = 0;
+			tileClips[TILE_NONE].y = 0;
+			tileClips[TILE_NONE].w = TILE_WIDTH;
+			tileClips[TILE_NONE].h = TILE_HEIGHT;
 
-			tileClips[TILE_GREEN].x = 0;
-			tileClips[TILE_GREEN].y = 80;
-			tileClips[TILE_GREEN].w = TILE_WIDTH;
-			tileClips[TILE_GREEN].h = TILE_HEIGHT;
+			tileClips[TILE_BRIDGE].x = 0;
+			tileClips[TILE_BRIDGE].y = 60;
+			tileClips[TILE_BRIDGE].w = TILE_WIDTH;
+			tileClips[TILE_BRIDGE].h = TILE_HEIGHT;
 
-			tileClips[TILE_BLUE].x = 0;
-			tileClips[TILE_BLUE].y = 160;
-			tileClips[TILE_BLUE].w = TILE_WIDTH;
-			tileClips[TILE_BLUE].h = TILE_HEIGHT;
+			tileClips[TILE_BOX].x = 0;
+			tileClips[TILE_BOX].y = 120;
+			tileClips[TILE_BOX].w = TILE_WIDTH;
+			tileClips[TILE_BOX].h = TILE_HEIGHT;
+
+			tileClips[TILE_GRASS].x = 0;
+			tileClips[TILE_GRASS].y = 180;
+			tileClips[TILE_GRASS].w = TILE_WIDTH;
+			tileClips[TILE_GRASS].h = TILE_HEIGHT;
 		}
 	}
 	//Close the file

@@ -15,7 +15,7 @@ public:
 	~Tile();
 
 	//shows the tile
-	void render(SDL_Rect& camera, Sprite &tileTexture, SDL_Renderer* gameRenderer);
+	void render(SDL_Rect& camera, Sprite &tileTexture, SDL_Renderer* gameRenderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
 
 	//get the tile type
 	int getType();

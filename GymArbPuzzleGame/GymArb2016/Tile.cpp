@@ -28,18 +28,16 @@ Tile::~Tile()
 }
 
 
-void Tile::render(SDL_Rect &camera, Sprite &tileTexture, SDL_Renderer* gameRenderer)
+void Tile::render(SDL_Rect &camera, Sprite &tileTexture, SDL_Renderer* gameRenderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES])
 {
-	SDL_Rect renderQuad = { 0,0,80,80 };
 	//the the tile is on screen
 	if (checkCollision(camera, m_box)) {
 		//show the tile
-		tileTexture.render(m_box.x - camera.x, m_box.y - camera.y, &tileClips[m_type]);
+		tileTexture.render(gameRenderer, m_box.x - camera.x, m_box.y - camera.y, &tileClips[m_type]);
 	}
 
 	if (tileTexture.m_texture == nullptr)
 		std::cout << "tileTexture.m_texture == nullptr";
-	SDL_RenderCopy(gameRenderer, tileTexture.m_texture, &renderQuad, &renderQuad);
 
 }
 

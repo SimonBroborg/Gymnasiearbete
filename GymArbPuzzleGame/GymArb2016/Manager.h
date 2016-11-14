@@ -5,24 +5,14 @@
 #include "Tile.h"
 #include "Player.h"
 #include "Circle.h"
+#include <String>
 
 #include "Engine.h"
 
 class Manager : public Engine
 {
 public:
-
 	
-
-	
-
-
-	
-
-	//the different tile sprites
-	const int TILE_RED = 0;
-	const int TILE_GREEN = 1;
-	const int TILE_BLUE = 2;
 
 	//Initializing variables
 	Manager();
@@ -38,12 +28,12 @@ public:
 	float getHeight();
 	float getWidth();
 
-	bool loadMedia(Tile* tiles[], SDL_Renderer* renderer);
+	bool loadMedia(Tile* tiles[], SDL_Renderer* renderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
 
 	void close(Tile* tiles[]);
 
 
-	bool setTiles(Tile* tiles[]);
+	bool setTiles(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES], std::string mapPath);
 
 	//Start the game loop
 	void gameLoop();
@@ -58,7 +48,9 @@ public:
 
 
 	//scene textures
-	Sprite tileTexture;
+	Sprite tileTexture; 
+
+	Sprite playerTexture;
 	
 	
 private:

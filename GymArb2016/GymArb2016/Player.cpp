@@ -21,7 +21,7 @@ Player::Player(SDL_Renderer *renderTarget, std::string filePath, int x, int y, i
 	SDL_FreeSurface(surface);
 
 	SDL_QueryTexture(_texture, NULL, NULL, &_cropRect.w, &_cropRect.h);
-
+	std::cout << _cropRect.w << " " << _cropRect.h;
 	positionRect.x = x;
 	positionRect.y = y;
 
