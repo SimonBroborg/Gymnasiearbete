@@ -28,12 +28,12 @@ public:
 	float getHeight();
 	float getWidth();
 
-	bool loadMedia(Tile* tiles[], SDL_Renderer* renderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
+	bool loadMedia(Tile* tiles[], SDL_Renderer* renderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES], std::string levelPath);
 
 	void close(Tile* tiles[]);
 
 
-	bool setTiles(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES], std::string mapPath);
+	bool setTiles(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES], std::string levelPath);
 
 	//Start the game loop
 	void gameLoop();
@@ -51,6 +51,8 @@ public:
 	Sprite tileTexture; 
 
 	Sprite playerTexture;
+
+	Sprite circleTexture;
 	
 	
 private:

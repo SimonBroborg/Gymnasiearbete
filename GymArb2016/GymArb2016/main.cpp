@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 	window = SDL_CreateWindow("SDL GAME", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_RESIZABLE);
 	renderTarget = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-	Player player1(renderTarget, "doctorSS.png", 0, 0, 4, 4);
+	Player player1(renderTarget, "isaksak.png", 0, 0, 1, 6);
 
 	TTF_Font *font = TTF_OpenFont("sample.ttf", 20);
 	SDL_Color color = { 234,141,255,255 };

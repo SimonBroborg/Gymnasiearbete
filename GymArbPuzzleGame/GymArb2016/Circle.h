@@ -8,7 +8,10 @@
 #include <math.h>
 #include "Manager.h"
 #include <vector>
-class Circle
+#include "Engine.h"
+#include "Tile.h"
+
+class Circle : public Engine
 {
 public:
 	Circle() {
@@ -17,17 +20,19 @@ public:
 	Circle(SDL_Renderer *renderer,float radi, float angle);
 	~Circle();
 
-	void draw();
+	void render(Sprite &circleTexture, SDL_Renderer* renderer);
 
-	void move(std::vector<SDL_Rect> &rects, SDL_Rect &player, float playerVelX);
+	void move(Tile * tiles[], Player player);
 
-	bool checkCollision(SDL_Rect &rect);
-	bool playerCollision(SDL_Rect &player, float playerVelX);
+	
+	bool playerCollision(Player player);
 
 	float m_theta;
 	float m_step;
 	float m_radi;
 	float m_gravity;
+
+	float xPos, yPos;
 
 	float t;
 
@@ -37,11 +42,9 @@ public:
 	float m_speed;
 	float m_scaleX, m_scaleY;
 
+	SDL_Rect m_imgRect;
 
 private:
 
-	SDL_Rect m_imgRect;
-
-	SDL_Renderer *m_gameRenderer;
 };
 

@@ -16,8 +16,8 @@ Player::Player(SDL_Renderer* renderer, Sprite &playerTexture,  float framesX, fl
 	m_frameWidth = posRect.w = cropRect.w;
 	m_frameHeight = posRect.h = cropRect.h;
 
-	m_leftSpeed = -180.0f * 0.7; //players velocity to the left
-	m_rightSpeed = 180.0f * 0.7; //players velocity to the right
+	m_leftSpeed = -4; //players velocity to the left
+	m_rightSpeed = 4; //players velocity to the right
 	m_jumpSpeed =250.0f; //the speed or power that the player jumps with
 	m_gravity = 400.0f; //gravity which pushes the player downwards
 
@@ -31,9 +31,6 @@ Player::~Player()
 {
 }
 
-void Player::setUp() {
-	
-}
 void Player::render(Sprite &playerTexture, SDL_Renderer* renderer)
 {
 	SDL_QueryTexture(playerTexture.m_texture, NULL, NULL, &posRect.w, &posRect.h);
@@ -107,7 +104,7 @@ void Player::move(float delta, Tile* tiles[])
 
 		
 		//moves the player's x coordinate equal to the x velocity times delta
-		posRect.x += m_velX * delta;
+		posRect.x += m_velX;
 
 		//moves the player equal to the velocity
 		posRect.y += m_velY * delta;
@@ -118,7 +115,7 @@ void Player::move(float delta, Tile* tiles[])
 
 		for (int i = 0; i < TOTAL_TILES; ++i) {
 
-			if ((tiles[i]->getType() >= TILE_BRIDGE) && (tiles[i]->getType() <= TILE_GRASS)) {
+			if ((tiles[i]->getType() >= TILE_BRIDGE)) {
 
 				if (checkCollision(posRect, tiles[i]->getBox())) {
 					if (m_yPos + posRect.h <= tiles[i]->getBox().y) {
@@ -161,7 +158,7 @@ void Player::move(float delta, Tile* tiles[])
 					}
 				}
 			}
-}
+		}
 
 		
 		
@@ -225,48 +222,13 @@ void Player::move(float delta, Tile* tiles[])
 		
 }
 
-//returns true if there is a collision, otherwise it returns false
-bool Player::checkCollision(const SDL_Rect& posRect, const SDL_Rect& obj)
-{
-	//sets up variables which keeps track of the different parts of the rect
-	//which makes it easier to understand the collision check 
-	//posRect is the players coordinates, height and width, and obj for the object the player collides with
-	float playerLeft, objLeft;
-	float playerRight, objRight;
-	float playerTop, objTop;
-	float playerBottom, objBottom;
 
-	playerLeft = posRect.x;
-	playerRight = posRect.x + posRect.w;
-	playerTop = posRect.y;
-	playerBottom = posRect.y + posRect.h;
-
-	objLeft = obj.x;
-	objRight = obj.x + obj.w;
-	objTop = obj.y;
-	objBottom = obj.y + obj.h;
-
-	//if none of the proceeding if-statements is true, there is a collision
-	if (playerBottom <= objTop)
-		return false;
-
-	if (playerTop >= objBottom)
-		return false;
-
-	if (playerRight <= objLeft)
-		return false;
-
-	if (playerLeft >= objRight)
-		return false;
-
-	return true;
-}
 
 //Makes sure the player cant go outside the window
 void Player::keepInsideBorder()
 {
 	//makes sure the player cant go outside the window on the left
-	if (posRect.x < 0)
+	if (posRect.x <= 0)
 		posRect.x = 0;
 
 	//makes sure the player cant go outside the window on the right
@@ -274,7 +236,7 @@ void Player::keepInsideBorder()
 		posRect.x = SCREEN_WIDTH - posRect.w;
 
 	//the player cant fall through the bottom of the window
-	if (posRect.y + posRect.h > SCREEN_HEIGHT)
+	if (posRect.y + posRect.h >= SCREEN_HEIGHT)
 	{
 		posRect.y = SCREEN_HEIGHT - posRect.h;
 		bJumping = false;
@@ -294,4 +256,8 @@ float Player::getVelX() {
 
 float Player::getVelY() {
 	return m_velY;
+}
+
+SDL_Rect Player::getBox() {
+	return posRect;
 }

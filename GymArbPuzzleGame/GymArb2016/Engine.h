@@ -17,7 +17,7 @@ public:
 	const int LEVEL_HEIGHT = 800;
 
 	static const int TOTAL_TILES = 240;
-	static const int TOTAL_TILE_SPRITES = 4;
+	static const int TOTAL_TILE_SPRITES = 7;
 
 	//tile constants
 	const int TILE_WIDTH = 60;
@@ -28,7 +28,9 @@ public:
 	const int TILE_BRIDGE = 1;
 	const int TILE_BOX = 2;
 	const int TILE_GRASS = 3;
-
+	const int TILE_GRASS_CENTER = 4;
+	const int TILE_GRASS_CLIFF_LEFT = 5;
+	const int TILE_GRASS_CLIFF_RIGHT = 6;
 
 
 	//The game renderer

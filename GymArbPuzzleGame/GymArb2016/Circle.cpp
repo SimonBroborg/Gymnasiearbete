@@ -1,4 +1,4 @@
-/*#include "Circle.h"
+#include "Circle.h"
 #include "Player.h"
 
 Circle::Circle(SDL_Renderer *renderer, float radi, float angle)
@@ -6,7 +6,6 @@ Circle::Circle(SDL_Renderer *renderer, float radi, float angle)
 	m_step = 1;
 	m_theta = 0;
 	m_radi = radi;
-	m_gameRenderer = renderer;
 	m_gravity = 0.2;
 
 	m_speed = 4;
@@ -22,10 +21,8 @@ Circle::Circle(SDL_Renderer *renderer, float radi, float angle)
 	std::cout << m_scaleX << std::endl;
 	std::cout << angle << std::endl;
 
-	m_imgRect.w = m_imgRect.h = (m_radi) * 2;
-
-	screenWidth = 1280;
-	screenHeight = 700;
+	m_imgRect.x = 100; 
+	m_imgRect.y = 100;
 
 }
 
@@ -34,7 +31,7 @@ Circle::~Circle()
 }
 
 
-void Circle::draw() {
+void Circle::render(Sprite &circleTexture, SDL_Renderer* renderer) {
 	/*for (int i = 0; i < 360; i += m_step)
 	{
 		float x = m_xPos + m_radi * cos(i);
@@ -43,26 +40,24 @@ void Circle::draw() {
 		SDL_RenderDrawPoint(m_gameRenderer, x, y);
 	}*/
 	
-	/*//sets the circle picture on the circle
-	m_imgRect.x = xPos - m_radi;
-	m_imgRect.y = yPos - m_radi;
-
 	//puts the circle on the renderer
-	SDL_RenderCopyEx(m_gameRenderer, m_texture, NULL, &m_imgRect, m_angle, NULL, SDL_FLIP_NONE);
+	SDL_QueryTexture(circleTexture.m_texture, NULL, NULL, &m_imgRect.w, &m_imgRect.h);
+	circleTexture.render(renderer, m_imgRect.x, m_imgRect.y);
 }
 
-void Circle::move(std::vector<SDL_Rect> &rects, SDL_Rect &player, float playerVelX)
+void Circle::move(Tile * tiles[], Player player)
 {
-	Manager game;
-
-
+	xPos = m_imgRect.x;
+	yPos = m_imgRect.y;
 	//if he circle hits the right side of the window
-	if (xPos + m_radi + m_velX > screenWidth) {
+	if (m_imgRect.x + m_imgRect.w  >= SCREEN_WIDTH) {
+		m_imgRect.x = SCREEN_WIDTH - m_imgRect.w;
 		m_velX = -m_velX;
 	}
 
 	//if the circle hits the bottom of the window
-	if (yPos + m_radi + m_velY > screenHeight) {
+	if (m_imgRect.y + m_imgRect.h >= SCREEN_HEIGHT) {
+		m_imgRect.y = SCREEN_HEIGHT - m_imgRect.h;
 		if (m_velY >= 1.3)
 			m_velY = -m_velY * 0.5;
 		else
@@ -70,17 +65,17 @@ void Circle::move(std::vector<SDL_Rect> &rects, SDL_Rect &player, float playerVe
 
 	}
 	//if circle hits the left side
-	if (xPos - m_radi + m_velX < 0) {
+	if (m_imgRect.x <= 0) {
 		m_velX = -m_velX;
 
 	}
 	//if circle hits the roof
-	if (yPos - m_radi + m_velY < 0) {
+	if (m_imgRect.y <= 0) {
 		m_velY = -m_velY;
 	}
 
-	xPos += m_velX;
-	yPos += m_velY;
+	m_imgRect.x += m_velX;
+	m_imgRect.y += m_velY;
 
 	m_angle += m_velX;
 
@@ -90,130 +85,132 @@ void Circle::move(std::vector<SDL_Rect> &rects, SDL_Rect &player, float playerVe
 		m_velX = 0;
 
 	m_velY += m_gravity;
+
 	
-
-	for (int i = 0; i < rects.size(); i++)
+	
+	for (int i = 0; i < TOTAL_TILES; i++)
 	{
-		SDL_Rect &rect = rects[i];
-
-		//collision with solid blocks
 		
-			if (checkCollision(rect))
-			{
+		if (tiles[i]->getType() >= TILE_BRIDGE) {
 
+			//collision with solid blocks
+
+			if (checkCollision(m_imgRect, tiles[i]->getBox()))
+			{
+				
 				//if the circle is above the rectangle
-				if (yPos < rect.y)
+				if (yPos + m_imgRect.h <= tiles[i]->getBox().y)
 				{
-					//checks if the x position of the circle is inside the rectangle
-					if (xPos <= rect.x + rect.w && xPos > rect.x) {
-						yPos = rect.y - m_radi;
+					
 
 						//checks the y speed of the circle, this helps deciding if the ball should bounce or not
-						if (m_velY >= 1.3)
+						if (m_velY >= 3)
 							m_velY = -m_velY * 0.5; //the ball bounces
-						else
+						else {
 							m_velY = 0; // the ball does not bounce
-					}
-
-					//what happens if the ball collides from an angle thats not 90, 180, 270 or 360 degrees
-					else 
-					{
-						m_velY = 0; //stops the ball y motion
-					}
+							
+						}
+						m_imgRect.y = tiles[i]->getBox().y - m_imgRect.h;
+					
 				}
 
 				//if the rect is on the right of the block
-				else if (xPos > rect.x + rect.w) {
-					if (rect.h == 32) {
-						xPos = rect.x + rect.w + m_radi;
+				else if (xPos >= tiles[i]->getBox().x + tiles[i]->getBox().w) {
+					if (tiles[i]->getType() != TILE_BRIDGE) {
+						m_imgRect.x = tiles[i]->getBox().x + tiles[i]->getBox().w;
 						m_velX = -m_velX;
 					}
 				}
 
 				//if the circle is on the left of the block
-				else if (xPos < rect.x) {
-					if (rect.h == 32) {
-						xPos = rect.x - m_radi;
+				else if (xPos + m_imgRect.w <= tiles[i]->getBox().x) {
+					if (tiles[i]->getType() != TILE_BRIDGE) {
+						m_imgRect.x = tiles[i]->getBox().x - m_imgRect.w;
 						m_velX = -m_velX;
 					}
 				}
 
 				//if the circle is under the rectangle
-				else if (yPos > rect.y + rect.h)
-					if(rect.h == 32)
-					m_velY = -m_velY;
+				else if (yPos >= tiles[i]->getBox().y + tiles[i]->getBox().h) {
+					if (tiles[i]->getType() != TILE_BRIDGE) {
+						m_imgRect.y = tiles[i]->getBox().y + tiles[i]->getBox().h;
+						m_velY = -m_velY;
+					}
+				}
 			}
+		}
 	}
 	
-
-	if (playerCollision(player, playerVelX)) {
+	
+	if (playerCollision(player)) {
 
 
 		//if the circle is above the rectangle
-		if (yPos < player.y)
+		if (yPos + m_imgRect.h <= player.getBox().y)
 		{
-			//checks if the x position of the circle is inside the rectangle
-			if (xPos <= player.x + player.w && xPos > player.x) {
-				yPos = player.y - m_radi;
 
-				//checks the y speed of the circle, this helps deciding if the ball should bounce or not
-				if (m_velY >= 1.3)
-					m_velY = -m_velY * 0.5; //the ball bounces
-				else
-					m_velY = 0; // the ball does not bounce
-			}
 
-			//what happens if the ball collides from an angle thats not 90, 180, 270 or 360 degrees
-			else
-			{
-				m_velY = 0; //stops the ball y motion
+			//checks the y speed of the circle, this helps deciding if the ball should bounce or not
+			if (m_velY >= 3)
+				m_velY = -m_velY * 0.5; //the ball bounces
+			else {
+				m_velY = 0; // the ball does not bounce
+
 			}
+			m_imgRect.y = player.getBox().y - m_imgRect.h;
+
 		}
-		
+
 		//if the rect is on the right of the block
-		else if (xPos > player.x + player.w) {
-				xPos = player.x + player.w + m_radi;
-				m_velX = playerVelX;
-			
+		else if (xPos >= player.getBox().x + player.getBox().w) {
+
+			m_imgRect.x = player.getBox().x + player.getBox().w;
+			m_velX = -m_velX;
+
 		}
 
 		//if the circle is on the left of the block
-		else if (xPos < player.x) {
-				xPos = player.x - m_radi;
-				m_velX = playerVelX;
+		else if (xPos + m_imgRect.w <= player.getBox().x) {
+
+			m_imgRect.x = player.getBox().x - m_imgRect.w;
+			m_velX = -m_velX;
+
 		}
 
 		//if the circle is under the rectangle
-		else if (yPos > player.y + player.h)
-				m_velY = -m_velY;
-	}
-	
+		else if (yPos >= player.getBox().y + player.getBox().h) {
 
+			m_imgRect.y = player.getBox().y + player.getBox().h;
+			m_velY = -m_velY;
+
+		}
+	}
 }
 
-bool Circle::checkCollision(SDL_Rect &rect)
+/*
+bool Circle::checkCollision(Tile* tile)
 {
 	float cX, cY;
 	
 	//find the closest x offset
-	if (xPos < rect.x)
-		cX = rect.x;
-	else if (xPos > rect.x + rect.w)
-		cX = rect.x + rect.w;
+	if (m_imgRect.x < tile->getBox().x)
+		cX = tile->getBox().x;
+	else if (m_imgRect.x > tile->getBox().x + tile->getBox().w)
+		cX = tile->getBox().x + tile->getBox().w;
 	else
-		cX = xPos;
+		cX = m_imgRect.x;
 
 	//fins the closest y offset
-	if (yPos + m_velY < rect.y)
-		cY = rect.y;
+	if (m_imgRect.y + m_velY < tile->getBox().y)
+		cY = tile->getBox().y;
 
-	else if (yPos + m_velY> rect.y + rect.h)
-		cY = rect.y + rect.h;
+	else if (m_imgRect.y + m_velY> tile->getBox().y + tile->getBox().h)
+		cY = tile->getBox().y + tile->getBox().h;
 	else
-		cY = yPos;
+		cY = m_imgRect.y;
 
 	//if the closest point is inside the circle
-	if (((cX - xPos) * (cX - xPos) + (cY - yPos) * (cY - yPos)) < m_radi * m_radi)
+	if (((cX - m_imgRect.x) * (cX - m_imgRect.x) + (cY - m_imgRect.y) * (cY - m_imgRect.y)) < m_radi * m_radi)
 	{
 		//This rect and the circle have collided
 		return true;
@@ -223,24 +220,24 @@ bool Circle::checkCollision(SDL_Rect &rect)
 	return false;
 
 }
-
-bool Circle::playerCollision(SDL_Rect &player, float playerVelX) {
+*/
+bool Circle::playerCollision(Player player) {
 	float cX, cY;
 
 	//find the closest x offset
-	if (xPos < player.x)
-		cX = player.x;
-	else if (xPos > player.x + player.w)
-		cX = player.x + player.w;
+	if (xPos < player.getBox().x)
+		cX = player.getBox().y;
+	else if (xPos > player.getBox().y + player.getBox().w)
+		cX = player.getBox().y + player.getBox().w;
 	else
 		cX = xPos;
 
 	//fins the closest y offset
-	if (yPos + m_velY < player.y)
-		cY = player.y;
+	if (yPos + m_velY < player.getBox().y)
+		cY = player.getBox().y;
 
-	else if (yPos + m_velY > player.y + player.h)
-		cY = player.y + player.h;
+	else if (yPos + m_velY > player.getBox().y + player.getBox().h)
+		cY = player.getBox().y + player.getBox().h;
 	else
 		cY = yPos;
 
@@ -255,4 +252,3 @@ bool Circle::playerCollision(SDL_Rect &player, float playerVelX) {
 	return false;
 }
 
-*/

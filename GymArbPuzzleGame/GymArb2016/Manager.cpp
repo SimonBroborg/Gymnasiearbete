@@ -29,22 +29,23 @@ void Manager::run()
 
 void Manager::gameLoop()
 {
-	Player player = new Player(renderer, playerTexture, 4, 4);
+	Player player(renderer, playerTexture, 4, 4);
+
+	Circle circle(renderer, 20, 90);
+
 	Tile* tileSet[TOTAL_TILES];
 
 	SDL_Rect tileClips[TOTAL_TILE_SPRITES];
 
-	if (!loadMedia(tileSet, renderer, tileClips)) {
+	if (!loadMedia(tileSet, renderer, tileClips, "assets/levels/level1.map")) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
 
 	SDL_Rect camera = { 0,0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
-	
-
 	Mix_Music *bgm = Mix_LoadMUS("backgroundMusic.mp3");
 
-	backgroundTexture = loadBackground("snowMountain.png");
+	backgroundTexture = loadBackground("");
 
 
 	//Circle circle(renderer, 70, 90);
@@ -73,8 +74,8 @@ void Manager::gameLoop()
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
-				/*circle.xPos = evnt.button.x;
-				circle.yPos = evnt.button.y;*/
+				circle.m_imgRect.x = evnt.button.x;
+				circle.m_imgRect.y = evnt.button.y;
 				player.posRect.x = evnt.button.x;
 				player.posRect.y = evnt.button.y;
 				break;
@@ -86,14 +87,14 @@ void Manager::gameLoop()
 					bIsRunning = false;
 					break;
 				case SDL_SCANCODE_A:
-					//circle.m_velX = -2;
+					circle.m_velX = -3;
 					break;
 				case SDL_SCANCODE_D:
-					//circle.m_velX = 2;
+					circle.m_velX = 3;
 					break;
 
 				case SDL_SCANCODE_SPACE:
-					//circle.m_velY = -6;
+					circle.m_velY = -4;
 					break;
 				}
 				break;
@@ -111,7 +112,7 @@ void Manager::gameLoop()
 		SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL); //copies the background to the renderer
 
 		player.move(m_deltaTime, tileSet); //movement function for the player, calculates the new position of the player and checks collision
-		//circle.move(rects, player.posRect, player.getVelX() * m_deltaTime);
+		//circle.move(tileSet, player);
 
 
  		//render level
@@ -120,7 +121,7 @@ void Manager::gameLoop()
 			tileSet[i]->render(camera, tileTexture, renderer, tileClips); //renders the tiles to the renderer from the tile set vector
 		}		
 
-		//circle.draw();
+		//circle.render(circleTexture, renderer);
 		player.render(playerTexture, renderer); //renders the player
 
 		SDL_RenderPresent(renderer); //prints out everything on the window
@@ -138,7 +139,7 @@ SDL_Texture *Manager::loadBackground(std::string path)
 }
 
 
-bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES])
+bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileClips[], std::string levelPath)
 {
 	//loading success flag
 	bool success = true;
@@ -149,13 +150,18 @@ bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileCli
 		success = false;
 	}
 
-	if (!playerTexture.loadFromFile("assets/player/p1_front.png", renderer)) {
+	if (!playerTexture.loadFromFile("assets/player/p1_front - kopia.png", renderer)) {
 		std::cout << "Failed to load player texture" << std::endl;
 		success = false;
 	}
 
+	if (!circleTexture.loadFromFile("assets/misc/circle2.png", renderer)) {
+		std::cout << "Failed to load circle texture" << std::endl;
+		success = false;
+	}
+
 	//Load tile map
-	if (!setTiles(tiles, tileClips, "lazy.map")) {
+	if (!setTiles(tiles, tileClips, levelPath.c_str())) {
 		std::cout << "Failed to load tile set ! " << std::endl;
 		success = false;
 	}
@@ -197,7 +203,7 @@ void Manager::close(Tile* tiles[])
 
 
 
-bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES], std::string mapPath)
+bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPath)
 {
 	//success flag
 	bool tilesLoaded = true;
@@ -207,7 +213,7 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES], st
 	int y = 0;
 
 	//open the map
-	std::ifstream map(mapPath.c_str());
+	std::ifstream map(levelPath.c_str());
 
 	//if the map couldn't be loaded 
 	if (!map.is_open()) {
@@ -277,6 +283,23 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES], st
 			tileClips[TILE_GRASS].y = 180;
 			tileClips[TILE_GRASS].w = TILE_WIDTH;
 			tileClips[TILE_GRASS].h = TILE_HEIGHT;
+
+			tileClips[TILE_GRASS_CENTER].x = 60;
+			tileClips[TILE_GRASS_CENTER].y = 180;
+			tileClips[TILE_GRASS_CENTER].w = TILE_WIDTH;
+			tileClips[TILE_GRASS_CENTER].h = TILE_HEIGHT;
+
+			tileClips[TILE_GRASS_CLIFF_LEFT].x = 120;
+			tileClips[TILE_GRASS_CLIFF_LEFT].y = 180;
+			tileClips[TILE_GRASS_CLIFF_LEFT].w = TILE_WIDTH;
+			tileClips[TILE_GRASS_CLIFF_LEFT].h = TILE_HEIGHT;
+
+			tileClips[TILE_GRASS_CLIFF_RIGHT].x = 180;
+			tileClips[TILE_GRASS_CLIFF_RIGHT].y = 180;
+			tileClips[TILE_GRASS_CLIFF_RIGHT].w = TILE_WIDTH;
+			tileClips[TILE_GRASS_CLIFF_RIGHT].h = TILE_HEIGHT;
+
+			
 		}
 	}
 	//Close the file

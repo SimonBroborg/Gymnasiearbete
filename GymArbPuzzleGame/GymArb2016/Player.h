@@ -30,11 +30,10 @@ public:
 	float getVelX();
 	float getVelY();
 
-	void setUp();
+	SDL_Rect getBox();
 
 private:
-	//checks the collision between the player and another rect. Returns true if there is a collision.
-	bool checkCollision(const SDL_Rect& posRect, const SDL_Rect& obj);
+	
 
 	//Booleans which checks movement, jumping and if the player is on the ground
 	bool bJumping, bMoving, bOnGround, bFallThrough;
