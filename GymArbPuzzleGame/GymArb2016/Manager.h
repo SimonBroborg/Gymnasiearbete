@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Circle.h"
 #include <String>
+#include "Menu.h"
 
 #include "Engine.h"
 
@@ -53,6 +54,8 @@ public:
 	Sprite playerTexture;
 
 	Sprite circleTexture;
+
+	Sprite buttonTexture;
 	
 	
 private:

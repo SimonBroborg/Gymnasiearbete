@@ -7,6 +7,7 @@
 #include "Tile.h"
 #include "Circle.h"
 #include <fstream>
+#include "Button.h"
 
 Manager::Manager()
 {
@@ -37,6 +38,8 @@ void Manager::gameLoop()
 
 	SDL_Rect tileClips[TOTAL_TILE_SPRITES];
 
+	Menu menu;
+
 	if (!loadMedia(tileSet, renderer, tileClips, "assets/levels/level1.map")) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
@@ -47,10 +50,8 @@ void Manager::gameLoop()
 
 	backgroundTexture = loadBackground("");
 
+	menu.createMenu();
 
-	//Circle circle(renderer, 70, 90);
-
-	//circle.loadSprite(renderer, "circle2.png", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 	while (bIsRunning)
 	{
 		m_prevTime = m_currentTime;
@@ -73,7 +74,12 @@ void Manager::gameLoop()
 				bIsRunning = false;
 				break;
 
+			case SDL_MOUSEMOTION:
+				
+					break;
+
 			case SDL_MOUSEBUTTONDOWN:
+				menu.checkHover(evnt.button.x, evnt.button.y);
 				circle.m_imgRect.x = evnt.button.x;
 				circle.m_imgRect.y = evnt.button.y;
 				player.posRect.x = evnt.button.x;
@@ -83,9 +89,6 @@ void Manager::gameLoop()
 			case SDL_KEYDOWN:
 				switch (evnt.key.keysym.scancode)
 				{
-				case SDL_SCANCODE_ESCAPE:
-					bIsRunning = false;
-					break;
 				case SDL_SCANCODE_A:
 					circle.m_velX = -3;
 					break;
@@ -124,6 +127,7 @@ void Manager::gameLoop()
 		//circle.render(circleTexture, renderer);
 		player.render(playerTexture, renderer); //renders the player
 
+		menu.showMenu(buttonTexture, renderer);
 		SDL_RenderPresent(renderer); //prints out everything on the window
 	}
 	close(tileSet);
@@ -159,6 +163,12 @@ bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileCli
 		std::cout << "Failed to load circle texture" << std::endl;
 		success = false;
 	}
+
+	if (!buttonTexture.loadFromFile("assets/buttons/knapp.png", renderer)) {
+		std::cout << "Failed to load button texture" << std::endl;
+		success = false;
+	}
+
 
 	//Load tile map
 	if (!setTiles(tiles, tileClips, levelPath.c_str())) {
