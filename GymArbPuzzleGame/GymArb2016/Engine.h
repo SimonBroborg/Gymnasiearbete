@@ -14,7 +14,7 @@ public:
 
 	//the dimensions of the level
 	const int LEVEL_WIDTH = 1200;
-	const int LEVEL_HEIGHT = 800;
+	const int LEVEL_HEIGHT = 720;
 
 	static const int TOTAL_TILES = 240;
 	static const int TOTAL_TILE_SPRITES = 7;
@@ -31,6 +31,8 @@ public:
 	const int TILE_GRASS_CENTER = 4;
 	const int TILE_GRASS_CLIFF_LEFT = 5;
 	const int TILE_GRASS_CLIFF_RIGHT = 6;
+
+	bool bIsRunning;
 
 
 	//The game renderer

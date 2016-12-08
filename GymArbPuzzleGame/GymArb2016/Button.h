@@ -5,17 +5,19 @@
 #include "Engine.h"
 #include "Sprite.h"
 
-class Button
+class Button : public Engine
 {
 public:
-	Button(int x, int y, int width, int height);
+	Button(SDL_Texture* texture, int x, int y);
 	~Button();
 
-	void render(Sprite &buttonTexture, SDL_Renderer* renderer);
+	void render(SDL_Renderer* renderer);
 
 	SDL_Rect getBox();
 
 	bool checkHover(int mouseX, int mouseY);
+
+	SDL_Texture* buttonTexture; 
 private:
 	SDL_Rect m_box;
 

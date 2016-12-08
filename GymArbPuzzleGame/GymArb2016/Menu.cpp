@@ -1,9 +1,13 @@
 #include "Menu.h"
+#include <cstdio>
+#include <iostream>
 
 
-
-Menu::Menu()
+Menu::Menu(SDL_Renderer* renderer, std::string path)
 {
+	background = IMG_LoadTexture(renderer, path.c_str());
+	SDL_SetTextureBlendMode(background, SDL_BLENDMODE_BLEND);
+	SDL_SetTextureAlphaMod(background, 150);
 }
 
 
@@ -11,28 +15,19 @@ Menu::~Menu()
 {
 }
 
-void Menu::createMenu()
+void Menu::createButton(SDL_Renderer* renderer, std::string path, int y)
 {
-	Button* exitButton = new Button(0, 0, 100, 100);
-	buttons[0] = exitButton;
-
-	Button * levelButton = new Button(SCREEN_WIDTH/ 2 - 50, 150, 100, 100);
-	buttons[1] = levelButton;
-
+	buttonTexture = IMG_LoadTexture(renderer, path.c_str());
+	Button * button = new Button(buttonTexture, 0, y);
+	buttons.push_back(*button);
 }
 
 void Menu::showMenu(Sprite &buttonTexture, SDL_Renderer* renderer)
 {
-	for (int i = 0; i < TOTAL_MENU_BUTTONS; i++) {
-		buttons[i]->render(buttonTexture, renderer);
+	SDL_RenderCopy(renderer, background, NULL, NULL);
 
-	}
-	
-}
-
-void Menu::checkHover(int mouseX, int mouseY)
-{
-	for (int i = 0; i < TOTAL_MENU_BUTTONS; i++) {
-		buttons[i]->checkHover(mouseX, mouseY);
-	}
+	for (int i = 0; i < buttons.size(); i++) {
+		buttons[i].render(renderer);
+	}	
+	bIsRunning = false;
 }

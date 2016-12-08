@@ -33,7 +33,7 @@ public:
 	SDL_Rect getBox();
 
 private:
-	
+	Mix_Chunk *playerJump;
 
 	//Booleans which checks movement, jumping and if the player is on the ground
 	bool bJumping, bMoving, bOnGround, bFallThrough;

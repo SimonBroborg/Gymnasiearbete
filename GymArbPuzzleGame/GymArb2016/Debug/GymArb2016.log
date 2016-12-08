@@ -1,3 +1,6 @@
-﻿  Menu.cpp
-  GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.exe
-  GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.pdb (Partial PDB)
+﻿  Manager.cpp
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(68): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(365): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(370): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
+  GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.exe
+  GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.pdb (Partial PDB)

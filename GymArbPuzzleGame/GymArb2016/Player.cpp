@@ -24,6 +24,8 @@ Player::Player(SDL_Renderer* renderer, Sprite &playerTexture,  float framesX, fl
 	bJumping = false; //The player is not jumping when the game starts
 	bMoving = false; //The player is not moving when the game starts
 	bFallThrough = false; //checks if it is possible to fall through block
+
+	playerJump = Mix_LoadWAV("assets/sounds/player_jump.wav");
 }
 
 
@@ -66,6 +68,8 @@ void Player::processInput(SDL_Event &evnt, float delta)
 				m_velY -= m_jumpSpeed;
 				bOnGround = false;
 				bMoving = true;
+				Mix_PlayChannel(-1, playerJump, 0);
+
 			}
 			break;
 		}

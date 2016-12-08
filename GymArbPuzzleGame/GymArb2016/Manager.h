@@ -39,9 +39,6 @@ public:
 	//Start the game loop
 	void gameLoop();
 
-	
-
-	bool bIsRunning;
 
 	SDL_Event evnt;
 

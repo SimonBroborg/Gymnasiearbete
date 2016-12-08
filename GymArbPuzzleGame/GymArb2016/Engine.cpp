@@ -84,7 +84,7 @@ void Engine::initSystems()
 		std::cout << "Error: " << Mix_GetError() << std::endl;
 
 	//Creates the game window
-	window = SDL_CreateWindow("Puzzle game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("Puzzle game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (window == nullptr)
 		std::cout << "Error: " << SDL_GetError() << std::endl;
 
@@ -92,4 +92,6 @@ void Engine::initSystems()
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer == nullptr)
 		std::cout << "Error: " << SDL_GetError() << std::endl;
+
+
 }

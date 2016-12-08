@@ -9,15 +9,19 @@
 class Menu : public Engine
 {
 public:
-	Menu();
+	Menu(SDL_Renderer* renderer, std::string path);
 	~Menu();
 
 	static const int TOTAL_MENU_BUTTONS = 2;
 
 	void showMenu(Sprite &buttonTexture, SDL_Renderer* renderer);
-	void createMenu();
-	void checkHover(int mouseX, int mouseY);
+	void createButton(SDL_Renderer* renderer, std::string path, int x);
 
-	Button* buttons[TOTAL_MENU_BUTTONS];
+	std::vector<Button> buttons;
+
+	SDL_Texture* buttonTexture;
+
+
+	SDL_Texture* background; 
 };
 

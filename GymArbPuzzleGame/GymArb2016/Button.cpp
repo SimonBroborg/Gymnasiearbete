@@ -1,16 +1,13 @@
 #include "Button.h"
 #include <iostream>
 
-Button::Button(int x, int y, int width, int height)
+Button::Button(SDL_Texture* texture, int x, int y)
 {
-	m_box.x = x;
+	SDL_QueryTexture(texture, NULL, NULL, &m_box.w, &m_box.h);
+	m_box.x = SCREEN_WIDTH / 2 - m_box.w / 2;
 	m_box.y = y;
-
-	m_box.w = width;
-
-	m_box.h = height;
+	buttonTexture = texture; 
 }
-
 
 Button::~Button()
 {
@@ -21,9 +18,9 @@ SDL_Rect Button::getBox()
 	return m_box;
 }
 
-void Button::render(Sprite &buttonTexture, SDL_Renderer* renderer)
+void Button::render(SDL_Renderer* renderer)
 {
-	buttonTexture.render(renderer, m_box.x, m_box.y);
+	SDL_RenderCopy(renderer, buttonTexture, NULL, &m_box);
 }
 
 bool Button::checkHover(int mouseX, int mouseY)
@@ -33,7 +30,6 @@ bool Button::checkHover(int mouseX, int mouseY)
 		std::cout << "Hovering" << std::endl;
 		hovering = true;
 	}
-	
 	
 	return hovering;
 }

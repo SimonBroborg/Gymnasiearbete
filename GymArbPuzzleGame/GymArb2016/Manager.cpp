@@ -14,7 +14,6 @@ Manager::Manager()
 	window = nullptr;
 	renderer = nullptr;
 	bIsRunning = true;
-
 }
 
 
@@ -30,27 +29,38 @@ void Manager::run()
 
 void Manager::gameLoop()
 {
-	Player player(renderer, playerTexture, 4, 4);
+	//creates the player object
+	Player player(renderer, playerTexture, 1, 6);
 
+	//creates a circle object, this is currently a prototype
 	Circle circle(renderer, 20, 90);
 
+	//creates the array which will contain the map tiles
 	Tile* tileSet[TOTAL_TILES];
 
+	//array with clips from the tile sprite sheet
 	SDL_Rect tileClips[TOTAL_TILE_SPRITES];
 
-	Menu menu;
+	//Creates the menu object
+	Menu menu(renderer, "kjellsbg.png");
 
+	//loads the media ( sprites etc. ) for the game
 	if (!loadMedia(tileSet, renderer, tileClips, "assets/levels/level1.map")) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
 
-	SDL_Rect camera = { 0,0, SCREEN_WIDTH, SCREEN_HEIGHT };
+	Mix_Music *bgm = Mix_LoadMUS("assets/sounds/japanese_flute_music.mp3");
 
-	Mix_Music *bgm = Mix_LoadMUS("backgroundMusic.mp3");
+	
 
-	backgroundTexture = loadBackground("");
+	backgroundTexture = loadBackground("snowMountain.png");
 
-	menu.createMenu();
+	menu.createButton(renderer, "assets/buttons/quit_game_button.png", SCREEN_HEIGHT / 2 - 44);
+	menu.createButton(renderer, "assets/buttons/close_menu_button.png", SCREEN_HEIGHT / 2 + 50);
+
+	menu.createButton(renderer, "assets/buttons/quit_game_button.png", 50);
+
+	bool showMenu = false;
 
 	while (bIsRunning)
 	{
@@ -62,9 +72,19 @@ void Manager::gameLoop()
 			m_deltaTime = 0.03f;
 
 		//plays the background music when the game starts
-		if (!Mix_PlayingMusic()) {
-			//Mix_PlayMusic(bgm, 0);
+		
+		if (showMenu) {
+			Mix_PauseMusic();
 		}
+		else if(!showMenu) {
+			if (!Mix_PlayingMusic()) {
+				Mix_PlayMusic(bgm, 0);
+			}
+			else if (Mix_PausedMusic()) {
+				Mix_ResumeMusic();
+			}
+		}
+		
 
 		while (SDL_PollEvent(&evnt))
 		{
@@ -79,11 +99,20 @@ void Manager::gameLoop()
 					break;
 
 			case SDL_MOUSEBUTTONDOWN:
-				menu.checkHover(evnt.button.x, evnt.button.y);
+				if (showMenu) {
+					if (menu.buttons[0].checkHover(evnt.button.x, evnt.button.y)) {
+						bIsRunning = false;
+					}
+					if (menu.buttons[1].checkHover(evnt.button.x, evnt.button.y)) {
+						showMenu = false;
+					}
+				}
+
 				circle.m_imgRect.x = evnt.button.x;
 				circle.m_imgRect.y = evnt.button.y;
 				player.posRect.x = evnt.button.x;
 				player.posRect.y = evnt.button.y;
+
 				break;
 
 			case SDL_KEYDOWN:
@@ -99,14 +128,26 @@ void Manager::gameLoop()
 				case SDL_SCANCODE_SPACE:
 					circle.m_velY = -4;
 					break;
+
+				case SDL_SCANCODE_ESCAPE:
+						if (!showMenu) {
+							showMenu = true;
+						}
+						else {
+							showMenu = false;
+						}
+					break;
 				}
 				break;
-
-
 			}
-			player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
+				if(!showMenu)
+					player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
 
 		}
+
+		if (!showMenu)
+			player.move(m_deltaTime, tileSet); //movement function for the player, calculates the new position of the player and checks collision
+						   //circle.move(tileSet, player);
 
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_RenderClear(renderer); //clears the window
@@ -114,20 +155,19 @@ void Manager::gameLoop()
 		
 		SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL); //copies the background to the renderer
 
-		player.move(m_deltaTime, tileSet); //movement function for the player, calculates the new position of the player and checks collision
-		//circle.move(tileSet, player);
-
-
- 		//render level
+																 //render level
 		for (int i = 0; i < TOTAL_TILES; i++)
 		{
-			tileSet[i]->render(camera, tileTexture, renderer, tileClips); //renders the tiles to the renderer from the tile set vector
+			tileSet[i]->render(tileTexture, renderer, tileClips); //renders the tiles to the renderer from the tile set vector
 		}		
 
 		//circle.render(circleTexture, renderer);
 		player.render(playerTexture, renderer); //renders the player
+		
+		if (showMenu)
+			menu.showMenu(buttonTexture, renderer);
+		
 
-		menu.showMenu(buttonTexture, renderer);
 		SDL_RenderPresent(renderer); //prints out everything on the window
 	}
 	close(tileSet);

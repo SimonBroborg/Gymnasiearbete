@@ -68,7 +68,7 @@ void Player::update(float delta, const Uint8 *KEY_STATE)
 	if (KEY_STATE[keys[0]])
 	{
 		positionRect.y -= _moveSpeed * delta;
-		_cropRect.y = _frameHeight * 3;
+		_cropRect.y = 0;
 	}
 	else if (KEY_STATE[keys[1]])
 	{
@@ -92,7 +92,7 @@ void Player::update(float delta, const Uint8 *KEY_STATE)
 	{
 		_frameCounter += delta;
 
-		if (_frameCounter >= 0.05f)
+		if (_frameCounter >= 0.1f)
 		{
 			_frameCounter = 0;
 			_cropRect.x += _frameWidth;
@@ -103,7 +103,7 @@ void Player::update(float delta, const Uint8 *KEY_STATE)
 	else
 	{
 		_frameCounter = 0;
-		_cropRect.x = _frameWidth;
+		_cropRect.x = 0;
 	}
 }
 
