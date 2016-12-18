@@ -8,16 +8,16 @@ class Engine
 {
 public:
 	//Width and height of the game window
-	const int SCREEN_WIDTH = 1200;
-	const int SCREEN_HEIGHT = 720;
+	static const int SCREEN_WIDTH = 1280;
+	static const int SCREEN_HEIGHT = 720;
 
 
 	//the dimensions of the level
-	const int LEVEL_WIDTH = 1200;
-	const int LEVEL_HEIGHT = 720;
+	static const int LEVEL_WIDTH = 1800;
+	static const int LEVEL_HEIGHT = 1260;
 
-	static const int TOTAL_TILES = 240;
-	static const int TOTAL_TILE_SPRITES = 7;
+	static const int TOTAL_TILES = 630;
+	static const int TOTAL_TILE_SPRITES = 12;
 
 	//tile constants
 	const int TILE_WIDTH = 60;
@@ -27,10 +27,15 @@ public:
 	const int TILE_NONE = 0;
 	const int TILE_BRIDGE = 1;
 	const int TILE_BOX = 2;
-	const int TILE_GRASS = 3;
-	const int TILE_GRASS_CENTER = 4;
+	const int TILE_GRASS_ROUNDED = 3;
+	const int TILE_DIRT_CENTER  = 4;
 	const int TILE_GRASS_CLIFF_LEFT = 5;
 	const int TILE_GRASS_CLIFF_RIGHT = 6;
+	const int TILE_GRASS_LEFT_ROUNDED = 7;
+	const int TILE_GRASS_CENTER = 8;
+	const int TILE_GRASS_RIGHT_ROUNDED = 9;
+	const int TILE_PORTAL = 10;
+
 
 	bool bIsRunning;
 
@@ -47,9 +52,10 @@ public:
 	SDL_Window *window;
 
 
-
 	
 	Engine();
 	~Engine();
+
+	
 };
 

@@ -1,16 +1,18 @@
 #include "Engine.h"
 #include <iostream>
 
-
-
 Engine::Engine()
 {
+
 }
 
 
 Engine::~Engine()
 {
 }
+
+
+
 
 
 bool Engine::checkCollision(SDL_Rect a, SDL_Rect b)
@@ -58,11 +60,6 @@ bool Engine::checkCollision(SDL_Rect a, SDL_Rect b)
 	return true;
 }
 
-
-
-
-
-
 void Engine::initSystems()
 {
 	//Initializing SDL
@@ -88,6 +85,10 @@ void Engine::initSystems()
 	if (window == nullptr)
 		std::cout << "Error: " << SDL_GetError() << std::endl;
 
+	SDL_Surface* windowIcon = IMG_Load("assets/player/per.png");
+	SDL_SetWindowIcon(window, windowIcon);
+	SDL_FreeSurface(windowIcon); 
+
 	//Creates the game renderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer == nullptr)
@@ -95,3 +96,4 @@ void Engine::initSystems()
 
 
 }
+

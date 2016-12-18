@@ -63,9 +63,6 @@ void Sprite::render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip /* = NU
 	//render to screen
 	SDL_RenderCopyEx(renderer, m_texture, clip, &renderQuad, angle, center, flip);
 
-	if (m_texture == nullptr) {
-		std::cout << "m_texture is nullptr" << std::endl;
-	}
 }
 
 int Sprite::getWidth()

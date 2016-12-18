@@ -4,15 +4,34 @@
 
 Player::Player(SDL_Renderer* renderer, Sprite &playerTexture,  float framesX, float framesY)
 {
+	SDL_Surface *surface = IMG_Load("assets/player/doctorSS.png");
+	if (surface == nullptr)
+		std::cout << "Could not load image to surface! Error: " << SDL_GetError() << std::endl;
+	else
+	{
+		//SDL_SetColorKey(s	urface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 0, 0));
+		m_texture = SDL_CreateTextureFromSurface(renderer, surface);
+		if (m_texture == nullptr)
+			std::cout << "Could not create texture from surface! SDL Error: " << SDL_GetError() << std::endl;
+	}
+
+	SDL_FreeSurface(surface);
+
 	m_gameRenderer = renderer;
 	m_velX = 0;
 	m_velY = 0;
 
-	//Displays the player on chosen coordinates
+	/*//Displays the player on chosen coordinates
 	posRect.x = 100;
-	posRect.y = 600;
-
+	posRect.y = 600;*/
+	SDL_QueryTexture(m_texture, NULL, NULL, &cropRect.w, &cropRect.h);
+	
+	
 	//Set the width and height of the frames and rects equal to each other
+	m_textureWidth = cropRect.w; 
+	cropRect.w /= framesX;
+	cropRect.h /= framesY;
+	
 	m_frameWidth = posRect.w = cropRect.w;
 	m_frameHeight = posRect.h = cropRect.h;
 
@@ -24,8 +43,10 @@ Player::Player(SDL_Renderer* renderer, Sprite &playerTexture,  float framesX, fl
 	bJumping = false; //The player is not jumping when the game starts
 	bMoving = false; //The player is not moving when the game starts
 	bFallThrough = false; //checks if it is possible to fall through block
-
+	
 	playerJump = Mix_LoadWAV("assets/sounds/player_jump.wav");
+	posRect.x = 0;
+	posRect.y = 0;
 }
 
 
@@ -33,10 +54,12 @@ Player::~Player()
 {
 }
 
-void Player::render(Sprite &playerTexture, SDL_Renderer* renderer)
+void Player::render(Sprite &playerTexture, SDL_Renderer* renderer, int camX, int camY)
 {
-	SDL_QueryTexture(playerTexture.m_texture, NULL, NULL, &posRect.w, &posRect.h);
-	playerTexture.render(renderer, posRect.x, posRect.y);
+	//SDL_QueryTexture(m_texture, NULL, NULL, &posRect.w, &posRect.h); 
+	
+	
+	playerTexture.render(renderer, posRect.x - camX, posRect.y- camY, &cropRect);
 }
 
 
@@ -51,13 +74,25 @@ void Player::processInput(SDL_Event &evnt, float delta)
 			bFallThrough = true;
 			bMoving = true;
 			break;
+		case SDL_SCANCODE_S:
+			bFallThrough = true;
+			bMoving = true;
+			break;
 
 		case SDL_SCANCODE_LEFT:
 			m_velX = m_leftSpeed;
 			bMoving = true;
 			break;
+		case SDL_SCANCODE_A:
+			m_velX = m_leftSpeed;
+			bMoving = true;
+			break;
 
 		case SDL_SCANCODE_RIGHT:
+			m_velX = m_rightSpeed;
+			bMoving = true;
+			break;
+		case SDL_SCANCODE_D:
 			m_velX = m_rightSpeed;
 			bMoving = true;
 			break;
@@ -69,7 +104,7 @@ void Player::processInput(SDL_Event &evnt, float delta)
 				bOnGround = false;
 				bMoving = true;
 				Mix_PlayChannel(-1, playerJump, 0);
-
+				
 			}
 			break;
 		}
@@ -83,8 +118,20 @@ void Player::processInput(SDL_Event &evnt, float delta)
 				bMoving = false;
 			}
 			break;
+		case SDL_SCANCODE_A:
+			if (m_velX < 0) {
+				m_velX = 0;
+				bMoving = false;
+			}
+			break;
 
 		case SDL_SCANCODE_RIGHT:
+			if (m_velX > 0) {
+				m_velX = 0;
+				bMoving = false;
+			}
+			break;
+		case SDL_SCANCODE_D:
 			if (m_velX > 0) {
 				m_velX = 0;
 				bMoving = false;
@@ -95,12 +142,19 @@ void Player::processInput(SDL_Event &evnt, float delta)
 			bFallThrough = false;
 			bMoving = false;
 			break;
+		case SDL_SCANCODE_S:
+			bFallThrough = false;
+			bMoving = false;
+			break;
 		}
 		
 	}
+
+
+	
 }
 
-void Player::move(float delta, Tile* tiles[])
+void Player::move(float delta, Tile* tiles[], bool &nextLevel)
 {
 		//the position of the player before any movement calculations
 		m_xPos = posRect.x;
@@ -116,13 +170,40 @@ void Player::move(float delta, Tile* tiles[])
 		//changes the velocity so slowly fall down again
 		m_velY += m_gravity * delta;
 		
+		if (bMoving)
+		{
+			if (m_velX > 0) {
+				cropRect.y = m_frameHeight * 2;
+			}
+			else if (m_velX < 0) {
+				cropRect.y = m_frameHeight;
+			}
 
+			m_frameCounter += delta;
+
+			if (m_frameCounter >= 0.2f)
+			{
+				m_frameCounter = 0;
+				cropRect.x += m_frameWidth;
+				if (cropRect.x >= m_textureWidth)
+					cropRect.x = 0;
+			}
+		}
+		else
+		{
+			m_frameCounter = 0;
+			cropRect.x = 0;
+		} 
 		for (int i = 0; i < TOTAL_TILES; ++i) {
 
 			if ((tiles[i]->getType() >= TILE_BRIDGE)) {
 
 				if (checkCollision(posRect, tiles[i]->getBox())) {
-					if (m_yPos + posRect.h <= tiles[i]->getBox().y) {
+					if (tiles[i]->getType() == TILE_PORTAL) {
+						nextLevel = true;
+					}
+
+					else if (m_yPos + posRect.h <= tiles[i]->getBox().y) {
 
 						if (tiles[i]->getType() == TILE_BRIDGE && bFallThrough == true)
 						{
@@ -130,12 +211,18 @@ void Player::move(float delta, Tile* tiles[])
 							bOnGround = false;
 							bJumping = true;
 						}
+
+						
+						
 						else {
 							m_velY = 0;
 							posRect.y = tiles[i]->getBox().y - posRect.h;
 							bOnGround = true;
 							bJumping = false;
+
+							
 						}
+
 					}
 
 					//colliding from left
@@ -143,6 +230,7 @@ void Player::move(float delta, Tile* tiles[])
 					{
 						if (tiles[i]->getType() != TILE_BRIDGE)
 							posRect.x = tiles[i]->getBox().x + tiles[i]->getBox().w;
+						
 					}
 
 					// colliding from right
@@ -150,6 +238,7 @@ void Player::move(float delta, Tile* tiles[])
 					{
 						if(tiles[i]->getType() != TILE_BRIDGE)
 							posRect.x = tiles[i]->getBox().x - posRect.w;
+						
 					}
 
 					//colliding from the bottom
@@ -159,6 +248,7 @@ void Player::move(float delta, Tile* tiles[])
 							posRect.y = tiles[i]->getBox().y + tiles[i]->getBox().h;
 							m_velY += -m_velY;
 						}
+						
 					}
 				}
 			}
@@ -236,13 +326,13 @@ void Player::keepInsideBorder()
 		posRect.x = 0;
 
 	//makes sure the player cant go outside the window on the right
-	if (posRect.x + posRect.w >= SCREEN_WIDTH)
-		posRect.x = SCREEN_WIDTH - posRect.w;
+	if (posRect.x + posRect.w >= LEVEL_WIDTH)
+		posRect.x = LEVEL_WIDTH - posRect.w;
 
 	//the player cant fall through the bottom of the window
-	if (posRect.y + posRect.h >= SCREEN_HEIGHT)
+	if (posRect.y + posRect.h >= LEVEL_HEIGHT)
 	{
-		posRect.y = SCREEN_HEIGHT - posRect.h;
+		posRect.y = LEVEL_HEIGHT - posRect.h;
 		bJumping = false;
 		bOnGround = true;
 		m_velY = 0;

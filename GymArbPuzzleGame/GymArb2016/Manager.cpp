@@ -14,7 +14,10 @@ Manager::Manager()
 	window = nullptr;
 	renderer = nullptr;
 	bIsRunning = true;
+	nextLevel = false;
+	currentLevel = 0; 
 }
+
 
 
 Manager::~Manager()
@@ -30,7 +33,7 @@ void Manager::run()
 void Manager::gameLoop()
 {
 	//creates the player object
-	Player player(renderer, playerTexture, 1, 6);
+	Player player(renderer, playerTexture, 4, 4);
 
 	//creates a circle object, this is currently a prototype
 	Circle circle(renderer, 20, 90);
@@ -41,11 +44,14 @@ void Manager::gameLoop()
 	//array with clips from the tile sprite sheet
 	SDL_Rect tileClips[TOTAL_TILE_SPRITES];
 
+
+	SDL_Rect camera = { 0,0, SCREEN_WIDTH, SCREEN_HEIGHT }; 
+ 
 	//Creates the menu object
-	Menu menu(renderer, "kjellsbg.png");
+	Menu menu(renderer, "menuBackground.png");
 
 	//loads the media ( sprites etc. ) for the game
-	if (!loadMedia(tileSet, renderer, tileClips, "assets/levels/level1.map")) {
+	if (!loadMedia(tileSet, renderer, tileClips, "assets/levels/level1.map", 0, 0)) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
 
@@ -58,12 +64,11 @@ void Manager::gameLoop()
 	menu.createButton(renderer, "assets/buttons/quit_game_button.png", SCREEN_HEIGHT / 2 - 44);
 	menu.createButton(renderer, "assets/buttons/close_menu_button.png", SCREEN_HEIGHT / 2 + 50);
 
-	menu.createButton(renderer, "assets/buttons/quit_game_button.png", 50);
-
 	bool showMenu = false;
 
 	while (bIsRunning)
 	{
+		
 		m_prevTime = m_currentTime;
 		m_currentTime = SDL_GetTicks();
 		m_deltaTime = (m_currentTime - m_prevTime) / 1000.0f;
@@ -130,14 +135,16 @@ void Manager::gameLoop()
 					break;
 
 				case SDL_SCANCODE_ESCAPE:
-						if (!showMenu) {
-							showMenu = true;
-						}
-						else {
-							showMenu = false;
-						}
+					if (!showMenu) {
+						showMenu = true;
+					}
+					else {
+						showMenu = false;
+					}
 					break;
+ 
 				}
+			
 				break;
 			}
 				if(!showMenu)
@@ -145,9 +152,40 @@ void Manager::gameLoop()
 
 		}
 
-		if (!showMenu)
-			player.move(m_deltaTime, tileSet); //movement function for the player, calculates the new position of the player and checks collision
-						   //circle.move(tileSet, player);
+		if (nextLevel == true) {
+			currentLevel++;
+			setTiles(tileSet, tileClips, levels[currentLevel].c_str(), 0, 0);
+			
+			
+		}
+		nextLevel = false;
+
+		if (!showMenu) {
+			player.move(m_deltaTime, tileSet, nextLevel); //movement function for the player, calculates the new position of the player and checks collision
+						   //circle.move(tileSet, player
+			camera.x = (player.posRect.x + player.posRect.w /2 ) - SCREEN_WIDTH / 2;
+			camera.y = (player.posRect.y + player.posRect.h / 2) - SCREEN_HEIGHT / 2;
+
+			//Keep the camera in bounds
+			if (camera.x < 0)
+			{
+				camera.x = 0;
+			}
+			if (camera.y < 0)
+			{
+				camera.y = 0;
+			}
+			if (camera.x > LEVEL_WIDTH - camera.w)
+			{
+				camera.x = LEVEL_WIDTH - camera.w;
+			}
+			if (camera.y > LEVEL_HEIGHT - camera.h)
+			{
+				camera.y = LEVEL_HEIGHT - camera.h;
+			}
+		}
+
+
 
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		SDL_RenderClear(renderer); //clears the window
@@ -155,20 +193,23 @@ void Manager::gameLoop()
 		
 		SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL); //copies the background to the renderer
 
+
 																 //render level
 		for (int i = 0; i < TOTAL_TILES; i++)
 		{
-			tileSet[i]->render(tileTexture, renderer, tileClips); //renders the tiles to the renderer from the tile set vector
+			tileSet[i]->render(tileTexture, renderer, tileClips, camera); //renders the tiles to the renderer from the tile set vector
 		}		
 
+		
 		//circle.render(circleTexture, renderer);
-		player.render(playerTexture, renderer); //renders the player
+		player.render(playerTexture, renderer, camera.x, camera.y); //renders the player
 		
 		if (showMenu)
 			menu.showMenu(buttonTexture, renderer);
 		
 
 		SDL_RenderPresent(renderer); //prints out everything on the window
+
 	}
 	close(tileSet);
 
@@ -183,7 +224,7 @@ SDL_Texture *Manager::loadBackground(std::string path)
 }
 
 
-bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileClips[], std::string levelPath)
+bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileClips[], std::string levelPath, int playerX, int playerY)
 {
 	//loading success flag
 	bool success = true;
@@ -194,7 +235,7 @@ bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileCli
 		success = false;
 	}
 
-	if (!playerTexture.loadFromFile("assets/player/p1_front - kopia.png", renderer)) {
+	if (!playerTexture.loadFromFile("assets/player/doctorSS.png", renderer)) {
 		std::cout << "Failed to load player texture" << std::endl;
 		success = false;
 	}
@@ -211,7 +252,7 @@ bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileCli
 
 
 	//Load tile map
-	if (!setTiles(tiles, tileClips, levelPath.c_str())) {
+	if (!setTiles(tiles, tileClips, levelPath.c_str(), playerX, playerY)) {
 		std::cout << "Failed to load tile set ! " << std::endl;
 		success = false;
 	}
@@ -253,7 +294,7 @@ void Manager::close(Tile* tiles[])
 
 
 
-bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPath)
+bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPath, int playerX, int playerY)
 {
 	//success flag
 	bool tilesLoaded = true;
@@ -291,6 +332,8 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			if ((tileType >= 0) && tileType < TOTAL_TILE_SPRITES) {
 				tiles[i] = new Tile(x, y, tileType);
 			}
+
+			
 			//if the don't recognize the tile type
 			else {
 				std::cout << "Error loading map! Invalid tile type" << std::endl;
@@ -329,15 +372,15 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_BOX].w = TILE_WIDTH;
 			tileClips[TILE_BOX].h = TILE_HEIGHT;
 
-			tileClips[TILE_GRASS].x = 0;
-			tileClips[TILE_GRASS].y = 180;
-			tileClips[TILE_GRASS].w = TILE_WIDTH;
-			tileClips[TILE_GRASS].h = TILE_HEIGHT;
+			tileClips[TILE_GRASS_ROUNDED].x = 0;
+			tileClips[TILE_GRASS_ROUNDED].y = 180;
+			tileClips[TILE_GRASS_ROUNDED].w = TILE_WIDTH;
+			tileClips[TILE_GRASS_ROUNDED].h = TILE_HEIGHT;
 
-			tileClips[TILE_GRASS_CENTER].x = 60;
-			tileClips[TILE_GRASS_CENTER].y = 180;
-			tileClips[TILE_GRASS_CENTER].w = TILE_WIDTH;
-			tileClips[TILE_GRASS_CENTER].h = TILE_HEIGHT;
+			tileClips[TILE_DIRT_CENTER ].x = 60;
+			tileClips[TILE_DIRT_CENTER ].y = 180;
+			tileClips[TILE_DIRT_CENTER ].w = TILE_WIDTH;
+			tileClips[TILE_DIRT_CENTER ].h = TILE_HEIGHT;
 
 			tileClips[TILE_GRASS_CLIFF_LEFT].x = 120;
 			tileClips[TILE_GRASS_CLIFF_LEFT].y = 180;
@@ -348,6 +391,26 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_GRASS_CLIFF_RIGHT].y = 180;
 			tileClips[TILE_GRASS_CLIFF_RIGHT].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_CLIFF_RIGHT].h = TILE_HEIGHT;
+
+			tileClips[TILE_PORTAL].x = 60;
+			tileClips[TILE_PORTAL].y = 0;
+			tileClips[TILE_PORTAL].w = TILE_WIDTH;
+			tileClips[TILE_PORTAL].h = TILE_HEIGHT; 
+
+			tileClips[TILE_GRASS_LEFT_ROUNDED].x = 240;
+			tileClips[TILE_GRASS_LEFT_ROUNDED].y = 180;
+			tileClips[TILE_GRASS_LEFT_ROUNDED].w = TILE_WIDTH;
+			tileClips[TILE_GRASS_LEFT_ROUNDED].h = TILE_HEIGHT;
+
+			tileClips[TILE_GRASS_CENTER].x = 300;
+			tileClips[TILE_GRASS_CENTER].y = 180;
+			tileClips[TILE_GRASS_CENTER].w = TILE_WIDTH;
+			tileClips[TILE_GRASS_CENTER].h = TILE_HEIGHT;
+
+			tileClips[TILE_GRASS_RIGHT_ROUNDED].x = 360;
+			tileClips[TILE_GRASS_RIGHT_ROUNDED].y = 180;
+			tileClips[TILE_GRASS_RIGHT_ROUNDED].w = TILE_WIDTH;
+			tileClips[TILE_GRASS_RIGHT_ROUNDED].h = TILE_HEIGHT;
 
 			
 		}
@@ -368,4 +431,9 @@ float Manager::getHeight()
 float Manager::getWidth()
 {
 	return SCREEN_WIDTH;
+}
+
+void Manager::loadNextLevel(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES]) {
+	
+	
 }

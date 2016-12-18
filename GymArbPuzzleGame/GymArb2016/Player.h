@@ -14,13 +14,13 @@ public:
 	~Player();
 
 	//Renders the player texture based on the position
-	void render(Sprite &playerTexture, SDL_Renderer* renderer);
+	void render(Sprite &playerTexture, SDL_Renderer* renderer, int camX, int camY);
 
 	//takes the players inputs and calculates the movement of the player
 	void processInput(SDL_Event &evnt, float delta);
 
 	//moves the player based on the posRect's x and y coordinates. Also calls the checkCollision() function
-	void move(float delta, Tile* tiles[]);
+	void move(float delta, Tile* tiles[], bool &nextLevel);
 
 	void keepInsideBorder();
 
@@ -31,6 +31,8 @@ public:
 	float getVelY();
 
 	SDL_Rect getBox();
+
+	SDL_Texture* m_texture; 
 
 private:
 	Mix_Chunk *playerJump;
