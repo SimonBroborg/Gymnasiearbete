@@ -10,12 +10,22 @@
 #include "Button.h"
 
 Manager::Manager()
-{
+{	
+	//assigning variables
 	window = nullptr;
 	renderer = nullptr;
+
+	//checks if the game is running	
 	bIsRunning = true;
+
+	//checks if the next level should be loaded
 	nextLevel = false;
+
+	//the current level
 	currentLevel = 0; 
+
+	//tells if the menu is shown
+	showMenu = false;
 }
 
 
@@ -26,7 +36,10 @@ Manager::~Manager()
 
 void Manager::run()
 {
+	//initializes the systems such as SDL, SDL_Image, creates window and renderer etc.
 	initSystems();
+
+	//starts the game loop
 	gameLoop();
 }
 
@@ -44,43 +57,44 @@ void Manager::gameLoop()
 	//array with clips from the tile sprite sheet
 	SDL_Rect tileClips[TOTAL_TILE_SPRITES];
 
-
+	//creates the camera object which makes the side-scrolling possible
 	SDL_Rect camera = { 0,0, SCREEN_WIDTH, SCREEN_HEIGHT }; 
  
 	//Creates the menu object
 	Menu menu(renderer, "menuBackground.png");
 
-	//loads the media ( sprites etc. ) for the game
+	//loads the media ( sprites etc. ) for the game. Loads the first level
 	if (!loadMedia(tileSet, renderer, tileClips, "assets/levels/level1.map", 0, 0)) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
 
+	//Loads the background music for the game
 	Mix_Music *bgm = Mix_LoadMUS("assets/sounds/japanese_flute_music.mp3");
 
-	
-
+	//loads the background image for the game
 	backgroundTexture = loadBackground("snowMountain.png");
 
+	//creates the buttons for the menu
 	menu.createButton(renderer, "assets/buttons/quit_game_button.png", SCREEN_HEIGHT / 2 - 44);
 	menu.createButton(renderer, "assets/buttons/close_menu_button.png", SCREEN_HEIGHT / 2 + 50);
 
-	bool showMenu = false;
-
-	while (bIsRunning)
+	
+	//the game loop, runs as long as bIsRunning = true
+ 	while (bIsRunning)
 	{
-		
+		//checks the delta time for each loop
 		m_prevTime = m_currentTime;
 		m_currentTime = SDL_GetTicks();
 		m_deltaTime = (m_currentTime - m_prevTime) / 1000.0f;
 
-		if (m_deltaTime < 0.03f)
-			m_deltaTime = 0.03f;
-
-		//plays the background music when the game starts
+		m_deltaTime = 0.03;
 		
+		//pauses music if menu is shown
 		if (showMenu) {
 			Mix_PauseMusic();
 		}
+
+		//else starts/resumes background music
 		else if(!showMenu) {
 			if (!Mix_PlayingMusic()) {
 				Mix_PlayMusic(bgm, 0);
@@ -90,19 +104,17 @@ void Manager::gameLoop()
 			}
 		}
 		
-
+		//checks for inputs from the player
 		while (SDL_PollEvent(&evnt))
 		{
 			switch (evnt.type)
 			{
+			//if the 'x' button is pressed the game closes
 			case SDL_QUIT:
 				bIsRunning = false;
 				break;
 
-			case SDL_MOUSEMOTION:
-				
-					break;
-
+			//checks hover over buttons if user moves the mouse key
 			case SDL_MOUSEBUTTONDOWN:
 				if (showMenu) {
 					if (menu.buttons[0].checkHover(evnt.button.x, evnt.button.y)) {
@@ -113,13 +125,15 @@ void Manager::gameLoop()
 					}
 				}
 
+				//places the player and the circle on the pressed coordinates
 				circle.m_imgRect.x = evnt.button.x;
 				circle.m_imgRect.y = evnt.button.y;
-				player.posRect.x = evnt.button.x;
-				player.posRect.y = evnt.button.y;
+				player.posRect.x = evnt.button.x + camera.x;
+				player.posRect.y = evnt.button.y + camera.y;
 
 				break;
 
+				//moves the circle when A, D and SPACE is pressed
 			case SDL_KEYDOWN:
 				switch (evnt.key.keysym.scancode)
 				{
@@ -134,6 +148,7 @@ void Manager::gameLoop()
 					circle.m_velY = -4;
 					break;
 
+				//sets showMenu = true/false when ESCAPE is pressed
 				case SDL_SCANCODE_ESCAPE:
 					if (!showMenu) {
 						showMenu = true;
@@ -142,27 +157,28 @@ void Manager::gameLoop()
 						showMenu = false;
 					}
 					break;
- 
 				}
-			
 				break;
 			}
-				if(!showMenu)
-					player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
-
+			
+			//takes in player input is menu is hidden
+			if(!showMenu)
+				player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
 		}
 
+		//if nextLevel == true, the game loads the next level and sets nextLevel == false
 		if (nextLevel == true) {
 			currentLevel++;
-			setTiles(tileSet, tileClips, levels[currentLevel].c_str(), 0, 0);
-			
-			
+			setTiles(tileSet, tileClips, levels[currentLevel].c_str(), 0, 0);	
+			nextLevel = false;
 		}
-		nextLevel = false;
-
+		
+		//moves the player and camera if menu is hidden
 		if (!showMenu) {
-			player.move(m_deltaTime, tileSet, nextLevel); //movement function for the player, calculates the new position of the player and checks collision
-						   //circle.move(tileSet, player
+			//movement function for the player, calculates the new position of the player and checks collision
+			player.move(m_deltaTime, tileSet, nextLevel); 	
+			//circle.move(tileSet, player);
+
 			camera.x = (player.posRect.x + player.posRect.w /2 ) - SCREEN_WIDTH / 2;
 			camera.y = (player.posRect.y + player.posRect.h / 2) - SCREEN_HEIGHT / 2;
 
@@ -185,18 +201,20 @@ void Manager::gameLoop()
 			}
 		}
 
-
-
+		//sets the default draw color
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		SDL_RenderClear(renderer); //clears the window
+		//clears the window
+		SDL_RenderClear(renderer); 
 
-		
+		//copies the background to the renderer
 		SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL); //copies the background to the renderer
-
-
-																 //render level
+		
+		//renders the level
 		for (int i = 0; i < TOTAL_TILES; i++)
 		{
+			if (tileSet[i]->getType() == TILE_MOVING_PLATFORM) {
+				tileSet[i]->movePlatform(tileSet);
+			}
 			tileSet[i]->render(tileTexture, renderer, tileClips, camera); //renders the tiles to the renderer from the tile set vector
 		}		
 
@@ -204,13 +222,16 @@ void Manager::gameLoop()
 		//circle.render(circleTexture, renderer);
 		player.render(playerTexture, renderer, camera.x, camera.y); //renders the player
 		
+		//if showMenu == true, the menu is shown
 		if (showMenu)
 			menu.showMenu(buttonTexture, renderer);
 		
-
+		//presents the renderer
 		SDL_RenderPresent(renderer); //prints out everything on the window
 
 	}
+
+	//closes down all systems and deallocates the tiles
 	close(tileSet);
 
 }
@@ -218,6 +239,7 @@ void Manager::gameLoop()
 
 SDL_Texture *Manager::loadBackground(std::string path)
 {
+	//loads the background from file path
 	SDL_Texture *background = IMG_LoadTexture(renderer, path.c_str());
 
 	return background;
@@ -249,7 +271,6 @@ bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileCli
 		std::cout << "Failed to load button texture" << std::endl;
 		success = false;
 	}
-
 
 	//Load tile map
 	if (!setTiles(tiles, tileClips, levelPath.c_str(), playerX, playerY)) {
@@ -411,6 +432,16 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_GRASS_RIGHT_ROUNDED].y = 180;
 			tileClips[TILE_GRASS_RIGHT_ROUNDED].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_RIGHT_ROUNDED].h = TILE_HEIGHT;
+
+			tileClips[TILE_MOVING_PLATFORM].x = 121;
+			tileClips[TILE_MOVING_PLATFORM].y = 0;
+			tileClips[TILE_MOVING_PLATFORM].w = TILE_WIDTH;
+			tileClips[TILE_MOVING_PLATFORM].h = TILE_HEIGHT;
+
+			tileClips[TILE_MOVING_PLATFORM_STOP].x = 181;
+			tileClips[TILE_MOVING_PLATFORM_STOP].y = 0;
+			tileClips[TILE_MOVING_PLATFORM_STOP].w = TILE_WIDTH;
+			tileClips[TILE_MOVING_PLATFORM_STOP].h = TILE_HEIGHT; 
 
 			
 		}

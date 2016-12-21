@@ -23,10 +23,16 @@ public:
 	//get the collision box
 	SDL_Rect getBox();
 
+	void movePlatform(Tile* tiles[]);
+
+	float getSpeed();
+
 private:
 	//the attributes of the tile
 	SDL_Rect m_box;
 
 	//the tile type
 	int m_type;
+
+	float movingSpeed;
 };

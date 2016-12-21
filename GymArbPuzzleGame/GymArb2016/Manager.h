@@ -71,5 +71,7 @@ private:
 	SDL_Texture *loadBackground(std::string path);
 
 	bool nextLevel;
+
+	bool showMenu;
 };
 

@@ -17,7 +17,7 @@ public:
 	static const int LEVEL_HEIGHT = 1260;
 
 	static const int TOTAL_TILES = 630;
-	static const int TOTAL_TILE_SPRITES = 12;
+	static const int TOTAL_TILE_SPRITES = 14;
 
 	//tile constants
 	const int TILE_WIDTH = 60;
@@ -35,6 +35,8 @@ public:
 	const int TILE_GRASS_CENTER = 8;
 	const int TILE_GRASS_RIGHT_ROUNDED = 9;
 	const int TILE_PORTAL = 10;
+	const int TILE_MOVING_PLATFORM = 11; 
+	const int TILE_MOVING_PLATFORM_STOP = 12;
 
 
 	bool bIsRunning;

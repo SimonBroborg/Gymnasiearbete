@@ -220,6 +220,11 @@ void Player::move(float delta, Tile* tiles[], bool &nextLevel)
 							bOnGround = true;
 							bJumping = false;
 
+							if (tiles[i]->getType() == TILE_MOVING_PLATFORM) {
+									if (!bMoving)
+										m_velX = tiles[i]->getSpeed();
+
+							}
 							
 						}
 

@@ -20,6 +20,8 @@ Tile::Tile(int x, int y, int tileType)
 
 	//get the tile type
 	m_type = tileType;
+
+	movingSpeed = 3; 
 }
 
 
@@ -48,6 +50,25 @@ int Tile::getType()
 SDL_Rect Tile::getBox()
 {
 	return m_box;
+}
+
+
+void Tile::movePlatform(Tile* tiles[])
+{
+	m_box.x += movingSpeed;
+
+	for (int i = 0; i < TOTAL_TILES; i++) {
+		if (checkCollision(m_box, tiles[i]->getBox())) {
+			if(tiles[i]->getType() == TILE_MOVING_PLATFORM_STOP)
+				movingSpeed = -movingSpeed;
+		}
+	}
+	
+		
+}
+
+float Tile::getSpeed() {
+	return movingSpeed;
 }
 
 /*
