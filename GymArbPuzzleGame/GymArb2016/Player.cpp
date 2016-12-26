@@ -160,7 +160,6 @@ void Player::move(float delta, Tile* tiles[], bool &nextLevel)
 		m_xPos = posRect.x;
 		m_yPos = posRect.y;
 
-		
 		//moves the player's x coordinate equal to the x velocity times delta
 		posRect.x += m_velX;
 
@@ -194,40 +193,44 @@ void Player::move(float delta, Tile* tiles[], bool &nextLevel)
 			m_frameCounter = 0;
 			cropRect.x = 0;
 		} 
+
+		//collision checking with the map
 		for (int i = 0; i < TOTAL_TILES; ++i) {
 
-			if ((tiles[i]->getType() >= TILE_BRIDGE)) {
+			//checks collision if the tile type != 0 ( empty space ) 
+			if ((tiles[i]->getType() != 0)) {
 
+				//returns true if there is a collision between the player and the tile
 				if (checkCollision(posRect, tiles[i]->getBox())) {
+
+					//goes to the next level if the tile is a portal
 					if (tiles[i]->getType() == TILE_PORTAL) {
 						nextLevel = true;
 					}
-
+					//checks if the player collides from the top of the tile
 					else if (m_yPos + posRect.h <= tiles[i]->getBox().y) {
 
+						//if the tile is a bridge and "down" is pressed, the player will fall through
 						if (tiles[i]->getType() == TILE_BRIDGE && bFallThrough == true)
 						{
 							m_velY += m_gravity * delta;
 							bOnGround = false;
 							bJumping = true;
 						}
-
-						
-						
+						//if the tile is not a bridge
 						else {
+							//stops the player from falling
 							m_velY = 0;
 							posRect.y = tiles[i]->getBox().y - posRect.h;
 							bOnGround = true;
 							bJumping = false;
 
+							//if the tile is a moving platform, the player will get the same speed
 							if (tiles[i]->getType() == TILE_MOVING_PLATFORM) {
 									if (!bMoving)
 										m_velX = tiles[i]->getSpeed();
-
 							}
-							
 						}
-
 					}
 
 					//colliding from left
@@ -241,6 +244,7 @@ void Player::move(float delta, Tile* tiles[], bool &nextLevel)
 					// colliding from right
 					else if (m_xPos + posRect.w <= tiles[i]->getBox().x)
 					{
+						//if the tile is no a bridge the player will collide 
 						if(tiles[i]->getType() != TILE_BRIDGE)
 							posRect.x = tiles[i]->getBox().x - posRect.w;
 						
@@ -249,6 +253,7 @@ void Player::move(float delta, Tile* tiles[], bool &nextLevel)
 					//colliding from the bottom
 					else if (m_yPos >= tiles[i]->getBox().y + tiles[i]->getBox().h)
 					{
+						// if the tile is not a bridge the player will collide 
 						if (tiles[i]->getType() != TILE_BRIDGE) {
 							posRect.y = tiles[i]->getBox().y + tiles[i]->getBox().h;
 							m_velY += -m_velY;
@@ -259,68 +264,7 @@ void Player::move(float delta, Tile* tiles[], bool &nextLevel)
 			}
 		}
 
-		
-		
-
-		/*collision checking for each object inside the vectors "rects"
-					for (int i = 0; i < rects.size(); i++)
-					{
-						SDL_Rect &rect = rects[i];
-			
-						if (checkCollision(posRect, rect))
-						{
-			
-							//colliding from above
-							if (m_yPos + posRect.h <= rect.y)
-							{
-								//checks if the player can fall through the block (stands on a platform)
-								if (rect.h == 8 && bFallThrough == true)
-								{
-									m_velY += m_gravity * delta;
-									bOnGround = false;
-									bJumping = true;
-								}
-								else
-								{
-									bJumping = false;
-									m_velY = 0;
-									posRect.y = rect.y - posRect.h;
-									bOnGround = true;
-								}
-							}
-			
-							//colliding from left
-							else if (m_xPos - rect.w >= rect.x)
-							{
-								if (rect.h == 32)
-									posRect.x = rect.x + rect.w;
-							}
-			
-							// colliding from right
-							else if (m_xPos + posRect.w <= rect.x)
-							{
-								if (rect.h == 32)
-									posRect.x = rect.x - posRect.w;
-							}
-			
-							//colliding from the bottom
-							else if (m_yPos >= rect.y + rect.h)
-							{
-								if (rect.h == 32)
-								{
-									posRect.y = rect.y + rect.h;
-									m_velY += -m_velY;
-								}
-							}
-						}
-					}	
-			
-					if (bJumping)
-						std::cout << m_yPos << std::endl;*/
-
-		
 }
-
 
 
 //Makes sure the player cant go outside the window
@@ -348,7 +292,7 @@ void Player::keepInsideBorder()
 		posRect.y = 0;
 }
 
-
+//setters and getters for velocity and collision box
 float Player::getVelX() {
 	return m_velX;
 }
