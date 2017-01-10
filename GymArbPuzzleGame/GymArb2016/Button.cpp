@@ -27,7 +27,7 @@ bool Button::checkHover(int mouseX, int mouseY)
 {
 	hovering = false;
 	if ((mouseX >= m_box.x) && (mouseX <= m_box.x + m_box.w) && (mouseY >= m_box.y) && (mouseY <= m_box.y + m_box.h)) {
-		std::cout << "Hovering" << std::endl;
+		
 		hovering = true;
 	}
 	

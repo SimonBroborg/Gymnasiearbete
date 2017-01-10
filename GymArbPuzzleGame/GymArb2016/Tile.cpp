@@ -21,7 +21,11 @@ Tile::Tile(int x, int y, int tileType)
 	//get the tile type
 	m_type = tileType;
 
-	movingSpeed = 3; 
+	m_velX = 2; 
+	m_velY = 2; 
+	m_damage = 0; 
+
+	angle = 0;
 }
 
 
@@ -34,7 +38,11 @@ void Tile::render(Sprite &tileTexture, SDL_Renderer* gameRenderer, SDL_Rect tile
 {	
 	//show the tile
 	if (checkCollision(camera, m_box)) {
-		tileTexture.render(gameRenderer, m_box.x - camera.x , m_box.y - camera.y, &tileClips[m_type]);
+		if (m_type == TILE_SAW_1) {
+			rotate();
+		}
+
+		tileTexture.render(gameRenderer, m_box.x - camera.x , m_box.y - camera.y, &tileClips[m_type], angle);
 
 		if (tileTexture.m_texture == nullptr)
 			std::cout << "tileTexture.m_texture == nullptr";
@@ -55,20 +63,48 @@ SDL_Rect Tile::getBox()
 
 void Tile::movePlatform(Tile* tiles[])
 {
-	m_box.x += movingSpeed;
+	m_box.x += m_velX;
 
 	for (int i = 0; i < TOTAL_TILES; i++) {
 		if (checkCollision(m_box, tiles[i]->getBox())) {
 			if(tiles[i]->getType() == TILE_MOVING_PLATFORM_STOP)
-				movingSpeed = -movingSpeed;
+				m_velX = -m_velX;
 		}
 	}
 	
 		
 }
 
+void Tile::rotate()
+{
+	angle += 10;
+	if (angle == 360)
+		angle = 0; 
+}
+
+
+void Tile::destroy(float delta)
+{
+	
+	m_damage += delta * 1000; 
+
+	if (m_damage > 50) {
+		if (m_type == TILE_ICE_WHOLE)
+			m_type++;
+		else if (m_type == TILE_ICE_BROKEN_1)
+			m_type++;
+		else if (m_type == TILE_ICE_BROKEN_2)
+			m_type++;
+		else if (m_type == TILE_ICE_BROKEN_3) {
+			delete this;
+		}
+	}
+
+	
+}
+
 float Tile::getSpeed() {
-	return movingSpeed;
+	return m_velX;
 }
 
 /*

@@ -1,15 +1,17 @@
 #pragma once
+////////////////////////////////////// ALL INCLUDED FILES //////////////////////////////////////////
 #include <SDL\SDL.h>
 #include <string>
 #include <vector>
 #include "Engine.h"
 #include "Sprite.h"
 
+///////////////////////////////////// THE Tile CLASS, INHERITS FROM Engine //////////////////////////
 class Tile : public Engine
 {
+//////////////////////////////////////////// PUBLIC ////////////////////////////////////////////////////////////////////
 public:
-
-	//initializes position and type
+	//Constructor
 	Tile(int x, int y, int tileType);
 	
 	~Tile();
@@ -27,12 +29,21 @@ public:
 
 	float getSpeed();
 
+	void destroy(float delta);
+
+	void rotate();
+
 private:
 	//the attributes of the tile
 	SDL_Rect m_box;
 
 	//the tile type
 	int m_type;
+	
+	float m_damage; 
 
-	float movingSpeed;
+	float m_velX;
+	float m_velY;
+
+	double angle;
 };

@@ -1,5 +1,4 @@
-#include "Circle.h"
-#include "Player.h"
+/*#include "Circle.h"
 
 Circle::Circle(SDL_Renderer *renderer, float radi, float angle)
 {
@@ -17,9 +16,6 @@ Circle::Circle(SDL_Renderer *renderer, float radi, float angle)
 	m_velX = 0;
 	m_velY = (m_speed * (sin(angle*M_PI / 180)));
 	m_velY = 0;
-
-	std::cout << m_scaleX << std::endl;
-	std::cout << angle << std::endl;
 
 	m_imgRect.x = 100; 
 	m_imgRect.y = 100;
@@ -40,7 +36,7 @@ void Circle::render(Sprite &circleTexture, SDL_Renderer* renderer) {
 		SDL_RenderDrawPoint(m_gameRenderer, x, y);
 	}*/
 	
-	//puts the circle on the renderer
+	/*//puts the circle on the renderer
 	SDL_QueryTexture(circleTexture.m_texture, NULL, NULL, &m_imgRect.w, &m_imgRect.h);
 	circleTexture.render(renderer, m_imgRect.x, m_imgRect.y);
 }
@@ -67,8 +63,8 @@ void Circle::move(Tile * tiles[], Player player)
 	//if circle hits the left side
 	if (m_imgRect.x <= 0) {
 		m_velX = -m_velX;
-
 	}
+
 	//if circle hits the roof
 	if (m_imgRect.y <= 0) {
 		m_velY = -m_velY;
@@ -220,7 +216,7 @@ bool Circle::checkCollision(Tile* tile)
 	return false;
 
 }
-*/
+*//*
 bool Circle::playerCollision(Player player) {
 	float cX, cY;
 
@@ -252,3 +248,4 @@ bool Circle::playerCollision(Player player) {
 	return false;
 }
 
+*/

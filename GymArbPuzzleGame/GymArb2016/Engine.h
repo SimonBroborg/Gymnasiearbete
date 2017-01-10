@@ -8,23 +8,23 @@ class Engine
 {
 public:
 	//Width and height of the game window
-	static const int SCREEN_WIDTH = 1280;
-	static const int SCREEN_HEIGHT = 720;
+	const int SCREEN_WIDTH = 1260;
+	const int SCREEN_HEIGHT = 720;
 
 
 	//the dimensions of the level
-	static const int LEVEL_WIDTH = 1800;
-	static const int LEVEL_HEIGHT = 1260;
+	const int LEVEL_WIDTH = 1260;
+	const int LEVEL_HEIGHT = 720;
 
-	static const int TOTAL_TILES = 630;
-	static const int TOTAL_TILE_SPRITES = 14;
+	static const int TOTAL_TILES = 252;
+	static const int TOTAL_TILE_SPRITES = 24;
 
 	//tile constants
-	const int TILE_WIDTH = 60;
-	const int TILE_HEIGHT = 60;
+	static const int TILE_WIDTH =60;
+	static const int TILE_HEIGHT = 60;
 
 	//the different tile sprites
-	const int TILE_NONE = 0;
+		const int TILE_NONE = 0;
 	const int TILE_BRIDGE = 1;
 	const int TILE_BOX = 2;
 	const int TILE_GRASS_ROUNDED = 3;
@@ -37,15 +37,26 @@ public:
 	const int TILE_PORTAL = 10;
 	const int TILE_MOVING_PLATFORM = 11; 
 	const int TILE_MOVING_PLATFORM_STOP = 12;
+	const int TILE_SPIKES = 13; 
 
+	const int TILE_ICE_WHOLE = 14; 
+	const int TILE_ICE_BROKEN_1 = 15;
+	const int TILE_ICE_BROKEN_2 = 16;
+	const int TILE_ICE_BROKEN_3 = 17;
+
+	const int TILE_SAW_1 = 18; 
+	const int TILE_SAW_2 = 19;
+	const int TILE_SAW_3 = 20;
+	const int TILE_SAW_4 = 21;
 
 	bool bIsRunning;
-
 
 	//The game renderer
 	SDL_Renderer *renderer;
 
 	bool checkCollision(SDL_Rect a, SDL_Rect b);
+
+	bool checkCircularCollision(SDL_Rect player, SDL_Rect circle, float velX, float velY);
 
 	//Initializing the systems
 	void initSystems();
@@ -53,11 +64,15 @@ public:
 	//The game window
 	SDL_Window *window;
 
-
+	double distanceSquared(int x1, int y1, int x2, int y2);
 	
 	Engine();
 	~Engine();
 
+
+	void keepInsideBorder(SDL_Rect posRect);
+
+	bool circularCollision(SDL_Rect circle, SDL_Rect rect);
 	
 };
 

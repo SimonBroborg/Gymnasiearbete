@@ -1,76 +1,92 @@
 #pragma once
+/////////////////////////////////////// ALL INCLUDED FILES ///////////////////////////////////////////////////////////////
 #include <SDL\SDL.h>
 #include <string>
 #include <vector>
 #include "Sprite.h"
 #include "Engine.h"
 #include "Tile.h"
+#include "Circle.h"
 
+/////////////////////////////////////////////////// THE Player CLASS, INHERITS FROM Engine //////////////////////////////////////////////////////////
 class Player : public Engine
 {
+//////////////////////////////////////////// PUBLIC ////////////////////////////////////////////////////////////////////
 public:
-	//creates the player sprite, x and y position and the number of frames for the player when the game starts
+	//Constructor, parameter for renderer, Sprite and the number of frames on x and y
 	Player(SDL_Renderer* renderer, Sprite &playerTexture, float framesX, float framesY);
+	//Destructor
 	~Player();
 
-	//Renders the player texture based on the position
-	void render(Sprite &playerTexture, SDL_Renderer* renderer, int camX, int camY);
+//////////////////////////////// PUBLIC FUNCTIONS //////////////////////////////////////////////////////////////
 
-	//takes the players inputs and calculates the movement of the player
-	void processInput(SDL_Event &evnt, float delta);
+	void processInput(SDL_Event &evnt, float delta); //Reads input from player
+	void move(float delta, Tile* tiles[], bool &nextLevel); //Moves the player + checks tile collision
+	void render(Sprite &playerTexture, SDL_Renderer* renderer, int camX, int camY); //Renders the player	
 
-	//moves the player based on the posRect's x and y coordinates. Also calls the checkCollision() function
-	void move(float delta, Tile* tiles[], bool &nextLevel);
+	//Getters
+	float getVelX(); //gets horizontal velocity
+	float getVelY(); //gets vertical velocity
+	SDL_Rect getBox(); //gets the collision box
 
-	void keepInsideBorder();
+	//Setters
+	void setStartX(int x); //Set the horizontal start position
+	void setStartY(int y); //Sets the vertical start position
+	void setBoxX(int x); //Sets the horizontal position
+	void setBoxY(int y); //Sets the vertical position
 
-	//Keeps track of the players position
-	SDL_Rect posRect;
 
-	float getVelX();
-	float getVelY();
-
-	SDL_Rect getBox();
-
-	SDL_Texture* m_texture; 
-
+/////////////////////////////////////// PRIVATE /////////////////////////////////////////////////////////////////////
 private:
-	Mix_Chunk *playerJump;
 
-	//Booleans which checks movement, jumping and if the player is on the ground
-	bool bJumping, bMoving, bOnGround, bFallThrough;
+////////////////////////////////// PLAYER VALUES /////////////////////////////////////////////////////
 
-	//the x and y velocity
-	float m_velX, m_velY;
+	//SDL
+	SDL_Rect posRect; //Collision box + keeps track of position
 
-	//the speed which the player moves at to the left and right
-	double m_leftSpeed, m_rightSpeed, m_jumpSpeed;
+	//ints
+	int startPosX; //Horizontal start position
+	int startPosY; //Vertical start position
+	int m_jumpTime; 
+	
+	//floats
+	float m_velX; //Horizontal velocity
+	float m_velY; //Vertical velocity
+	float m_gravity; //the players velocity
 
-	//the players gravity
-	float m_gravity;
+	float m_xPos; //Horizontal position before movement, helps with collision checking
+	float m_yPos; //Vertical position before movement, helps with collision checking
 
+	//doubles
+	double m_maxHorVel; //The maximum horizontal velocity
+	double m_jumpSpeed; //The speed of the jump
+	
+	//bools
+	bool bJumping; //Checks if the player is jumping
+	bool bMoving; //Checks if the player is moving
+	bool bOnGround; //Checks if the player is on ground
+	bool bFallThrough; //Checks if player want to fall through a tile
+	bool bSprint;
 
-	//Shows the current frame of the player on the sprite sheet
-	SDL_Rect cropRect;
+////////////////////////////////////////// PLAYER SOUNDS ///////////////////////////////////////////////
 
-	//Checks which the active frame is
-	float m_frameCounter;
+	Mix_Chunk *playerJump; //Jump sound
+	Mix_Chunk *playerSaw; //Sound when moving into a saw
 
-	//the dimensions of the player. Will help choosing the right part of the players sprite sheet
-	float m_frameWidth, m_frameHeight;
+//////////////////////////////////// PRIVATE FUNCTIONS /////////////////////////////////////////////////
 
-	//width of the whole texture
-	float m_textureWidth;
+	void respawn(); //Moves the player to start positions
 
-	//keeps track of the x and y coordinates before any movement. Used to know from which side the collision is from. 
-	float m_xPos, m_yPos;
+///////////////////////// PLAYER TEXTURE AND ANIMATIONS //////////////////////////////////////////////////
 
-	float m_windowWidth, m_windowHeight;
+	//SDL
+	SDL_Texture* m_texture; //Sprite sheet
+	SDL_Rect cropRect; //Shows current frame from the sprite sheet
 
-	SDL_Renderer* m_gameRenderer; 
-
-
-
-
+	//Floats
+	float m_frameCounter; //Keeps track of the current frame
+	float m_frameWidth; //Width of the frame (the player's width)
+	float m_frameHeight; //Height of the frame (the player's height
+	float m_textureWidth; //Width of the sprite sheet
 };
 

@@ -26,6 +26,8 @@ Manager::Manager()
 
 	//tells if the menu is shown
 	showMenu = false;
+
+	m_fullscreen = false; 
 }
 
 
@@ -46,10 +48,8 @@ void Manager::run()
 void Manager::gameLoop()
 {
 	//creates the player object
-	Player player(renderer, playerTexture, 4, 4);
-
-	//creates a circle object, this is currently a prototype
-	Circle circle(renderer, 20, 90);
+	Player player(renderer, playerTexture, 1, 1);
+	int playerStartX, playerStartY;
 
 	//creates the array which will contain the map tiles
 	Tile* tileSet[TOTAL_TILES];
@@ -64,7 +64,7 @@ void Manager::gameLoop()
 	Menu menu(renderer, "menuBackground.png");
 
 	//loads the media ( sprites etc. ) for the game. Loads the first level
-	if (!loadMedia(tileSet, renderer, tileClips, "assets/levels/level1.map", 0, 0)) {
+	if (!loadMedia(tileSet, renderer, tileClips, "assets/levels/level1.map", playerStartX, playerStartY)) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
 
@@ -78,29 +78,28 @@ void Manager::gameLoop()
 	menu.createButton(renderer, "assets/buttons/quit_game_button.png", SCREEN_HEIGHT / 2 - 44);
 	menu.createButton(renderer, "assets/buttons/close_menu_button.png", SCREEN_HEIGHT / 2 + 50);
 
+	menu.createButton(renderer, "assets/buttons/close_menu_button.png", SCREEN_HEIGHT / 2 + 100);
+
 	
 	//the game loop, runs as long as bIsRunning = true
  	while (bIsRunning)
 	{
 		//checks the delta time for each loop
-		m_prevTime = m_currentTime;
-		m_currentTime = SDL_GetTicks();
-		m_deltaTime = (m_currentTime - m_prevTime) / 1000.0f;
+		
+		
 
-		m_deltaTime = 0.03;
 		
 		//pauses music if menu is shown
 		if (showMenu) {
 			Mix_PauseMusic();
 		}
-
 		//else starts/resumes background music
 		else if(!showMenu) {
 			if (!Mix_PlayingMusic()) {
-				Mix_PlayMusic(bgm, 0);
+				//Mix_PlayMusic(bgm, 0);
 			}
 			else if (Mix_PausedMusic()) {
-				Mix_ResumeMusic();
+				//Mix_ResumeMusic();
 			}
 		}
 		
@@ -123,30 +122,29 @@ void Manager::gameLoop()
 					if (menu.buttons[1].checkHover(evnt.button.x, evnt.button.y)) {
 						showMenu = false;
 					}
+					if (menu.buttons[2].checkHover(evnt.button.x, evnt.button.y)) {
+						if (m_fullscreen) {
+							SDL_SetWindowFullscreen(window, SDL_FALSE);
+							m_fullscreen = false;
+						}
+						else {
+							SDL_SetWindowFullscreen(window, SDL_TRUE);
+							m_fullscreen = true; 
+						}
+					}
 				}
 
 				//places the player and the circle on the pressed coordinates
-				circle.m_imgRect.x = evnt.button.x;
-				circle.m_imgRect.y = evnt.button.y;
-				player.posRect.x = evnt.button.x + camera.x;
-				player.posRect.y = evnt.button.y + camera.y;
-
+			
+				player.setBoxX(evnt.button.x + camera.x);
+				player.setBoxY(evnt.button.y + camera.y);
 				break;
 
-				//moves the circle when A, D and SPACE is pressed
+				
 			case SDL_KEYDOWN:
 				switch (evnt.key.keysym.scancode)
 				{
-				case SDL_SCANCODE_A:
-					circle.m_velX = -3;
-					break;
-				case SDL_SCANCODE_D:
-					circle.m_velX = 3;
-					break;
-
-				case SDL_SCANCODE_SPACE:
-					circle.m_velY = -4;
-					break;
+				
 
 				//sets showMenu = true/false when ESCAPE is pressed
 				case SDL_SCANCODE_ESCAPE:
@@ -166,21 +164,27 @@ void Manager::gameLoop()
 				player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
 		}
 
+		
+
 		//if nextLevel == true, the game loads the next level and sets nextLevel == false
 		if (nextLevel == true) {
 			currentLevel++;
-			setTiles(tileSet, tileClips, levels[currentLevel].c_str(), 0, 0);	
+			setTiles(tileSet, tileClips, levels[currentLevel].c_str(), playerStartX, playerStartY);	
 			nextLevel = false;
+			player.setStartX(playerStartX);
+			player.setStartY(playerStartY);
 		}
-		
+		m_prevTime = m_currentTime;
+		m_currentTime = SDL_GetTicks();
 		//moves the player and camera if menu is hidden
 		if (!showMenu) {
 			//movement function for the player, calculates the new position of the player and checks collision
 			player.move(m_deltaTime, tileSet, nextLevel); 	
 			//circle.move(tileSet, player);
+		m_deltaTime = (m_currentTime - m_prevTime) / 1000.0f;
 
-			camera.x = (player.posRect.x + player.posRect.w /2 ) - SCREEN_WIDTH / 2;
-			camera.y = (player.posRect.y + player.posRect.h / 2) - SCREEN_HEIGHT / 2;
+			camera.x = (player.getBox().x + player.getBox().w /2 ) - SCREEN_WIDTH / 2;
+			camera.y = (player.getBox().y + player.getBox().h / 2) - SCREEN_HEIGHT / 2;
 
 			//Keep the camera in bounds
 			if (camera.x < 0)
@@ -210,7 +214,7 @@ void Manager::gameLoop()
 		SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL); //copies the background to the renderer
 		
 		//renders the level
-		for (int i = 0; i < TOTAL_TILES; i++)
+		for (int i = 0; i < TOTAL_TILES; ++i)
 		{
 			if (tileSet[i]->getType() == TILE_MOVING_PLATFORM) {
 				tileSet[i]->movePlatform(tileSet);
@@ -246,7 +250,7 @@ SDL_Texture *Manager::loadBackground(std::string path)
 }
 
 
-bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileClips[], std::string levelPath, int playerX, int playerY)
+bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileClips[], std::string levelPath, int &playerX, int &playerY)
 {
 	//loading success flag
 	bool success = true;
@@ -257,7 +261,7 @@ bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileCli
 		success = false;
 	}
 
-	if (!playerTexture.loadFromFile("assets/player/doctorSS.png", renderer)) {
+	if (!playerTexture.loadFromFile("assets/player/player.png", renderer)) {
 		std::cout << "Failed to load player texture" << std::endl;
 		success = false;
 	}
@@ -315,7 +319,7 @@ void Manager::close(Tile* tiles[])
 
 
 
-bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPath, int playerX, int playerY)
+bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPath, int &playerX, int &playerY)
 {
 	//success flag
 	bool tilesLoaded = true;
@@ -334,12 +338,12 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 	}
 	else {
 		//initialize the tiles
-		for (int i = 0; i < TOTAL_TILES; i++)
+		for (int i = 0; i < TOTAL_TILES; ++i)
 		{
 			//determines what kind of tile will be made
 			int tileType = -1;
 
-			//red tile from map file
+			//read tile from map file
 			map >> tileType;
 
 
@@ -349,23 +353,29 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 				tilesLoaded = false;
 				break;
 			}
-
-			if ((tileType >= 0) && tileType < TOTAL_TILE_SPRITES) {
+			
+			if (tileType == TILE_SAW_1) {
+				x -= TILE_WIDTH / 2;
+				y -= TILE_HEIGHT / 2;
+				tiles[i] = new Tile(x, y, tileType);
+				x += TILE_WIDTH / 2;
+				y += TILE_HEIGHT / 2; 
+			}
+		
+		
+			else if ((tileType >= 0) && tileType < TOTAL_TILE_SPRITES) {
 				tiles[i] = new Tile(x, y, tileType);
 			}
-
 			
-			//if the don't recognize the tile type
+			//if the til type is not recognized
 			else {
 				std::cout << "Error loading map! Invalid tile type" << std::endl;
 				tilesLoaded = false;
 				break;
 			}
 
-			//move to the next tile spot
+			//move to the next tile spot horizontally
 			x += TILE_WIDTH;
-
-			
 
 			//if we have gone too far
 			if (x >= LEVEL_WIDTH) {
@@ -375,73 +385,121 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 				//move to the next row
 				y += TILE_HEIGHT;
 			}
+
 		}
 		//clips the sprite sheet
 		if (tilesLoaded) {
 			tileClips[TILE_NONE].x = 0;
 			tileClips[TILE_NONE].y = 0;
-			tileClips[TILE_NONE].w = TILE_WIDTH;
-			tileClips[TILE_NONE].h = TILE_HEIGHT;
+			tileClips[TILE_NONE].w = 0;
+			tileClips[TILE_NONE].h = 0;
 
 			tileClips[TILE_BRIDGE].x = 0;
-			tileClips[TILE_BRIDGE].y = 60;
+			tileClips[TILE_BRIDGE].y = TILE_HEIGHT;
 			tileClips[TILE_BRIDGE].w = TILE_WIDTH;
 			tileClips[TILE_BRIDGE].h = TILE_HEIGHT;
 
 			tileClips[TILE_BOX].x = 0;
-			tileClips[TILE_BOX].y = 120;
+			tileClips[TILE_BOX].y = TILE_HEIGHT * 2;
 			tileClips[TILE_BOX].w = TILE_WIDTH;
 			tileClips[TILE_BOX].h = TILE_HEIGHT;
 
 			tileClips[TILE_GRASS_ROUNDED].x = 0;
-			tileClips[TILE_GRASS_ROUNDED].y = 180;
+			tileClips[TILE_GRASS_ROUNDED].y = TILE_HEIGHT * 3;
 			tileClips[TILE_GRASS_ROUNDED].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_ROUNDED].h = TILE_HEIGHT;
 
-			tileClips[TILE_DIRT_CENTER ].x = 60;
-			tileClips[TILE_DIRT_CENTER ].y = 180;
+			tileClips[TILE_DIRT_CENTER ].x = TILE_WIDTH;
+			tileClips[TILE_DIRT_CENTER ].y = TILE_HEIGHT * 3;
 			tileClips[TILE_DIRT_CENTER ].w = TILE_WIDTH;
 			tileClips[TILE_DIRT_CENTER ].h = TILE_HEIGHT;
 
-			tileClips[TILE_GRASS_CLIFF_LEFT].x = 120;
-			tileClips[TILE_GRASS_CLIFF_LEFT].y = 180;
+			tileClips[TILE_GRASS_CLIFF_LEFT].x = TILE_WIDTH * 2;
+			tileClips[TILE_GRASS_CLIFF_LEFT].y = TILE_HEIGHT * 3;
 			tileClips[TILE_GRASS_CLIFF_LEFT].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_CLIFF_LEFT].h = TILE_HEIGHT;
 
-			tileClips[TILE_GRASS_CLIFF_RIGHT].x = 180;
-			tileClips[TILE_GRASS_CLIFF_RIGHT].y = 180;
+			tileClips[TILE_GRASS_CLIFF_RIGHT].x = TILE_WIDTH * 3;
+			tileClips[TILE_GRASS_CLIFF_RIGHT].y = TILE_HEIGHT * 3;
 			tileClips[TILE_GRASS_CLIFF_RIGHT].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_CLIFF_RIGHT].h = TILE_HEIGHT;
 
-			tileClips[TILE_PORTAL].x = 60;
+			tileClips[TILE_PORTAL].x = TILE_WIDTH;
 			tileClips[TILE_PORTAL].y = 0;
 			tileClips[TILE_PORTAL].w = TILE_WIDTH;
 			tileClips[TILE_PORTAL].h = TILE_HEIGHT; 
 
-			tileClips[TILE_GRASS_LEFT_ROUNDED].x = 240;
-			tileClips[TILE_GRASS_LEFT_ROUNDED].y = 180;
+			tileClips[TILE_GRASS_LEFT_ROUNDED].x = TILE_WIDTH * 4;
+			tileClips[TILE_GRASS_LEFT_ROUNDED].y = TILE_HEIGHT * 3;
 			tileClips[TILE_GRASS_LEFT_ROUNDED].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_LEFT_ROUNDED].h = TILE_HEIGHT;
 
-			tileClips[TILE_GRASS_CENTER].x = 300;
-			tileClips[TILE_GRASS_CENTER].y = 180;
+			tileClips[TILE_GRASS_CENTER].x = TILE_WIDTH* 5;
+			tileClips[TILE_GRASS_CENTER].y = TILE_HEIGHT * 3;
 			tileClips[TILE_GRASS_CENTER].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_CENTER].h = TILE_HEIGHT;
 
-			tileClips[TILE_GRASS_RIGHT_ROUNDED].x = 360;
-			tileClips[TILE_GRASS_RIGHT_ROUNDED].y = 180;
+			tileClips[TILE_GRASS_RIGHT_ROUNDED].x = TILE_WIDTH * 6;
+			tileClips[TILE_GRASS_RIGHT_ROUNDED].y = TILE_HEIGHT * 3;
 			tileClips[TILE_GRASS_RIGHT_ROUNDED].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_RIGHT_ROUNDED].h = TILE_HEIGHT;
 
-			tileClips[TILE_MOVING_PLATFORM].x = 121;
+			tileClips[TILE_MOVING_PLATFORM].x = TILE_WIDTH *2;
 			tileClips[TILE_MOVING_PLATFORM].y = 0;
 			tileClips[TILE_MOVING_PLATFORM].w = TILE_WIDTH;
 			tileClips[TILE_MOVING_PLATFORM].h = TILE_HEIGHT;
 
-			tileClips[TILE_MOVING_PLATFORM_STOP].x = 181;
+			tileClips[TILE_MOVING_PLATFORM_STOP].x = TILE_WIDTH * 3;
 			tileClips[TILE_MOVING_PLATFORM_STOP].y = 0;
 			tileClips[TILE_MOVING_PLATFORM_STOP].w = TILE_WIDTH;
 			tileClips[TILE_MOVING_PLATFORM_STOP].h = TILE_HEIGHT; 
+
+			tileClips[TILE_SPIKES].x = TILE_WIDTH * 4;
+			tileClips[TILE_SPIKES].y = 0;
+			tileClips[TILE_SPIKES].w = TILE_WIDTH;
+			tileClips[TILE_SPIKES].h = TILE_HEIGHT;
+
+			tileClips[TILE_ICE_WHOLE].x = TILE_WIDTH * 5;
+			tileClips[TILE_ICE_WHOLE].y = 0;
+			tileClips[TILE_ICE_WHOLE].w = TILE_WIDTH;
+			tileClips[TILE_ICE_WHOLE].h = TILE_HEIGHT;
+
+			tileClips[TILE_ICE_BROKEN_1].x = TILE_WIDTH *6;
+			tileClips[TILE_ICE_BROKEN_1].y = 0;
+			tileClips[TILE_ICE_BROKEN_1].w = TILE_WIDTH;
+			tileClips[TILE_ICE_BROKEN_1].h = TILE_HEIGHT;
+
+			tileClips[TILE_ICE_BROKEN_2].x = TILE_WIDTH *7;
+			tileClips[TILE_ICE_BROKEN_2].y = 0;
+			tileClips[TILE_ICE_BROKEN_2].w = TILE_WIDTH;
+			tileClips[TILE_ICE_BROKEN_2].h = TILE_HEIGHT;
+
+			tileClips[TILE_ICE_BROKEN_3].x = TILE_WIDTH *8;
+			tileClips[TILE_ICE_BROKEN_3].y = 0;
+			tileClips[TILE_ICE_BROKEN_3].w = TILE_WIDTH;
+			tileClips[TILE_ICE_BROKEN_3].h = TILE_HEIGHT;
+
+			tileClips[TILE_SAW_1].x = TILE_WIDTH;
+			tileClips[TILE_SAW_1].y = TILE_HEIGHT;
+			tileClips[TILE_SAW_1].w = 120;
+			tileClips[TILE_SAW_1].h = 120;
+
+			tileClips[TILE_SAW_2].x = TILE_WIDTH *3;
+			tileClips[TILE_SAW_2].y = TILE_HEIGHT;
+			tileClips[TILE_SAW_2].w = 120;
+			tileClips[TILE_SAW_2].h = 120;
+
+			tileClips[TILE_SAW_3].x = TILE_WIDTH * 5;
+			tileClips[TILE_SAW_3].y = TILE_HEIGHT;
+			tileClips[TILE_SAW_3].w = 120;
+			tileClips[TILE_SAW_3].h = 120;
+
+			tileClips[TILE_SAW_4].x = TILE_WIDTH * 7;
+			tileClips[TILE_SAW_4].y = TILE_HEIGHT;
+			tileClips[TILE_SAW_4].w = 120;
+			tileClips[TILE_SAW_4].h = 120;
+
+
 
 			
 		}
