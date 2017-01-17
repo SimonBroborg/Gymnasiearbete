@@ -8,9 +8,10 @@
 #include "Circle.h"
 #include <fstream>
 #include "Button.h"
+#include "Timer.h"
 
 Manager::Manager()
-{	
+{
 	//assigning variables
 	window = nullptr;
 	renderer = nullptr;
@@ -22,12 +23,12 @@ Manager::Manager()
 	nextLevel = false;
 
 	//the current level
-	currentLevel = 0; 
+	currentLevel = 0;
 
 	//tells if the menu is shown
 	showMenu = false;
 
-	m_fullscreen = false; 
+	m_fullscreen = false;
 }
 
 
@@ -48,8 +49,11 @@ void Manager::run()
 void Manager::gameLoop()
 {
 	//creates the player object
-	Player player(renderer, playerTexture, 1, 1);
+	Player Player(renderer, playerTexture, 1, 1);
 	int playerStartX, playerStartY;
+
+	//Creates the timer object
+	Timer timer; 
 
 	//creates the array which will contain the map tiles
 	Tile* tileSet[TOTAL_TILES];
@@ -58,8 +62,8 @@ void Manager::gameLoop()
 	SDL_Rect tileClips[TOTAL_TILE_SPRITES];
 
 	//creates the camera object which makes the side-scrolling possible
-	SDL_Rect camera = { 0,0, SCREEN_WIDTH, SCREEN_HEIGHT }; 
- 
+	SDL_Rect camera = { 0,0, SCREEN_WIDTH, SCREEN_HEIGHT };
+
 	//Creates the menu object
 	Menu menu(renderer, "menuBackground.png");
 
@@ -72,7 +76,7 @@ void Manager::gameLoop()
 	Mix_Music *bgm = Mix_LoadMUS("assets/sounds/japanese_flute_music.mp3");
 
 	//loads the background image for the game
-	backgroundTexture = loadBackground("snowMountain.png");
+	backgroundTexture = loadBackground("");
 
 	//creates the buttons for the menu
 	menu.createButton(renderer, "assets/buttons/quit_game_button.png", SCREEN_HEIGHT / 2 - 44);
@@ -80,21 +84,17 @@ void Manager::gameLoop()
 
 	menu.createButton(renderer, "assets/buttons/close_menu_button.png", SCREEN_HEIGHT / 2 + 100);
 
-	
+	int type = 0;
+	int tempType;
 	//the game loop, runs as long as bIsRunning = true
- 	while (bIsRunning)
+	while (bIsRunning)
 	{
-		//checks the delta time for each loop
-		
-		
-
-		
 		//pauses music if menu is shown
 		if (showMenu) {
 			Mix_PauseMusic();
 		}
 		//else starts/resumes background music
-		else if(!showMenu) {
+		else if (!showMenu) {
 			if (!Mix_PlayingMusic()) {
 				//Mix_PlayMusic(bgm, 0);
 			}
@@ -102,18 +102,18 @@ void Manager::gameLoop()
 				//Mix_ResumeMusic();
 			}
 		}
-		
+
 		//checks for inputs from the player
 		while (SDL_PollEvent(&evnt))
 		{
 			switch (evnt.type)
 			{
-			//if the 'x' button is pressed the game closes
+				//if the 'x' button is pressed the game closes
 			case SDL_QUIT:
 				bIsRunning = false;
 				break;
-
-			//checks hover over buttons if user moves the mouse key
+			
+				//checks hover over buttons if user moves the mouse key
 			case SDL_MOUSEBUTTONDOWN:
 				if (showMenu) {
 					if (menu.buttons[0].checkHover(evnt.button.x, evnt.button.y)) {
@@ -129,24 +129,23 @@ void Manager::gameLoop()
 						}
 						else {
 							SDL_SetWindowFullscreen(window, SDL_TRUE);
-							m_fullscreen = true; 
+							m_fullscreen = true;
 						}
 					}
 				}
+				
 
 				//places the player and the circle on the pressed coordinates
-			
-				player.setBoxX(evnt.button.x + camera.x);
-				player.setBoxY(evnt.button.y + camera.y);
+
+				Player.SetBoxX(evnt.button.x + camera.x);
+				Player.SetBoxY(evnt.button.y + camera.y);
 				break;
 
-				
+
 			case SDL_KEYDOWN:
 				switch (evnt.key.keysym.scancode)
 				{
-				
-
-				//sets showMenu = true/false when ESCAPE is pressed
+					//sets showMenu = true/false when ESCAPE is pressed
 				case SDL_SCANCODE_ESCAPE:
 					if (!showMenu) {
 						showMenu = true;
@@ -158,33 +157,33 @@ void Manager::gameLoop()
 				}
 				break;
 			}
-			
+
 			//takes in player input is menu is hidden
-			if(!showMenu)
-				player.processInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
+			if (!showMenu)
+				Player.Update(evnt, m_deltaTime); //takes the players input as an SDL_Event
 		}
 
-		
+
 
 		//if nextLevel == true, the game loads the next level and sets nextLevel == false
 		if (nextLevel == true) {
 			currentLevel++;
-			setTiles(tileSet, tileClips, levels[currentLevel].c_str(), playerStartX, playerStartY);	
+			setTiles(tileSet, tileClips, levels[currentLevel].c_str(), playerStartX, playerStartY);
 			nextLevel = false;
-			player.setStartX(playerStartX);
-			player.setStartY(playerStartY);
+			Player.SetStartX(playerStartX);
+			Player.SetStartY(playerStartY);
+			Player.Respawn();
 		}
-		m_prevTime = m_currentTime;
-		m_currentTime = SDL_GetTicks();
+
+		m_deltaTime = timer.getTicks() / 1000.f;
 		//moves the player and camera if menu is hidden
 		if (!showMenu) {
 			//movement function for the player, calculates the new position of the player and checks collision
-			player.move(m_deltaTime, tileSet, nextLevel); 	
+			Player.Move(m_deltaTime, tileSet, nextLevel);
 			//circle.move(tileSet, player);
-		m_deltaTime = (m_currentTime - m_prevTime) / 1000.0f;
-
-			camera.x = (player.getBox().x + player.getBox().w /2 ) - SCREEN_WIDTH / 2;
-			camera.y = (player.getBox().y + player.getBox().h / 2) - SCREEN_HEIGHT / 2;
+			timer.start();
+			camera.x = (Player.GetBox().x + Player.GetBox().w / 2) - SCREEN_WIDTH / 2;
+			camera.y = (Player.GetBox().y + Player.GetBox().h / 2) - SCREEN_HEIGHT / 2;
 
 			//Keep the camera in bounds
 			if (camera.x < 0)
@@ -208,11 +207,11 @@ void Manager::gameLoop()
 		//sets the default draw color
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 		//clears the window
-		SDL_RenderClear(renderer); 
+		SDL_RenderClear(renderer);
 
 		//copies the background to the renderer
 		SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL); //copies the background to the renderer
-		
+
 		//renders the level
 		for (int i = 0; i < TOTAL_TILES; ++i)
 		{
@@ -220,16 +219,16 @@ void Manager::gameLoop()
 				tileSet[i]->movePlatform(tileSet);
 			}
 			tileSet[i]->render(tileTexture, renderer, tileClips, camera); //renders the tiles to the renderer from the tile set vector
-		}		
+		}
 
-		
+
 		//circle.render(circleTexture, renderer);
-		player.render(playerTexture, renderer, camera.x, camera.y); //renders the player
-		
+		Player.Render(playerTexture, renderer, camera.x, camera.y); //renders the player
+
 		//if showMenu == true, the menu is shown
 		if (showMenu)
 			menu.showMenu(buttonTexture, renderer);
-		
+
 		//presents the renderer
 		SDL_RenderPresent(renderer); //prints out everything on the window
 
@@ -293,28 +292,28 @@ void Manager::close(Tile* tiles[])
 	TTF_Quit();
 	Mix_Quit();
 
-	
-		//deallocate tiles
-		for (int i = 0; i < TOTAL_TILES; i++)
-		{
-			if (tiles[i] == NULL) {
-				delete tiles[i];
-				tiles[i] = NULL;
-			}
+
+	//deallocate tiles
+	for (int i = 0; i < TOTAL_TILES; i++)
+	{
+		if (tiles[i] == NULL) {
+			delete tiles[i];
+			tiles[i] = NULL;
 		}
+	}
 
-		//free loaded images
-		tileTexture.free();
+	//free loaded images
+	tileTexture.free();
 
-		//destroy window
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
-		window = nullptr;
-		renderer = nullptr;
+	//destroy window
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	window = nullptr;
+	renderer = nullptr;
 
-		//quit SDL subsystems
-		IMG_Quit();
-		SDL_Quit();
+	//quit SDL subsystems
+	IMG_Quit();
+	SDL_Quit();
 }
 
 
@@ -353,20 +352,26 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 				tilesLoaded = false;
 				break;
 			}
-			
+
 			if (tileType == TILE_SAW_1) {
 				x -= TILE_WIDTH / 2;
 				y -= TILE_HEIGHT / 2;
 				tiles[i] = new Tile(x, y, tileType);
 				x += TILE_WIDTH / 2;
-				y += TILE_HEIGHT / 2; 
+				y += TILE_HEIGHT / 2;
 			}
-		
-		
-			else if ((tileType >= 0) && tileType < TOTAL_TILE_SPRITES) {
+
+			else if (tileType == TILE_PLAYER_SPAWN) {
+				playerX = x;
+				playerY = y;
 				tiles[i] = new Tile(x, y, tileType);
 			}
-			
+
+			else if ((tileType >= 0) && tileType < TOTAL_TILE_SPRITES) {
+				tiles[i] = new Tile(x, y, tileType);
+
+			}
+
 			//if the til type is not recognized
 			else {
 				std::cout << "Error loading map! Invalid tile type" << std::endl;
@@ -394,6 +399,11 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_NONE].w = 0;
 			tileClips[TILE_NONE].h = 0;
 
+			tileClips[TILE_PLAYER_SPAWN].x = 0;
+			tileClips[TILE_PLAYER_SPAWN].y = 0;
+			tileClips[TILE_PLAYER_SPAWN].w = 0;
+			tileClips[TILE_PLAYER_SPAWN].h = 0;
+
 			tileClips[TILE_BRIDGE].x = 0;
 			tileClips[TILE_BRIDGE].y = TILE_HEIGHT;
 			tileClips[TILE_BRIDGE].w = TILE_WIDTH;
@@ -409,10 +419,10 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_GRASS_ROUNDED].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_ROUNDED].h = TILE_HEIGHT;
 
-			tileClips[TILE_DIRT_CENTER ].x = TILE_WIDTH;
-			tileClips[TILE_DIRT_CENTER ].y = TILE_HEIGHT * 3;
-			tileClips[TILE_DIRT_CENTER ].w = TILE_WIDTH;
-			tileClips[TILE_DIRT_CENTER ].h = TILE_HEIGHT;
+			tileClips[TILE_DIRT_CENTER].x = TILE_WIDTH;
+			tileClips[TILE_DIRT_CENTER].y = TILE_HEIGHT * 3;
+			tileClips[TILE_DIRT_CENTER].w = TILE_WIDTH;
+			tileClips[TILE_DIRT_CENTER].h = TILE_HEIGHT;
 
 			tileClips[TILE_GRASS_CLIFF_LEFT].x = TILE_WIDTH * 2;
 			tileClips[TILE_GRASS_CLIFF_LEFT].y = TILE_HEIGHT * 3;
@@ -427,14 +437,14 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_PORTAL].x = TILE_WIDTH;
 			tileClips[TILE_PORTAL].y = 0;
 			tileClips[TILE_PORTAL].w = TILE_WIDTH;
-			tileClips[TILE_PORTAL].h = TILE_HEIGHT; 
+			tileClips[TILE_PORTAL].h = TILE_HEIGHT;
 
 			tileClips[TILE_GRASS_LEFT_ROUNDED].x = TILE_WIDTH * 4;
 			tileClips[TILE_GRASS_LEFT_ROUNDED].y = TILE_HEIGHT * 3;
 			tileClips[TILE_GRASS_LEFT_ROUNDED].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_LEFT_ROUNDED].h = TILE_HEIGHT;
 
-			tileClips[TILE_GRASS_CENTER].x = TILE_WIDTH* 5;
+			tileClips[TILE_GRASS_CENTER].x = TILE_WIDTH * 5;
 			tileClips[TILE_GRASS_CENTER].y = TILE_HEIGHT * 3;
 			tileClips[TILE_GRASS_CENTER].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_CENTER].h = TILE_HEIGHT;
@@ -444,7 +454,7 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_GRASS_RIGHT_ROUNDED].w = TILE_WIDTH;
 			tileClips[TILE_GRASS_RIGHT_ROUNDED].h = TILE_HEIGHT;
 
-			tileClips[TILE_MOVING_PLATFORM].x = TILE_WIDTH *2;
+			tileClips[TILE_MOVING_PLATFORM].x = TILE_WIDTH * 2;
 			tileClips[TILE_MOVING_PLATFORM].y = 0;
 			tileClips[TILE_MOVING_PLATFORM].w = TILE_WIDTH;
 			tileClips[TILE_MOVING_PLATFORM].h = TILE_HEIGHT;
@@ -452,7 +462,7 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_MOVING_PLATFORM_STOP].x = TILE_WIDTH * 3;
 			tileClips[TILE_MOVING_PLATFORM_STOP].y = 0;
 			tileClips[TILE_MOVING_PLATFORM_STOP].w = TILE_WIDTH;
-			tileClips[TILE_MOVING_PLATFORM_STOP].h = TILE_HEIGHT; 
+			tileClips[TILE_MOVING_PLATFORM_STOP].h = TILE_HEIGHT;
 
 			tileClips[TILE_SPIKES].x = TILE_WIDTH * 4;
 			tileClips[TILE_SPIKES].y = 0;
@@ -464,17 +474,17 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_ICE_WHOLE].w = TILE_WIDTH;
 			tileClips[TILE_ICE_WHOLE].h = TILE_HEIGHT;
 
-			tileClips[TILE_ICE_BROKEN_1].x = TILE_WIDTH *6;
+			tileClips[TILE_ICE_BROKEN_1].x = TILE_WIDTH * 6;
 			tileClips[TILE_ICE_BROKEN_1].y = 0;
 			tileClips[TILE_ICE_BROKEN_1].w = TILE_WIDTH;
 			tileClips[TILE_ICE_BROKEN_1].h = TILE_HEIGHT;
 
-			tileClips[TILE_ICE_BROKEN_2].x = TILE_WIDTH *7;
+			tileClips[TILE_ICE_BROKEN_2].x = TILE_WIDTH * 7;
 			tileClips[TILE_ICE_BROKEN_2].y = 0;
 			tileClips[TILE_ICE_BROKEN_2].w = TILE_WIDTH;
 			tileClips[TILE_ICE_BROKEN_2].h = TILE_HEIGHT;
 
-			tileClips[TILE_ICE_BROKEN_3].x = TILE_WIDTH *8;
+			tileClips[TILE_ICE_BROKEN_3].x = TILE_WIDTH * 8;
 			tileClips[TILE_ICE_BROKEN_3].y = 0;
 			tileClips[TILE_ICE_BROKEN_3].w = TILE_WIDTH;
 			tileClips[TILE_ICE_BROKEN_3].h = TILE_HEIGHT;
@@ -484,7 +494,7 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 			tileClips[TILE_SAW_1].w = 120;
 			tileClips[TILE_SAW_1].h = 120;
 
-			tileClips[TILE_SAW_2].x = TILE_WIDTH *3;
+			tileClips[TILE_SAW_2].x = TILE_WIDTH * 3;
 			tileClips[TILE_SAW_2].y = TILE_HEIGHT;
 			tileClips[TILE_SAW_2].w = 120;
 			tileClips[TILE_SAW_2].h = 120;
@@ -501,7 +511,7 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 
 
 
-			
+
 		}
 	}
 	//Close the file
@@ -523,6 +533,6 @@ float Manager::getWidth()
 }
 
 void Manager::loadNextLevel(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES]) {
-	
-	
+
+
 }

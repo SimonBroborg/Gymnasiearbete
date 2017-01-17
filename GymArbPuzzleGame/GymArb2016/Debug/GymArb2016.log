@@ -1,19 +1,6 @@
-﻿  Player.cpp
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(48): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(49): warning C4244: '/=': conversion from 'float' to 'int', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(49): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(50): warning C4244: '/=': conversion from 'float' to 'int', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(50): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(81): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(86): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(93): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(116): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(122): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(142): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(143): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(145): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(147): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(149): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\player.cpp(151): warning C4244: '+=': conversion from 'double' to 'int', possible loss of data
+﻿  Manager.cpp
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(88): warning C4101: 'tempType': unreferenced local variable
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(527): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(532): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
   GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.exe
   GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.pdb (Partial PDB)
