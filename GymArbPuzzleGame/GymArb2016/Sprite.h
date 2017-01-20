@@ -23,6 +23,9 @@ public:
 	
 	void render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
+	bool loadFromRenderedText(std::string textureText, SDL_Color textColor, SDL_Renderer* renderer);
+	void setFontSize(float size);
+	float getFontSize();
 
 	//gets image dimensions
 	int getWidth();
@@ -38,6 +41,10 @@ private:
 	//the texture dimensions
 	int m_width;
 	int m_height;
+
+	TTF_Font *font;
+	float fontSize = 16;
+
 	
 };
 

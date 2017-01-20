@@ -76,13 +76,17 @@ void Manager::gameLoop()
 	Mix_Music *bgm = Mix_LoadMUS("assets/sounds/japanese_flute_music.mp3");
 
 	//loads the background image for the game
-	backgroundTexture = loadBackground("");
+	backgroundTexture = loadBackground("assets/backgrounds/grayBackground.jpg");
 
 	//creates the buttons for the menu
 	menu.createButton(renderer, "assets/buttons/quit_game_button.png", SCREEN_HEIGHT / 2 - 44);
 	menu.createButton(renderer, "assets/buttons/close_menu_button.png", SCREEN_HEIGHT / 2 + 50);
 
 	menu.createButton(renderer, "assets/buttons/close_menu_button.png", SCREEN_HEIGHT / 2 + 100);
+
+	std::string playerSpecsText;
+	Sprite playerSpecs; 
+	SDL_Color textColor = { 0,0,0,0xFF };
 
 	int type = 0;
 	int tempType;
@@ -229,6 +233,14 @@ void Manager::gameLoop()
 		if (showMenu)
 			menu.showMenu(buttonTexture, renderer);
 
+		playerSpecsText = "Player x: " + std::to_string(Player.GetBox().x) +
+			"   " + "Player y: " + std::to_string(Player.GetBox().y) +
+			"   " + "Player vel x: " + std::to_string(Player.GetVelX()) +
+			"   " + "Player vel y: " + std::to_string(Player.GetVelY()) +
+			"   " + "Jumping: " + std::to_string(Player.bJumping) +
+			"   " + "On ground: " + std::to_string(Player.bOnGround);
+		playerSpecs.loadFromRenderedText(playerSpecsText.c_str(),textColor, renderer );
+		playerSpecs.render(renderer, 100, 100);
 		//presents the renderer
 		SDL_RenderPresent(renderer); //prints out everything on the window
 
@@ -340,7 +352,7 @@ bool Manager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPat
 		for (int i = 0; i < TOTAL_TILES; ++i)
 		{
 			//determines what kind of tile will be made
-			int tileType = -1;
+			int tileType = 0;
 
 			//read tile from map file
 			map >> tileType;

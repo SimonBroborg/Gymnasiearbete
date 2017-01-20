@@ -44,8 +44,7 @@ Player::Player(SDL_Renderer* renderer, Sprite &playerTexture, float framesX, flo
 	bFallThrough = false; //checks if it is possible to fall through block
 	bSprint = false;
 	onMovingPlatform = false;
-
-
+	bOnGround = false;
 
 	//Sounds
 	playerJump = Mix_LoadWAV("assets/sounds/player_jump.wav");
@@ -99,21 +98,19 @@ void Player::Update(SDL_Event &evnt, float delta)
 		case SDLK_SPACE: //If space is pressed
 			if (bJumping == false && bOnGround == true) { //If the player is on the ground and not already jumping
 				bJumping = true; //The player is jumping
-				m_velY -= m_jumpVelocity ; //Sets the horizontal speed
+				m_velY -= m_jumpVelocity + m_velY; //Sets the horizontal speed
 				bOnGround = false; //The player is not on the ground
 				bMoving = true; //The player is moving 
 				Mix_PlayChannel(-1, playerJump, 0); //Plays jump sound
 			}
 			break;
-
-
 		}
 	}
 	//////////////////////////////// KEY UP EVENTS ///////////////////////////////////////////
 
 	else if (evnt.type == SDL_KEYUP && evnt.key.repeat == 0) {
 
-		//Checks which key is released
+		//Checks which key is released   
 		switch (evnt.key.keysym.sym) {
 
 		case SDLK_LSHIFT:
@@ -136,7 +133,7 @@ void Player::Update(SDL_Event &evnt, float delta)
 		case SDLK_DOWN:
 			bFallThrough = false; //The player no longer wants to fall through a tile
 			bMoving = false; //The player is not moving
-			break;
+			break; 
 		}
 	}
 }
@@ -150,75 +147,63 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 	m_yPos = posRect.y; //Saves vertical position before movement
 
 	posRect.x += m_velX * delta; //Changes horziontal position
-
-	if (bSprint)
-		posRect.x += m_velX * delta;
-
 	posRect.y += m_velY * delta; //Changes vertical position
-	if (bSprint)
-		posRect.y += m_velY * delta * 0.3;
 
 	m_velY += m_gravity * delta; //Applies gravity to the vertical speed
-
-								 ////////////////////////////////// COLLISION CHECKING /////////////////////////////////////////////////////////
-
+	////////////////////////////////// COLLISION CHECKING /////////////////////////////////////////////////////////
 	for (int i = 0; i < TOTAL_TILES; ++i) { //Loops through all tiles
-
-
 		if ((tiles[i]->getType() != TILE_NONE)) { //Checks collision if the tile type != 0 ( empty space ) 
-
+			
 				/////////////////////////// SAW COLLISION /////////////////////////////////////////////
 
-			if (tiles[i]->getType() == TILE_SAW_1) { //If the tile is a saw
+			/*if (tiles[i]->getType() == TILE_SAW_1) { //If the tile is a saw
 				if (circularCollision(tiles[i]->getBox(), posRect)) { //Checks circular collision with the saw
 					Mix_PlayChannel(-1, playerSaw, 0); //Plays saw sound if there is a collision
 					Respawn(); //Respawns the player
 				}
-			}
-
+			}*/
 			////////////////////////// COLLISION WITH A TILE //////////////////////////////////////////////////////////7
-
-			else if (checkCollision(posRect, tiles[i]->getBox())) { //If there's a collision with the tile
+			if (checkCollision(posRect, tiles[i]->getBox())) { //If there's a collision with the tile
 															/////////////////////// PORTAL COLLISION /////////////////////////////
-				if (tiles[i]->getType() == TILE_PORTAL) {
+				/*if (tiles[i]->getType() == TILE_PORTAL) {
 					nextLevel = true; //Changes to the next level
 				}
 				///////////////////// SPIKE COLLISION //////////////////////////////
 				if (tiles[i]->getType() == TILE_SPIKES) {
 					Respawn(); //The player dies and respawns
-				}
+				}*/
 
 				////////////////// 'NORMAL' TILE COLLISION /////////////////////////
 				//checks if the player collides from the top of the tile
-				else if (m_yPos + posRect.h <= tiles[i]->getBox().y) {
-
-					//if the tile is a bridge and "down" is pressed, the player will fall through
+				if (m_yPos + posRect.h <= tiles[i]->getBox().y) {
+					
+					/*//if the tile is a bridge and "down" is pressed, the player will fall through
 					if (tiles[i]->getType() == TILE_BRIDGE && bFallThrough == true)
 					{
 						m_velY += m_gravity * delta; //Falls through the tile
 						bOnGround = false; //The player is not on the ground
 						bJumping = true;
-					}
+					}*/
+					
 					//if the tile is not a bridge
-					else {
+					
 						//stops the player from falling
-						m_velY = 0;
 						posRect.y = tiles[i]->getBox().y - posRect.h;
 						bOnGround = true;
 						bJumping = false;
+						m_velY = 0;
 
-						if (tiles[i]->getType() >= TILE_ICE_WHOLE && tiles[i]->getType() <= TILE_ICE_BROKEN_3) {
+						/*if (tiles[i]->getType() >= TILE_ICE_WHOLE && tiles[i]->getType() <= TILE_ICE_BROKEN_3) {
 							tiles[i]->destroy(delta);
 						}
 
 						//if the tile is a moving platform, the player will get the same speed
 						if (tiles[i]->getType() == TILE_MOVING_PLATFORM) {
-							onMovingPlatform = true; 
+							onMovingPlatform = true;
 						}
 						else {
-							onMovingPlatform = false; 
-						}
-					}
+							onMovingPlatform = false;
+						}*/
 				}
 
 				//colliding from left
@@ -251,10 +236,14 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 							m_velY += -m_velY;
 						}
 					}
-				}
+				}	
 			}
 		}
 	}
+	if (m_velY > 60) {
+		bOnGround = false;
+	}
+		
 }
 
 void Player::Render(Sprite &playerTexture, SDL_Renderer* renderer, int camX, int camY)
@@ -280,8 +269,6 @@ void Player::Respawn() {
 	posRect.x = startPosX;
 	posRect.y = startPosY;
 }
-
-
 
 void Player::SetStartX(int x)
 {

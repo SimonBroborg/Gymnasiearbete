@@ -80,7 +80,8 @@ void Circle::move(Tile * tiles[], Player player)
 	else
 		m_velX = 0;
 
-	m_velY += m_gravity;
+	
+	m_gravity;
 
 	
 	

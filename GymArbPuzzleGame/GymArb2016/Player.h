@@ -49,6 +49,16 @@ public:
 	void SetBoxY(int y); //Sets the vertical position
 
 	void Respawn(); //Moves the player to start positions
+
+
+	//bools
+	bool bJumping; //Checks if the player is jumping
+	bool bMoving; //Checks if the player is moving
+	bool bOnGround; //Checks if the player is on ground
+	bool bFallThrough; //Checks if player want to fall through a tile
+	bool bSprint;
+	bool onMovingPlatform;
+
 /////////////////////////////////////// PRIVATE /////////////////////////////////////////////////////////////////////
 private:
 
@@ -77,14 +87,7 @@ private:
 	double m_maxHorVel; //The maximum horizontal velocity
 	double m_jumpVelocity; //The speed of the jump
 	
-	
-	//bools
-	bool bJumping; //Checks if the player is jumping
-	bool bMoving; //Checks if the player is moving
-	bool bOnGround; //Checks if the player is on ground
-	bool bFallThrough; //Checks if player want to fall through a tile
-	bool bSprint;
-	bool onMovingPlatform; 
+
 ////////////////////////////////////////// PLAYER SOUNDS ///////////////////////////////////////////////
 
 	Mix_Chunk *playerJump; //Jump sound

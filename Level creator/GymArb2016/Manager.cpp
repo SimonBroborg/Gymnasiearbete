@@ -76,7 +76,6 @@ void Manager::gameLoop()
 	std::string text = "Enter file path";
 	SDL_Color textColor = { 0,0,0,0xFF };
 
-	
 	bool renderText;
 
 	inputTextTexture.loadFromRenderedText(text, textColor, renderer);

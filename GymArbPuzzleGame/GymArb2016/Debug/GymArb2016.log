@@ -1,6 +1,4 @@
-﻿  Manager.cpp
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(88): warning C4101: 'tempType': unreferenced local variable
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(527): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\manager.cpp(532): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
+﻿  Tile.cpp
+c:\users\simon.broborg\documents\github\gymnasiearbete\gymarbpuzzlegame\gymarb2016\tile.cpp(67): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
   GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.exe
   GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\GymArbPuzzleGame\Debug\GymArb2016.pdb (Partial PDB)

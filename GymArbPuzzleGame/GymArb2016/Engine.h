@@ -19,9 +19,9 @@ public:
 
 	static const int TOTAL_TILES = 252;
 	static const int TOTAL_TILE_SPRITES = 24;
-
+	
 	//tile constants
-	static const int TILE_WIDTH =60;
+	static const int TILE_WIDTH = 60;
 	static const int TILE_HEIGHT = 60;
 
 	//the different tile sprites
