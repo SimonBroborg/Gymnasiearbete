@@ -1,12 +1,14 @@
 #include "Button.h"
 #include <iostream>
 
-Button::Button(SDL_Texture* texture, int x, int y)
+Button::Button(std::string path, SDL_Renderer* renderer)
 {
-	SDL_QueryTexture(texture, NULL, NULL, &m_box.w, &m_box.h);
+	buttonTexture = IMG_LoadTexture(renderer, path.c_str());
+	SDL_QueryTexture(buttonTexture, NULL, NULL, &m_box.w, &m_box.h);
 	m_box.x = SCREEN_WIDTH / 2 - m_box.w / 2;
-	m_box.y = y;
-	buttonTexture = texture; 
+
+	SDL_SetTextureBlendMode(buttonTexture, SDL_BLENDMODE_BLEND);
+
 }
 
 Button::~Button()
@@ -30,6 +32,39 @@ bool Button::checkHover(int mouseX, int mouseY)
 		
 		hovering = true;
 	}
+	if (hovering)
+		setActive(true);
+	else
+		setActive(false);
+	
 	
 	return hovering;
+}
+
+void Button::setX(int x) {
+	m_box.x = x;
+}
+
+void Button::setY(int y) {
+	m_box.y = y;
+}
+
+bool Button::getActive() {
+	return hovering; 
+}
+
+void Button::setTexture(std::string path, SDL_Renderer * renderer) {
+	
+	buttonTexture = IMG_LoadTexture(renderer, path.c_str());
+}
+
+void Button::setActive(bool active) {
+	if (active) {
+		SDL_SetTextureAlphaMod(buttonTexture, 150);
+	}
+	else {
+		SDL_SetTextureAlphaMod(buttonTexture, 255);
+	}
+
+	hovering = active;
 }

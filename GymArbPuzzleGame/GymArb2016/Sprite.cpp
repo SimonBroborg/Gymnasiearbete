@@ -51,6 +51,8 @@ void Sprite::free() {
 
 void Sprite::render(SDL_Renderer* renderer, int x, int y, SDL_Rect* clip /* = NULL */, double angle /* = 0.0 */, SDL_Point* center /* = NULL */, SDL_RendererFlip flip /* = SDL_FLIP_NONE */) 
 {
+	xPos = x;
+	yPos = y; 
 	//set rendering space and render to screen
 	SDL_Rect renderQuad = { x, y, m_width, m_height };
 
@@ -91,7 +93,9 @@ void Sprite::loadSprite(SDL_Renderer* renderer, std::string path, float xPositio
 
 bool Sprite::loadFromRenderedText(std::string textureText, SDL_Color textColor, SDL_Renderer* renderer) {
 	//Get rid of preexisting texture
-	free();
+	m_texture = nullptr;
+	SDL_DestroyTexture(m_texture);
+	
 	font = TTF_OpenFont("assets/fonts/OpenSans-regular.ttf", fontSize);
 	//Render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
@@ -129,4 +133,12 @@ void Sprite::setFontSize(float size) {
 
 float Sprite::getFontSize() {
 	return fontSize;
+}
+
+int Sprite::getX() {
+	return xPos;
+}
+
+int Sprite::getY() {
+	return yPos;
 }

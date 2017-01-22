@@ -34,22 +34,21 @@ Tile::~Tile()
 }
 
 
-void Tile::render(Sprite &tileTexture, SDL_Renderer* gameRenderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES], SDL_Rect& camera)
+void Tile::render(Sprite &tileTexture, SDL_Renderer* gameRenderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES])
 {	
 	//show the tile
-	if (checkCollision(camera, m_box)) {
+	
 		if (m_type == TILE_SAW_1) {
 			rotate();
 		}
 
-		tileTexture.render(gameRenderer, m_box.x - camera.x , m_box.y - camera.y, &tileClips[m_type], angle);
+		tileTexture.render(gameRenderer, m_box.x, m_box.y, &tileClips[m_type], angle);
 
 		if (tileTexture.m_texture == nullptr)
 			std::cout << "tileTexture.m_texture == nullptr";
-	}
+	
 
 }
-
 
 int Tile::getType()
 {

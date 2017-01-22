@@ -17,12 +17,12 @@ public:
 	const int LEVEL_WIDTH = 1260;
 	const int LEVEL_HEIGHT = 720;
 
-	static const int TOTAL_TILES = 252;
+	static const int TOTAL_TILES = 1008;
 	static const int TOTAL_TILE_SPRITES = 19;
 
 	//tile constants
-	static const int TILE_WIDTH = 60;
-	static const int TILE_HEIGHT = 60;
+	 const int TILE_WIDTH = 30;
+	 const int TILE_HEIGHT = 30;
 
 	//the different tile sprites
 	const int TILE_NONE = 0;

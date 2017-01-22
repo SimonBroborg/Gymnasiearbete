@@ -31,12 +31,17 @@ public:
 	int getWidth();
 	int getHeight();
 
+	int getX();
+	int getY(); 
+
+	int xPos;
+	int yPos;
 	
 	//the sprite texture
 	SDL_Texture* m_texture;
 
 private:
-	
+
 
 	//the texture dimensions
 	int m_width;

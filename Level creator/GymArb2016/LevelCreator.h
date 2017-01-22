@@ -24,5 +24,7 @@ public:
 	void saveTiles(std::string levelPath); //saves the current level
 
 	void renderLevel(Sprite tileTexture, SDL_Renderer* renderer);
+
+	void deleteTile(Tile* tile);
 };
 

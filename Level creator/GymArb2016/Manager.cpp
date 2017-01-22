@@ -193,6 +193,11 @@ void Manager::gameLoop()
 						showMenu = false; 
 					}
 					break;
+
+				case SDLK_DELETE:
+					for (int i = 0; i < TOTAL_TILES; i++) {
+						creator.tileSet[i]->setType(TILE_NONE);
+					}
 				}
 				break;
 

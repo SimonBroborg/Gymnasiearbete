@@ -14,14 +14,40 @@ public:
 
 	static const int TOTAL_MENU_BUTTONS = 2;
 
+	//Renders the menus buttons and the background
 	void showMenu(Sprite &buttonTexture, SDL_Renderer* renderer);
-	void createButton(SDL_Renderer* renderer, std::string path, int x);
 
+	//Creates a button 
+	void createButton(SDL_Renderer* renderer, std::string path);
+
+	//Checks if any button on the menu is hovered
+	void checkHover(int mouseX, int mouseY); 
+	//Centers the buttons 
+	void createMenu(); 
+
+	//True or false depending on if the menu is currently showing
+	bool getShowing(); 
+
+	//Sets the isShowing variable
+	void setShowing(bool showing);
+
+	void changeActive(int indexChange); 
+
+	//Contains all the buttons
 	std::vector<Button> buttons;
 
 	SDL_Texture* buttonTexture;
 
 
 	SDL_Texture* background; 
+
+private:
+	//The space between the buttons
+	int buttonSpacing; 
+
+	//The height of the menu
+	float menuHeight;
+
+	bool isShowing;
 };
 

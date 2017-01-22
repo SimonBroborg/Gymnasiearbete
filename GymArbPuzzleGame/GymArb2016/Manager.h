@@ -33,15 +33,10 @@ public:
 
 	void close(Tile* tiles[]);
 
-
-	bool setTiles(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES], std::string levelPath, int &playerX, int &playerY);
-
-	//Start the game loop
 	void gameLoop();
 
 
 	SDL_Event evnt;
-
 
 
 
@@ -53,6 +48,8 @@ public:
 	Sprite circleTexture;
 
 	Sprite buttonTexture;
+
+	Sprite cursorTexture;
 
 	void loadNextLevel(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
 

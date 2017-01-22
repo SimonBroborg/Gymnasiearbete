@@ -107,6 +107,10 @@ float Tile::getSpeed() {
 	return m_velX;
 }
 
+void Tile::setType(int type) {
+	this->m_type = type;
+}
+
 /*
 SDL_Texture * Tile::loadTile(SDL_Renderer *renderer, std::string path)
 {

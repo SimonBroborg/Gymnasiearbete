@@ -22,6 +22,8 @@ public:
 	//get the tile type
 	int getType();
 
+	void setType(int type);
+
 	//get the collision box
 	SDL_Rect getBox();
 

@@ -1,28 +1,19 @@
 /*This source code copyrighted by Lazy Foo' Productions (2004-2015)
 and may not be redistributed without written permission.*/
 
-//Using SDL, SDL_image, standard IO, vectors, and strings
+//Using SDL, SDL_image, standard IO, and strings
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <stdio.h>
 #include <string>
 #include <iostream>
-#include "Manager.h"
-/*
-int main(int argc, char *argv[])
-{
-	Manager game;
-	game.run();
-	return 0;
-}
-*/
-//The dimensions of the level
-const int LEVEL_WIDTH = 1280;
-const int LEVEL_HEIGHT = 960;
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
+
+//Particle count
+const int TOTAL_PARTICLES = 20;
 
 //Texture wrapper class
 class LTexture
@@ -70,6 +61,30 @@ private:
 	int mHeight;
 };
 
+class Particle
+{
+public:
+	//Initialize position and animation
+	Particle(int x, int y);
+
+	//Shows the particle
+	void render();
+
+	//Checks if particle is dead
+	bool isDead();
+
+private:
+	//Offsets
+	int mPosX, mPosY;
+
+	//Current frame of animation
+	int mFrame;
+
+	//Type of particle
+	LTexture *mTexture;
+};
+
+
 //The dot that will move around on the screen
 class Dot
 {
@@ -81,8 +96,11 @@ public:
 	//Maximum axis velocity of the dot
 	static const int DOT_VEL = 10;
 
-	//Initializes the variables
+	//Initializes the variables and allocates particles
 	Dot();
+
+	//Deallocates particles
+	~Dot();
 
 	//Takes key presses and adjusts the dot's velocity
 	void handleEvent(SDL_Event& e);
@@ -90,14 +108,16 @@ public:
 	//Moves the dot
 	void move();
 
-	//Shows the dot on the screen relative to the camera
-	void render(int camX, int camY);
-
-	//Position accessors
-	int getPosX();
-	int getPosY();
+	//Shows the dot on the screen
+	void render();
 
 private:
+	//The particles
+	Particle* particles[TOTAL_PARTICLES];
+
+	//Shows the particles
+	void renderParticles();
+
 	//The X and Y offsets of the dot
 	int mPosX, mPosY;
 
@@ -122,7 +142,10 @@ SDL_Renderer* gRenderer = NULL;
 
 //Scene textures
 LTexture gDotTexture;
-LTexture gBGTexture;
+LTexture gRedTexture;
+LTexture gGreenTexture;
+LTexture gBlueTexture;
+LTexture gShimmerTexture;
 
 LTexture::LTexture()
 {
@@ -185,7 +208,34 @@ bool LTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor
 	//Get rid of preexisting texture
 	free();
 
-	return true;
+	//Render text surface
+	SDL_Surface* textSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor);
+	if (textSurface != NULL)
+	{
+		//Create texture from surface pixels
+		mTexture = SDL_CreateTextureFromSurface(gRenderer, textSurface);
+		if (mTexture == NULL)
+		{
+			printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+		}
+		else
+		{
+			//Get image dimensions
+			mWidth = textSurface->w;
+			mHeight = textSurface->h;
+		}
+
+		//Get rid of old surface
+		SDL_FreeSurface(textSurface);
+	}
+	else
+	{
+		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+	}
+
+
+	//Return success
+	return mTexture != NULL;
 }
 #endif
 
@@ -245,6 +295,44 @@ int LTexture::getHeight()
 	return mHeight;
 }
 
+Particle::Particle(int x, int y)
+{
+	//Set offsets
+	mPosX = x - 5 + (rand() % 25);
+	mPosY = y - 5 + (rand() % 25);
+
+	//Initialize animation
+	mFrame = rand() % 5;
+
+	//Set type
+	switch (rand() % 3)
+	{
+	case 0: mTexture = &gRedTexture; break;
+	case 1: mTexture = &gGreenTexture; break;
+	case 2: mTexture = &gBlueTexture; break;
+	}
+}
+
+void Particle::render()
+{
+	//Show image
+	mTexture->render(mPosX, mPosY);
+
+	//Show shimmer
+	if (mFrame % 2 == 0)
+	{
+		gShimmerTexture.render(mPosX, mPosY);
+	}
+
+	//Animate
+	mFrame++;
+}
+
+bool Particle::isDead()
+{
+	return mFrame > 10;
+}
+
 Dot::Dot()
 {
 	//Initialize the offsets
@@ -254,6 +342,21 @@ Dot::Dot()
 	//Initialize the velocity
 	mVelX = 0;
 	mVelY = 0;
+
+	//Initialize particles
+	for (int i = 0; i < TOTAL_PARTICLES; ++i)
+	{
+		particles[i] = new Particle(mPosX, mPosY);
+	}
+}
+
+Dot::~Dot()
+{
+	//Delete particles
+	for (int i = 0; i < TOTAL_PARTICLES; ++i)
+	{
+		delete particles[i];
+	}
 }
 
 void Dot::handleEvent(SDL_Event& e)
@@ -290,7 +393,7 @@ void Dot::move()
 	mPosX += mVelX;
 
 	//If the dot went too far to the left or right
-	if ((mPosX < 0) || (mPosX + DOT_WIDTH > LEVEL_WIDTH))
+	if ((mPosX < 0) || (mPosX + DOT_WIDTH > SCREEN_WIDTH))
 	{
 		//Move back
 		mPosX -= mVelX;
@@ -300,27 +403,40 @@ void Dot::move()
 	mPosY += mVelY;
 
 	//If the dot went too far up or down
-	if ((mPosY < 0) || (mPosY + DOT_HEIGHT > LEVEL_HEIGHT))
+	if ((mPosY < 0) || (mPosY + DOT_HEIGHT > SCREEN_HEIGHT))
 	{
 		//Move back
 		mPosY -= mVelY;
 	}
 }
 
-void Dot::render(int camX, int camY)
+void Dot::render()
 {
-	//Show the dot relative to the camera
-	gDotTexture.render(mPosX - camX, mPosY - camY);
+	//Show the dot
+	gDotTexture.render(mPosX, mPosY);
+
+	//Show particles on top of dot
+	renderParticles();
 }
 
-int Dot::getPosX()
+void Dot::renderParticles()
 {
-	return mPosX;
-}
+	//Go through particles
+	for (int i = 0; i < TOTAL_PARTICLES; ++i)
+	{
+		//Delete and replace dead particles
+		if (particles[i]->isDead())
+		{
+			delete particles[i];
+			particles[i] = new Particle(mPosX, mPosY);
+		}
+	}
 
-int Dot::getPosY()
-{
-	return mPosY;
+	//Show particles
+	for (int i = 0; i < TOTAL_PARTICLES; ++i)
+	{
+		particles[i]->render();
+	}
 }
 
 bool init()
@@ -351,7 +467,7 @@ bool init()
 		}
 		else
 		{
-			//Create vsynced renderer for window
+			//Create renderer for window
 			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 			if (gRenderer == NULL)
 			{
@@ -389,12 +505,39 @@ bool loadMedia()
 		success = false;
 	}
 
-	//Load background texture
-	if (!gBGTexture.loadFromFile("bg.png"))
+	//Load red texture
+	if (!gRedTexture.loadFromFile("red.bmp"))
 	{
-		printf("Failed to load background texture!\n");
+		printf("Failed to load red texture!\n");
 		success = false;
 	}
+
+	//Load green texture
+	if (!gGreenTexture.loadFromFile("green.bmp"))
+	{
+		printf("Failed to load green texture!\n");
+		success = false;
+	}
+
+	//Load blue texture
+	if (!gBlueTexture.loadFromFile("blue.bmp"))
+	{
+		printf("Failed to load blue texture!\n");
+		success = false;
+	}
+
+	//Load shimmer texture
+	if (!gShimmerTexture.loadFromFile("shimmer.bmp"))
+	{
+		printf("Failed to load shimmer texture!\n");
+		success = false;
+	}
+
+	//Set texture transparency
+	gRedTexture.setAlpha(192);
+	gGreenTexture.setAlpha(192);
+	gBlueTexture.setAlpha(192);
+	gShimmerTexture.setAlpha(192);
 
 	return success;
 }
@@ -403,7 +546,10 @@ void close()
 {
 	//Free loaded images
 	gDotTexture.free();
-	gBGTexture.free();
+	gRedTexture.free();
+	gGreenTexture.free();
+	gBlueTexture.free();
+	gShimmerTexture.free();
 
 	//Destroy window	
 	SDL_DestroyRenderer(gRenderer);
@@ -441,9 +587,6 @@ int main(int argc, char* args[])
 			//The dot that will be moving around on the screen
 			Dot dot;
 
-			//The camera area
-			SDL_Rect camera = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-
 			//While application is running
 			while (!quit)
 			{
@@ -463,47 +606,24 @@ int main(int argc, char* args[])
 				//Move the dot
 				dot.move();
 
-				//Center the camera over the dot
-				camera.x = (dot.getPosX() + Dot::DOT_WIDTH / 2) - SCREEN_WIDTH / 2;
-				camera.y = (dot.getPosY() + Dot::DOT_HEIGHT / 2) - SCREEN_HEIGHT / 2;
-
-				//Keep the camera in bounds
-				if (camera.x < 0)
-				{
-					camera.x = 0;
-				}
-				if (camera.y < 0)
-				{
-					camera.y = 0;
-				}
-				if (camera.x > LEVEL_WIDTH - camera.w)
-				{
-					camera.x = LEVEL_WIDTH - camera.w;
-				}
-				if (camera.y > LEVEL_HEIGHT - camera.h)
-				{
-					camera.y = LEVEL_HEIGHT - camera.h;
-				}
-
 				//Clear screen
 				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 				SDL_RenderClear(gRenderer);
 
-				//Render background
-				gBGTexture.render(0, 0, &camera);
-
 				//Render objects
-				dot.render(camera.x, camera.y);
+				dot.render();
 
 				//Update screen
 				SDL_RenderPresent(gRenderer);
 			}
 		}
-	}
 
-	//Free resources and close SDL
-	close();
+
+	}
 	int test;
 	std::cin >> test;
+	//Free resources and close SDL
+	close();
+
 	return 0;
 }
