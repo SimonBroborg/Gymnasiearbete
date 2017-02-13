@@ -21,6 +21,8 @@ public:
 	bool isStarted();
 	bool isPaused();
 
+
+
 private:
 	//The clock itme when the timer started
 	Uint32 startTicks;

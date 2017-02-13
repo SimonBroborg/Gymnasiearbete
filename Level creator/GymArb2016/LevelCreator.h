@@ -6,7 +6,7 @@
 class LevelCreator : public Engine
 {
 public:
-	LevelCreator();
+	LevelCreator(SDL_Renderer* renderer);
 	~LevelCreator();
 
 	int currentType; //Tile type selector
@@ -21,10 +21,19 @@ public:
 
 	void putTile(int mouseX, int mouseY); //Puts out a new tile
 
-	void saveTiles(std::string levelPath); //saves the current level
+	void saveTiles(std::string levelPath, std::string backgroundPath); //saves the current level
 
 	void renderLevel(Sprite tileTexture, SDL_Renderer* renderer);
 
-	void deleteTile(Tile* tile);
+	void deleteTile(int mouseX, int mouseY);
+
+	void setBackground(std::string path);
+
+	SDL_Texture* getBackground();
+private:
+
+	SDL_Texture* backgroundTexture;
+
+	SDL_Renderer * gameRenderer; 
 };
 

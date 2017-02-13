@@ -7,6 +7,7 @@
 #include "Circle.h"
 #include <String>
 #include "Menu.h"
+#include <SDL\SDL_messagebox.h>
 
 #include "Engine.h"
 
@@ -42,20 +43,11 @@ public:
 
 	//scene textures
 	Sprite tileTexture; 
-
 	Sprite playerTexture;
 
 	Sprite circleTexture;
 
-	Sprite buttonTexture;
-
-	Sprite cursorTexture;
-
-	void loadNextLevel(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
-
-	std::string levels[4]{ "assets/levels/level1.map", "assets/levels/level2.map" , "assets/levels/level3.map", "assets/levels/level4.map"};
-	int currentLevel;
-	
+	Sprite cursorTexture;	
 	
 private:
 	float m_frameTime = 0;
@@ -63,13 +55,12 @@ private:
 	float m_currentTime = 0;
 	float m_deltaTime = 0;
 
-	bool m_fullscreen; 
+	bool m_fullscreen;  //Flag for fullscreen 
 
-	SDL_Texture * backgroundTexture;
+	//SDL_Texture * backgroundTexture; //texture for the background
 	
-	SDL_Texture *loadBackground(std::string path);
+	SDL_Texture *loadBackground(std::string path); //Loads a new background texture
 
-	bool nextLevel;
 
 	bool showMenu;
 };

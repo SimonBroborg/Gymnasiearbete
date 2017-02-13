@@ -42,7 +42,6 @@ public:
 
 	Sprite buttonTexture;
 
-
 	Sprite inputTextTexture;
 	void loadNextLevel(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
 
@@ -61,10 +60,6 @@ private:
 	float m_deltaTime = 0;
 
 	bool m_fullscreen; //Flag for fullscreen
-
-	SDL_Texture * backgroundTexture; //Texture for the background image
-
-	SDL_Texture *loadBackground(std::string path); //Change the background image
 
 	bool nextLevel; //Flag for changing to the next level
 	bool prevLevel; 

@@ -4,12 +4,13 @@
 #include "Engine.h"
 #include "Sprite.h"
 #include <string>
+#include "Player.h"
+
 class WorldManager : public Engine
 {
 public:
-	WorldManager();
+	WorldManager(SDL_Renderer* renderer);
 	~WorldManager();
-
 
 
 	//Keeps track of the current level
@@ -29,9 +30,24 @@ public:
 
 	void loadNextLevel(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
 
+	static const int TOTAL_LEVELS = 4;
 	//Array which contains all the levels
-	std::string levels[4]{ "assets/levels/level1.map", "assets/levels/level2.map" , "assets/levels/level3.map", "assets/levels/level4.map" };
+	std::vector<std::string>levels;
 	
+
+	//Loads the next level
+	void loadNextLevel(Player & player);
+
+	int playerStartX, playerStartY;
+
+	void setBackground(std::string path);
+
+bool nextLevel; 
+SDL_Texture* backgroundTexture;
+private:
+
+	SDL_Renderer* gameRenderer; 
+
 
 };
 

@@ -48,7 +48,7 @@ private:
 	int m_height;
 
 	TTF_Font *font;
-	float fontSize = 16;
+	float fontSize = 200;
 
 	
 };

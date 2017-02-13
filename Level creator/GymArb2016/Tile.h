@@ -12,7 +12,7 @@ class Tile : public Engine
 	//////////////////////////////////////////// PUBLIC ////////////////////////////////////////////////////////////////////
 public:
 	//Constructor
-	Tile(int x, int y, int tileType);
+	Tile(int x, int y, int w, int h, int tileType);
 
 	~Tile();
 

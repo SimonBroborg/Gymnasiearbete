@@ -18,7 +18,7 @@ public:
 	const int LEVEL_HEIGHT = 720;
 
 	static const int TOTAL_TILES = 1008;
-	static const int TOTAL_TILE_SPRITES = 19;
+	static const int TOTAL_TILE_SPRITES = 21;
 
 	//tile constants
 	 const int TILE_WIDTH = 30;
@@ -46,6 +46,9 @@ public:
 	const int TILE_ICE_BROKEN_3 = 17;
 
 	const int TILE_SAW_1 = 18;
+	const int TILE_SPRING = 19;
+
+	const int TILE_PLAYER_SPAWN = 20;
 	
 
 	bool bIsRunning;

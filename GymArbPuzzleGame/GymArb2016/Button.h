@@ -8,7 +8,7 @@
 class Button : public Engine
 {
 public:
-	Button(std::string path, SDL_Renderer * renderer);
+	Button(SDL_Renderer * renderer, std::string text);
 	~Button();
 
 	//Render the button
@@ -28,7 +28,9 @@ public:
 	//Check if mouse is hovering the button
 	bool checkHover(int mouseX, int mouseY);
 
-	
+	Sprite buttonText;
+
+	SDL_Texture* buttonTextTexture; 
 
 	SDL_Texture* buttonTexture; 
 
@@ -38,6 +40,13 @@ private:
 
 	//Flag for hovering
 	bool hovering;
+
+	TTF_Font *font;
+	float fontSize;
+
+	int buttonWidth;
+	int buttonHeight; 
+
 
 };
 

@@ -12,7 +12,7 @@ class Tile : public Engine
 //////////////////////////////////////////// PUBLIC ////////////////////////////////////////////////////////////////////
 public:
 	//Constructor
-	Tile(int x, int y, int tileType);
+	Tile(int x, int y, int w, int h, int tileType);
 	
 	~Tile();
 
@@ -25,13 +25,15 @@ public:
 	//get the collision box
 	SDL_Rect getBox();
 
-	void movePlatform(Tile* tiles[]);
+	void movePlatform(Tile* tiles[], float delta);
 
 	float getSpeed();
 
 	void destroy(float delta);
 
 	void rotate();
+
+	
 
 private:
 	//the attributes of the tile
@@ -44,6 +46,8 @@ private:
 
 	float m_velX;
 	float m_velY;
+
+	float maxHorSpeed; 
 
 	double angle;
 };

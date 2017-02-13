@@ -173,7 +173,7 @@ bool Engine::circularCollision(SDL_Rect circle, SDL_Rect rect)
 
 	//Closest point on collision box
 	int cX, cY;
-
+	
 	//Find closest x offset
 	if (circle.x + circle.w < rect.x)
 	{
@@ -203,7 +203,7 @@ bool Engine::circularCollision(SDL_Rect circle, SDL_Rect rect)
 		cY = circle.y + circle.h;
 	}
 	//If the closest point is inside the circle
-	if (distanceSquared(circle.x + circle.w, circle.y + circle.h, cX, cY) < circle.w * circle.w)
+	if (distanceSquared(circle.x + circle.w, circle.y + circle.h, cX, cY) < circle.w / 2* circle.w / 2)
 	{
 		//This box and the circle have collided
 		return true;

@@ -52,31 +52,33 @@ void Manager::gameLoop()
 {
 	Menu menu(renderer, "menuBackground.png");
 
-	LevelCreator creator;
+	LevelCreator creator(renderer);
 	//creates the camera object which makes the side-scrolling possible
-	SDL_Rect camera = { 0,0, SCREEN_WIDTH, SCREEN_HEIGHT };
-
 
 	//loads the media ( sprites etc. ) for the game. Loads the first level
-	if (!loadMedia(renderer,"")) {
+	if (!loadMedia(renderer, "")) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
 
 	creator.setTiles(levels[currentLevel]);
 	//Loads the background music for the game
 
-	//loads the background image for the game
-	backgroundTexture = loadBackground("");
 
 	//creates the buttons for the menu
-	menu.createButton(renderer, "assets/buttons/quit_game_button.png", SCREEN_HEIGHT / 2 - 44);
-	menu.createButton(renderer, "assets/buttons/change_background_button.png", SCREEN_HEIGHT / 2 + 50);
-	menu.createButton(renderer, "assets/buttons/save_level_button.png", SCREEN_HEIGHT / 2 + 150);
+	menu.createButton(renderer, "Resume");
+	menu.createButton(renderer, "Change background");
+	menu.createButton(renderer, "Save level");
+	menu.createButton(renderer, "Fullscreen");
+	menu.createButton(renderer, "Exit to Desktop");
+
+	menu.createMenu(); //sorts the buttons and places them in order in the center of the screen
 
 	std::string text = "Enter file path";
 	SDL_Color textColor = { 0,0,0,0xFF };
 
 	bool renderText;
+
+	bool draw = false;
 
 	inputTextTexture.loadFromRenderedText(text, textColor, renderer);
 	SDL_StartTextInput();
@@ -110,31 +112,81 @@ void Manager::gameLoop()
 			case SDL_QUIT:
 				bIsRunning = false;
 				break;
-
-			
-
-
 				//checks hover over buttons if user moves the mouse key
 			case SDL_MOUSEBUTTONDOWN:
 				if (showMenu) {
-					if (menu.buttons[0].checkHover(evnt.button.x, evnt.button.y)) {
+					if (menu.buttons[4].checkHover(evnt.button.x, evnt.button.y)) {
 						bIsRunning = false;
 					}
+					if (menu.buttons[0].checkHover(evnt.button.x, evnt.button.y)) {
+						showMenu = false;
+					}
+					if (menu.buttons[3].checkHover(evnt.button.x, evnt.button.y)) {
+						if (m_fullscreen) {
+							SDL_SetWindowFullscreen(window, SDL_FALSE);
+							m_fullscreen = false;
+						}
+						else {
+							SDL_SetWindowFullscreen(window, SDL_TRUE);
+							m_fullscreen = true;//if nextLevel == true, the game loads the next level and sets nextLevel == false
+
+						}
+					}
+
 					if (menu.buttons[1].checkHover(evnt.button.x, evnt.button.y)) {
-						menu.buttons[1].setImage(renderer, "assets/buttons/change_background_button_transparent.png");
+						menu.buttons[1].setText(renderer, " ");
 						text = "Enter file path";
 						canSearchBackgroundImage = true;
 					}
 
 					if (menu.buttons[2].checkHover(evnt.button.x, evnt.button.y)) {
-						creator.saveTiles(levels[currentLevel]); //Saves the current level
-						showMenu = false; 
+						creator.saveTiles(levels[currentLevel], text); //Saves the current level
+						showMenu = false;
 					}
 
-				}
-				if (!showMenu)
-					creator.putTile(evnt.button.x, evnt.button.y); //Puts current tile type onto the hovered tile spot
 
+				}
+				else if (!showMenu) {
+					if (evnt.button.button == SDL_BUTTON_LEFT)
+						draw = true;
+
+					else if (evnt.button.button == SDL_BUTTON_RIGHT)
+						creator.deleteTile(evnt.button.x, evnt.button.y);
+				}
+				
+				break;
+
+			case SDL_MOUSEBUTTONUP:
+				if (!showMenu)
+					if (evnt.button.button == SDL_BUTTON_LEFT)
+						draw = false;
+				break;
+
+			case SDL_MOUSEMOTION:
+				if (showMenu)
+					menu.checkHover(evnt.motion.x, evnt.motion.y);
+				break;
+
+
+			case SDL_MOUSEWHEEL:
+				
+				if (evnt.wheel.y == 1) {
+					creator.currentType--;
+					if (creator.currentType < 1)
+						creator.currentType = TOTAL_TILE_SPRITES - 1;
+
+					delete creator.tileSet[0];
+					creator.tileSet[0] = new Tile(0, 0, creator.tileClips[creator.currentType].w, creator.tileClips[creator.currentType].h, creator.currentType);
+				}
+				else if (evnt.wheel.y == -1) {
+					creator.currentType++;
+					if (creator.currentType >= TOTAL_TILE_SPRITES)
+						creator.currentType = 1;
+
+					delete creator.tileSet[0];
+					creator.tileSet[0] = new Tile(0, 0, creator.tileClips[creator.currentType].w, creator.tileClips[creator.currentType].h, creator.currentType);
+				}
+				
 				break;
 
 
@@ -157,24 +209,6 @@ void Manager::gameLoop()
 					}
 					break;
 
-				case SDLK_UP:
-					creator.currentType--;
-					if (creator.currentType < 0)
-						creator.currentType = TOTAL_TILE_SPRITES - 1;
-					delete creator.tileSet[0];
-					creator.tileSet[0] = new Tile(0, 0, creator.currentType);
-
-					break;
-
-				case SDLK_DOWN:
-					creator.currentType++;
-					if (creator.currentType > TOTAL_TILE_SPRITES -  2)
-						creator.currentType = 0;
-					delete creator.tileSet[0];
-					creator.tileSet[0] = new Tile(0, 0, creator.currentType);
-
-					break;
-
 				case SDLK_LEFT:
 					prevLevel = true;
 					break;
@@ -185,12 +219,12 @@ void Manager::gameLoop()
 
 				case SDLK_RETURN:
 					if (canSearchBackgroundImage) {
-						menu.buttons[1].setImage(renderer, "assets/buttons/change_background_button.png");
+						menu.buttons[1].setText(renderer, "Change background");
 						canSearchBackgroundImage = false;
-						backgroundTexture = loadBackground(text);
-						text = "";
+						creator.setBackground(text);
+
 						renderText = true;
-						showMenu = false; 
+						showMenu = false;
 					}
 					break;
 
@@ -212,12 +246,15 @@ void Manager::gameLoop()
 			}
 
 		}
+		if (draw)
+			creator.putTile(evnt.button.x, evnt.button.y); //Puts current tile type onto the hovered tile spot
 
 		//if nextLevel == true, the game loads the next level and sets nextLevel == false
 		if (nextLevel) {
 			currentLevel++;
 			if (currentLevel >= TOTAL_LEVELS)
 				currentLevel = 0;
+
 			creator.setTiles(levels[currentLevel].c_str());
 			nextLevel = false;
 		}
@@ -226,7 +263,9 @@ void Manager::gameLoop()
 			if (currentLevel < 0)
 				currentLevel = TOTAL_LEVELS - 1;
 			creator.setTiles(levels[currentLevel].c_str());
-			prevLevel = false; 
+			prevLevel = false;
+			//if nextLevel == true, the game loads the next level and sets nextLevel == false
+
 		}
 		m_prevTime = m_currentTime;
 		m_currentTime = SDL_GetTicks();
@@ -245,7 +284,7 @@ void Manager::gameLoop()
 		SDL_RenderClear(renderer);
 
 		//copies the background to the renderer
-		SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL); //copies the background to the renderer
+		SDL_RenderCopy(renderer, creator.getBackground(), NULL, NULL); //copies the background to the renderer
 
 
 
@@ -263,19 +302,21 @@ void Manager::gameLoop()
 				inputTextTexture.loadFromRenderedText(" ", textColor, renderer);
 			}
 		}
+		if (!showMenu) {
 
-		//renders the level
-		for (int i = 0; i < TOTAL_TILES; ++i)
-		{
-			if (creator.tileSet[i]->getType() == TILE_MOVING_PLATFORM) {
-				creator.tileSet[i]->movePlatform(creator.tileSet);
+			//renders the level
+			for (int i = 0; i < TOTAL_TILES; ++i)
+			{
+				/*if (creator.tileSet[i]->getType() == TILE_MOVING_PLATFORM) {
+					creator.tileSet[i]->movePlatform(creator.tileSet);
+				}*/
+				creator.tileSet[i]->render(tileTexture, renderer, creator.tileClips); //renders the tiles to the renderer from the tile set vector
 			}
-			creator.tileSet[i]->render(tileTexture, renderer, creator.tileClips); //renders the tiles to the renderer from the tile set vector
 		}
 
 		//if showMenu == true, the menu is shown
 		if (showMenu)
-			menu.showMenu(buttonTexture, renderer);
+			menu.showMenu(renderer);
 
 		if (canSearchBackgroundImage && showMenu)
 			inputTextTexture.render(renderer, menu.buttons[1].getBox().x + menu.buttons[1].getBox().w / 2 - inputTextTexture.getWidth() / 2, menu.buttons[1].getBox().y + menu.buttons[1].getBox().h / 2 - inputTextTexture.getHeight() / 2);
@@ -293,22 +334,13 @@ void Manager::gameLoop()
 }
 
 
-SDL_Texture *Manager::loadBackground(std::string path)
-{
-	//loads the background from file path
-	SDL_Texture *background = IMG_LoadTexture(renderer, path.c_str());
-
-	return background;
-}
-
-
 bool Manager::loadMedia(SDL_Renderer * renderer, std::string levelPath)
 {
 	//loading success flag
 	bool success = true;
 
 	//load tile texture
-	if (!tileTexture.loadFromFile("assets/tiles/tileSpriteSheet.png", renderer)) {
+	if (!tileTexture.loadFromFile("../../GymArbPuzzleGame/GymArb2016/assets/tiles/tileSpriteSheet.png", renderer)) {
 		std::cout << "Failed to load tile set texture!" << std::endl;
 		success = false;
 	}
@@ -322,7 +354,7 @@ bool Manager::loadMedia(SDL_Renderer * renderer, std::string levelPath)
 }
 void Manager::close(Tile* tiles[])
 {
-	SDL_DestroyTexture(backgroundTexture);
+
 	//quits all initialized systems
 	IMG_Quit();
 	SDL_Quit();

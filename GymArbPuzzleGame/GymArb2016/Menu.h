@@ -12,13 +12,13 @@ public:
 	Menu(SDL_Renderer* renderer, std::string path);
 	~Menu();
 
-	static const int TOTAL_MENU_BUTTONS = 2;
+	
 
 	//Renders the menus buttons and the background
-	void showMenu(Sprite &buttonTexture, SDL_Renderer* renderer);
+	void showMenu(SDL_Renderer* renderer);
 
 	//Creates a button 
-	void createButton(SDL_Renderer* renderer, std::string path);
+	void createButton(SDL_Renderer* renderer, std::string text);
 
 	//Checks if any button on the menu is hovered
 	void checkHover(int mouseX, int mouseY); 

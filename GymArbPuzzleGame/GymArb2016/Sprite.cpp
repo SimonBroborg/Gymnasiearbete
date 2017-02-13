@@ -76,27 +76,11 @@ int Sprite::getHeight()
 {
 	return m_height;
 }
-/*
-void Sprite::loadSprite(SDL_Renderer* renderer, std::string path, float xPosition, float yPosition) {
-	//loads the objects sprite texture
-	m_texture = IMG_LoadTexture(renderer, path.c_str());
-	if (m_texture != nullptr)
-		std::cout << "Successfully loaded sprite from path: " << path << std::endl;
-	else
-		std::cout << "Could not load sprite from path: " << path << std::endl;
 
-	//sets the starting x and y position of the sprite
-	xPos = xPosition; 
-	yPos = yPosition;
-}
-*/
 
 bool Sprite::loadFromRenderedText(std::string textureText, SDL_Color textColor, SDL_Renderer* renderer) {
-	//Get rid of preexisting texture
-	m_texture = nullptr;
-	SDL_DestroyTexture(m_texture);
 	
-	font = TTF_OpenFont("assets/fonts/OpenSans-regular.ttf", fontSize);
+	font = TTF_OpenFont("assets/fonts/fixedsys.ttf", fontSize);
 	//Render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
 	if (textSurface != nullptr)

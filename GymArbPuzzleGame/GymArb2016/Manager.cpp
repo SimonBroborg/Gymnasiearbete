@@ -11,6 +11,7 @@
 #include "Timer.h"
 #include "WorldManager.h"
 
+#include <SDL\SDL_thread.h>
 Manager::Manager()
 {
 	//assigning variables
@@ -19,12 +20,6 @@ Manager::Manager()
 
 	//checks if the game is running	
 	bIsRunning = true;
-
-	//checks if the next level should be loaded
-	nextLevel = false;
-
-	//the current level
-	currentLevel = 0;
 
 	//tells if the menu is shown
 	showMenu = false;
@@ -52,57 +47,51 @@ void Manager::gameLoop()
 {
 	//creates the player object
 	Player Player(renderer, playerTexture, 1, 1);
-	int playerStartX, playerStartY;
 
 	//Creates the timer object
 	Timer timer;
-
-
-
-	//creates the camera object which makes the side-scrolling possible
-	SDL_Rect camera = { 0,0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 	//Creates the menu object
 	Menu menu(renderer, "menuBackground.png");
 
 
 
-	WorldManager world;
+	WorldManager world(renderer);
 
 	//loads the media ( sprites etc. ) for the game. Loads the first level
-	if (!loadMedia(world.tileSet, renderer, world.tileClips, "assets/levels/level1.map", playerStartX, playerStartY)) {
+	if (!loadMedia(world.tileSet, renderer, world.tileClips, "assets/levels/level1.map", world.playerStartX, world.playerStartY)) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
 
-	world.setTiles(world.tileSet, world.tileClips, "assets/levels/level1.map", playerStartX, playerStartY);
+	world.setTiles(world.tileSet, world.tileClips, "assets/levels/level1.map", world.playerStartX, world.playerStartY);
 
 	//Loads the background music for the game
 	Mix_Music *bgm = Mix_LoadMUS("assets/sounds/japanese_flute_music.mp3");
 
 	//loads the background image for the game
-	backgroundTexture = loadBackground("assets/backgrounds/grayBackground.jpg");
-
-	//creates the buttons for the menu
-	menu.createButton(renderer, "assets/buttons/quit_game_button.png");
-	menu.createButton(renderer, "assets/buttons/close_menu_button.png");
-	menu.createButton(renderer, "assets/buttons/fullscreen_button.png");
 	
 
-	menu.createMenu();
+	//creates the buttons for the menu
+	menu.createButton(renderer, "Resume");
+	menu.createButton(renderer, "Fullscreen");
+	menu.createButton(renderer, "Exit To Desktop");
+
+	menu.createMenu(); //sorts the buttons and places them in order
 
 	std::string playerSpecsText;
 	Sprite playerSpecs;
 	SDL_Color textColor = { 0,0,0,0xFF };
 
 
-	SDL_ShowCursor(0);
+	SDL_ShowCursor(0); //Hides the cursor
 
+	
 	//the game loop, runs as long as bIsRunning = true
 	while (bIsRunning)
 	{
+		//Returns the current x and y coordinates of the mouse
 		SDL_GetMouseState(&cursorTexture.xPos, &cursorTexture.yPos);
-		
-		
+
 		//pauses music if menu is shown
 		if (menu.getShowing()) {
 			Mix_PauseMusic();
@@ -131,13 +120,13 @@ void Manager::gameLoop()
 				//checks hover over buttons if user moves the mouse key
 			case SDL_MOUSEBUTTONDOWN:
 				if (menu.getShowing()) {
-					if (menu.buttons[0].checkHover(evnt.button.x, evnt.button.y)) {
+					if (menu.buttons[2].checkHover(evnt.button.x, evnt.button.y)) {
 						bIsRunning = false;
 					}
-					if (menu.buttons[1].checkHover(evnt.button.x, evnt.button.y)) {
+					if (menu.buttons[0].checkHover(evnt.button.x, evnt.button.y)) {
 						menu.setShowing(false);
 					}
-					if (menu.buttons[2].checkHover(evnt.button.x, evnt.button.y)) {
+					if (menu.buttons[1].checkHover(evnt.button.x, evnt.button.y)) {
 						if (m_fullscreen) {
 							SDL_SetWindowFullscreen(window, SDL_FALSE);
 							m_fullscreen = false;
@@ -147,14 +136,7 @@ void Manager::gameLoop()
 							m_fullscreen = true;
 						}
 					}
-
 				}
-
-
-				//places the player and the circle on the pressed coordinates
-
-				Player.SetBoxX(evnt.button.x);
-				Player.SetBoxY(evnt.button.y);
 				break;
 
 			case SDL_MOUSEMOTION:
@@ -184,7 +166,7 @@ void Manager::gameLoop()
 					break;
 
 				case SDLK_RETURN:
-					if(menu.getShowing())
+					if (menu.getShowing())
 						if (menu.buttons[0].getActive()) {
 							bIsRunning = false;
 						}
@@ -201,57 +183,20 @@ void Manager::gameLoop()
 							m_fullscreen = true;
 						}
 					}
-					
+
 				}
 				break;
 			}
 
 			//takes in player input is menu is hidden
 			if (menu.getShowing() == false)
-				Player.Update(evnt, m_deltaTime); //takes the players input as an SDL_Event
+				Player.ProcessInput(evnt, m_deltaTime); //takes the players input as an SDL_Event
 		}
-
-
-
 
 
 		//if nextLevel == true, the game loads the next level and sets nextLevel == false
-		if (nextLevel == true) {
-			currentLevel++;
-			world.setTiles(world.tileSet, world.tileClips, levels[currentLevel].c_str(), playerStartX, playerStartY);
-			nextLevel = false;
-			Player.SetStartX(playerStartX);
-			Player.SetStartY(playerStartY);
-			Player.Respawn();
-		}
-
-		m_deltaTime = timer.getTicks() / 1000.f;
-		//moves the player and camera if menu is hidden
-		if (menu.getShowing() == false) {
-			//movement function for the player, calculates the new position of the player and checks collision
-			Player.Move(m_deltaTime, world.tileSet, nextLevel);
-			//circle.move(tileSet, player);
-			timer.start();
-			camera.x = (Player.GetBox().x + Player.GetBox().w / 2) - SCREEN_WIDTH / 2;
-			camera.y = (Player.GetBox().y + Player.GetBox().h / 2) - SCREEN_HEIGHT / 2;
-
-			//Keep the camera in bounds
-			if (camera.x < 0)
-			{
-				camera.x = 0;
-			}
-			if (camera.y < 0)
-			{
-				camera.y = 0;
-			}
-			if (camera.x > LEVEL_WIDTH - camera.w)
-			{
-				camera.x = LEVEL_WIDTH - camera.w;
-			}
-			if (camera.y > LEVEL_HEIGHT - camera.h)
-			{
-				camera.y = LEVEL_HEIGHT - camera.h;
-			}
+		if (world.nextLevel) {
+			world.loadNextLevel(Player);
 		}
 
 		//sets the default draw color
@@ -260,33 +205,33 @@ void Manager::gameLoop()
 		SDL_RenderClear(renderer);
 
 		//copies the background to the renderer
-		SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL); //copies the background to the renderer
+		SDL_RenderCopy(renderer, world.backgroundTexture, NULL, NULL); //copies the background to the renderer
 
-		//renders the level
-		for (int i = 0; i < TOTAL_TILES; ++i)
-		{
-			if (world.tileSet[i]->getType() == TILE_MOVING_PLATFORM) {
-				world.tileSet[i]->movePlatform(world.tileSet);
+																 //moves the player and camera if menu is hidden
+		m_deltaTime = timer.getTicks() / 1000.f;
+		
+		if (!menu.getShowing()) {
+			//renders the level
+			for (int i = 0; i < TOTAL_TILES; ++i)
+			{
+				if (world.tileSet[i]->getType() == TILE_MOVING_PLATFORM) {
+					world.tileSet[i]->movePlatform(world.tileSet, m_deltaTime);
+				}
+				world.tileSet[i]->render(tileTexture, renderer, world.tileClips); //renders the tiles to the renderer from the tile set vector
 			}
-			world.tileSet[i]->render(tileTexture, renderer, world.tileClips); //renders the tiles to the renderer from the tile set vector
+
+			//movement function for the player, calculates the new position of the player and checks collision
+			Player.Move(m_deltaTime, world.tileSet, world.nextLevel);
+			//circle.move(tileSet, player);
+			Player.Render(playerTexture, renderer); //renders the player
+
+
 		}
-
-
-		Player.Render(playerTexture, renderer, camera.x, camera.y); //renders the player
+		timer.start();
 
 		//if showMenu == true, the menu is shown
 		if (menu.getShowing())
-			menu.showMenu(buttonTexture, renderer);
-
-		playerSpecsText = "Player x: " + std::to_string(Player.GetBox().x) +
-			"   " + "Player y: " + std::to_string(Player.GetBox().y) +
-			"   " + "Player vel x: " + std::to_string(Player.GetVelX()) +
-			"   " + "Player vel y: " + std::to_string(Player.GetVelY()) +
-			"   " + "Jumping: " + std::to_string(Player.bJumping) +
-			"   " + "On ground: " + std::to_string(Player.bOnGround);
-		//playerSpecs.loadFromRenderedText(playerSpecsText.c_str(), textColor, renderer);
-		playerSpecs.render(renderer, 100, 100);
-
+			menu.showMenu(renderer);
 		if (menu.getShowing())
 			cursorTexture.render(renderer, cursorTexture.getX(), cursorTexture.getY());
 
@@ -303,6 +248,7 @@ void Manager::gameLoop()
 
 SDL_Texture *Manager::loadBackground(std::string path)
 {
+	
 	//loads the background from file path
 	SDL_Texture *background = IMG_LoadTexture(renderer, path.c_str());
 
@@ -331,14 +277,7 @@ bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileCli
 		success = false;
 	}
 
-	if (!buttonTexture.loadFromFile("assets/buttons/knapp.png", renderer)) {
-		std::cout << "Failed to load button texture" << std::endl;
-		success = false;
-	}
-	if (!buttonTexture.loadFromFile("assets/buttons/knapp.png", renderer)) {
-		std::cout << "Failed to load button texture" << std::endl;
-		success = false;
-	}
+
 	if (!cursorTexture.loadFromFile("assets/cursor/cursor1.png", renderer)) {
 		std::cout << "Failed to load cursor texture" << std::endl;
 		success = false;
@@ -348,7 +287,7 @@ bool Manager::loadMedia(Tile* tiles[], SDL_Renderer * renderer, SDL_Rect tileCli
 }
 void Manager::close(Tile* tiles[])
 {
-	SDL_DestroyTexture(backgroundTexture);
+	//SDL_DestroyTexture(backgroundTexture);
 	//quits all initialized systems
 	IMG_Quit();
 	SDL_Quit();
@@ -388,9 +327,4 @@ float Manager::getHeight()
 float Manager::getWidth()
 {
 	return SCREEN_WIDTH;
-}
-
-void Manager::loadNextLevel(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES]) {
-
-
 }

@@ -20,14 +20,14 @@ Menu::~Menu()
 {
 }
 
-void Menu::createButton(SDL_Renderer* renderer, std::string path)
+void Menu::createButton(SDL_Renderer* renderer, std::string text)
 {
 	
-	Button * button = new Button(path.c_str(), renderer);
+	Button * button = new Button(renderer, text.c_str());
 	buttons.push_back(*button);
 }
 
-void Menu::showMenu(Sprite &buttonTexture, SDL_Renderer* renderer)
+void Menu::showMenu(SDL_Renderer* renderer)
 {
 	SDL_RenderCopy(renderer, background, NULL, NULL);
 

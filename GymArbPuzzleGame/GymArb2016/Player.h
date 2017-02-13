@@ -13,19 +13,6 @@ class Player : public Engine
 {
 //////////////////////////////////////////// PUBLIC ////////////////////////////////////////////////////////////////////
 public:
-	struct CollisionInfo {
-		bool above, below; 
-		bool left, right; 
-
-		void Reset() {
-			above = below = false;
-			left = right = false;
-		}
-	};
-
-	CollisionInfo collisions;
-
-
 	//Constructor, parameter for renderer, Sprite and the number of frames on x and y
 	Player(SDL_Renderer* renderer, Sprite &playerTexture, float framesX, float framesY);
 	//Destructor
@@ -33,9 +20,9 @@ public:
 
 //////////////////////////////// PUBLIC FUNCTIONS //////////////////////////////////////////////////////////////
 
-	void Update(SDL_Event &evnt, float delta); //Reads input from player
+	void ProcessInput(SDL_Event &evnt, float delta); //Reads input from player
 	void Move(float delta, Tile* tiles[], bool &nextLevel); //Moves the player + checks tile collision
-	void Render(Sprite &playerTexture, SDL_Renderer* renderer, int camX, int camY); //Renders the player	
+	void Render(Sprite &playerTexture, SDL_Renderer* renderer); //Renders the player	
 
 	//Getters
 	float GetVelX(); //gets horizontal velocity
@@ -50,7 +37,6 @@ public:
 
 	void Respawn(); //Moves the player to start positions
 
-
 	//bools
 	bool bJumping; //Checks if the player is jumping
 	bool bMoving; //Checks if the player is moving
@@ -58,6 +44,9 @@ public:
 	bool bFallThrough; //Checks if player want to fall through a tile
 	bool bSprint;
 	bool onMovingPlatform;
+	bool onSpring; 
+	bool isBouncing; 
+	bool isFalling; //Checks if the player is falling
 
 /////////////////////////////////////// PRIVATE /////////////////////////////////////////////////////////////////////
 private:
@@ -71,6 +60,8 @@ private:
 	int startPosX; //Horizontal start position
 	int startPosY; //Vertical start position
 	int m_jumpTime; 
+	int velYBeforeLand;
+	int velXBeforeColl;
 	
 	//floats
 	float m_velX; //Horizontal velocity
@@ -85,7 +76,7 @@ private:
 
 	//doubles
 	double m_maxHorVel; //The maximum horizontal velocity
-	double m_jumpVelocity; //The speed of the jump
+	double m_jumpPower; //The speed of the jump
 	
 
 ////////////////////////////////////////// PLAYER SOUNDS ///////////////////////////////////////////////

@@ -1,2 +1,6 @@
-﻿  GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\Level creator\Debug\GymArb2016.exe
-  GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\Level creator\Debug\GymArb2016.pdb (Partial PDB)
+﻿  Manager.cpp
+c:\users\simon.broborg\documents\github\gymnasiearbete\level creator\gymarb2016\manager.cpp(271): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\level creator\gymarb2016\manager.cpp(394): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
+c:\users\simon.broborg\documents\github\gymnasiearbete\level creator\gymarb2016\manager.cpp(399): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
+  GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\Level creator\Debug\GymArb2016.exe
+  GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\Level creator\Debug\GymArb2016.pdb (Partial PDB)

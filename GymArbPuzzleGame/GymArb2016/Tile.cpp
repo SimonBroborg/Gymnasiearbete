@@ -7,21 +7,22 @@
 
 
 
-Tile::Tile(int x, int y, int tileType)
+Tile::Tile(int x, int y, int w, int h, int tileType)
 {
 	//get the offsets
 	m_box.x = x;
 	m_box.y = y;
-
+	
 	//set the collision box
-	m_box.w = TILE_WIDTH;
-	m_box.h = TILE_HEIGHT;
+	m_box.w = w;
+	m_box.h = h;
 
 
 	//get the tile type
 	m_type = tileType;
-
-	m_velX = 2; 
+	
+	maxHorSpeed = 100; 
+	m_velX = maxHorSpeed;
 	m_velY = 2; 
 	m_damage = 0; 
 
@@ -61,18 +62,19 @@ SDL_Rect Tile::getBox()
 }
 
 
-void Tile::movePlatform(Tile* tiles[])
+void Tile::movePlatform(Tile* tiles[], float delta)
 {
-	m_box.x += m_velX;
-
 	for (int i = 0; i < TOTAL_TILES; i++) {
-		if (checkCollision(m_box, tiles[i]->getBox())) {
-			if(tiles[i]->getType() == TILE_MOVING_PLATFORM_STOP)
-				m_velX = -m_velX;
+		if (checkCollision(m_box, tiles[i]->getBox()) && tiles[i]->getType() != TILE_NONE && tiles[i]->getType() != this->m_type) {
+			if (m_velX < 0)
+				m_velX = maxHorSpeed;
+			else if (m_velX > 0)
+				m_velX = -maxHorSpeed; 
+				
 		}
 	}
+	m_box.x += m_velX * delta;
 	
-		
 }
 
 void Tile::rotate()
@@ -106,67 +108,4 @@ void Tile::destroy(float delta)
 float Tile::getSpeed() {
 	return m_velX;
 }
-
-/*
-SDL_Texture * Tile::loadTile(SDL_Renderer *renderer, std::string path)
-{
-SDL_Texture * m_texture = IMG_LoadTexture(renderer, path.c_str()); //loads sprite from file path
-return  m_texture;
-}
-
-
-
-void Tile::createMap(SDL_Renderer *renderer, int map[10][18], std::vector<SDL_Rect> &rRects)
-{
-	Manager game;
-	for (int i = 0; i < X_TILES; i++)
-	{
-		for (int j = 0; j < Y_TILES; j++)
-		{
-			//checks if the chosen position got a tile (1) and if so it creates a rect at that position of the map
-			switch (map[j][i])
-			{
-				//block which the player collides with from all sides
-			case 1:
-				tileSprite = loadTile(renderer, "tiles/box.png");
-				SDL_QueryTexture(tileSprite, NULL, NULL, &tileRect.w, &tileRect.h);
-
-				tileRect.x = TILE_WIDTH * i;
-				tileRect.y = TILE_HEIGHT * j;
-
-
-				break;
-
-				//platform in the upper part of the tile which the player only collides with from the top
-			case 2:
-				tileSprite = loadTile(renderer, "tiles/bridge.png");
-				SDL_QueryTexture(tileSprite, NULL, NULL, &tileRect.w, &tileRect.h);
-
-				tileRect.x = TILE_WIDTH * i;
-				tileRect.y = TILE_HEIGHT * j;
-
-			
-				break;
-
-				//platform in the lower part of the tile which the player only collides with from the top
-			case 3:
-				tileSprite = loadTile(renderer, "tiles/bridge.png");
-				SDL_QueryTexture(tileSprite, NULL, NULL, &tileRect.w, &tileRect.h);
-
-				tileRect.x = TILE_WIDTH * i;
-				tileRect.y = TILE_HEIGHT * j;
-
-				system("CLS");
-				break;
-
-			}
-
-			rRects.push_back(tileRect); //takes the created rect and puts it into the rects vector
-
-			tileRect = { 0,0,0,0 };
-		}
-	}
-
-}*/
-
 
