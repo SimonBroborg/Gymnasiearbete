@@ -1,13 +1,7 @@
 #include "Tile.h"
-#include <SDL\SDL_image.h>
-#include <iostream>
-#include "Sprite.h"
-
-#include <fstream>
 
 
-
-Tile::Tile(int x, int y, int w, int h, int tileType)
+Tile::Tile(int x, int y, int w, int h, int tileType, WorldManager *world)
 {
 	//get the offsets
 	m_box.x = x;
@@ -27,6 +21,8 @@ Tile::Tile(int x, int y, int w, int h, int tileType)
 	m_damage = 0; 
 
 	angle = 0;
+
+	m_world = world;
 }
 
 
@@ -35,11 +31,11 @@ Tile::~Tile()
 }
 
 
-void Tile::render(Sprite &tileTexture, SDL_Renderer* gameRenderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES])
+void Tile::render(Sprite &tileTexture, SDL_Renderer* gameRenderer, SDL_Rect tileClips[])
 {	
 	//show the tile
 	
-		if (m_type == TILE_SAW_1) {
+		if (m_type == m_world->TILE_SAW_1) {
 			rotate();
 		}
 
@@ -64,8 +60,8 @@ SDL_Rect Tile::getBox()
 
 void Tile::movePlatform(Tile* tiles[], float delta)
 {
-	for (int i = 0; i < TOTAL_TILES; i++) {
-		if (checkCollision(m_box, tiles[i]->getBox()) && tiles[i]->getType() != TILE_NONE && tiles[i]->getType() != this->m_type) {
+	for (int i = 0; i < m_world->TOTAL_TILES; i++) {
+		if (checkCollision(m_box, tiles[i]->getBox()) && tiles[i]->getType() != m_world->TILE_NONE && tiles[i]->getType() != this->m_type) {
 			if (m_velX < 0)
 				m_velX = maxHorSpeed;
 			else if (m_velX > 0)
@@ -91,13 +87,13 @@ void Tile::destroy(float delta)
 	m_damage += delta * 1000; 
 
 	if (m_damage > 50) {
-		if (m_type == TILE_ICE_WHOLE)
+		if (m_type == m_world->TILE_ICE_WHOLE)
 			m_type++;
-		else if (m_type == TILE_ICE_BROKEN_1)
+		else if (m_type == m_world->TILE_ICE_BROKEN_1)
 			m_type++;
-		else if (m_type == TILE_ICE_BROKEN_2)
+		else if (m_type == m_world->TILE_ICE_BROKEN_2)
 			m_type++;
-		else if (m_type == TILE_ICE_BROKEN_3) {
+		else if (m_type == m_world->TILE_ICE_BROKEN_3) {
 			delete this;
 		}
 	}

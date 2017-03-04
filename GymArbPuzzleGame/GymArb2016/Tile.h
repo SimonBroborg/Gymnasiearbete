@@ -3,21 +3,26 @@
 #include <SDL\SDL.h>
 #include <string>
 #include <vector>
-#include "Engine.h"
-#include "Sprite.h"
+#include <SDL\SDL_image.h>
+#include <iostream>
 
+#include <fstream>
+#include "Entity.h"
+
+class WorldManager;
 ///////////////////////////////////// THE Tile CLASS, INHERITS FROM Engine //////////////////////////
-class Tile : public Engine
+class Tile : public Entity
 {
 //////////////////////////////////////////// PUBLIC ////////////////////////////////////////////////////////////////////
 public:
 	//Constructor
-	Tile(int x, int y, int w, int h, int tileType);
+	 Tile(int x, int y, int w, int h, int tileType, WorldManager *world);
 	
+	 virtual
 	~Tile();
 
 	//shows the tile
-	void render(Sprite &tileTexture, SDL_Renderer* gameRenderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
+	void render(Sprite &tileTexture, SDL_Renderer* gameRenderer, SDL_Rect tileClips[]);
 
 	//get the tile type
 	int getType();

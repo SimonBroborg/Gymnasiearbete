@@ -45,8 +45,7 @@ void Manager::run()
 
 void Manager::gameLoop()
 {
-	//creates the player object
-	Player Player(renderer, playerTexture, 1, 1);
+	
 
 	//Creates the timer object
 	Timer timer;
@@ -54,16 +53,17 @@ void Manager::gameLoop()
 	//Creates the menu object
 	Menu menu(renderer, "menuBackground.png");
 
+	world = new WorldManager(renderer);
 
-
-	WorldManager world(renderer);
+	//creates the player object
+	Player Player(renderer, world, playerTexture, 1, 1);
 
 	//loads the media ( sprites etc. ) for the game. Loads the first level
-	if (!loadMedia(world.tileSet, renderer, world.tileClips, "assets/levels/level1.map", world.playerStartX, world.playerStartY)) {
+	if (!loadMedia(world->tileSet, renderer, world->tileClips, "assets/levels/level1.map", world->playerStartX, world->playerStartY)) {
 		std::cout << "Failed to load media!" << std::endl;
 	}
 
-	world.setTiles(world.tileSet, world.tileClips, "assets/levels/level1.map", world.playerStartX, world.playerStartY);
+	world->setTiles(world->tileSet, world->tileClips, "assets/levels/level1.map", world->playerStartX, world->playerStartY);
 
 	//Loads the background music for the game
 	Mix_Music *bgm = Mix_LoadMUS("assets/sounds/japanese_flute_music.mp3");
@@ -195,8 +195,8 @@ void Manager::gameLoop()
 
 
 		//if nextLevel == true, the game loads the next level and sets nextLevel == false
-		if (world.nextLevel) {
-			world.loadNextLevel(Player);
+		if (world->nextLevel) {
+			world->loadNextLevel(Player);
 		}
 
 		//sets the default draw color
@@ -205,23 +205,23 @@ void Manager::gameLoop()
 		SDL_RenderClear(renderer);
 
 		//copies the background to the renderer
-		SDL_RenderCopy(renderer, world.backgroundTexture, NULL, NULL); //copies the background to the renderer
+		SDL_RenderCopy(renderer, world->backgroundTexture, NULL, NULL); //copies the background to the renderer
 
 																 //moves the player and camera if menu is hidden
 		m_deltaTime = timer.getTicks() / 1000.f;
 		
 		if (!menu.getShowing()) {
 			//renders the level
-			for (int i = 0; i < TOTAL_TILES; ++i)
+			for (int i = 0; i < world->TOTAL_TILES; ++i)
 			{
-				if (world.tileSet[i]->getType() == TILE_MOVING_PLATFORM) {
-					world.tileSet[i]->movePlatform(world.tileSet, m_deltaTime);
+				if (world->tileSet[i]->getType() == world->TILE_MOVING_PLATFORM) {
+					world->tileSet[i]->movePlatform(world->tileSet, m_deltaTime);
 				}
-				world.tileSet[i]->render(tileTexture, renderer, world.tileClips); //renders the tiles to the renderer from the tile set vector
+				world->tileSet[i]->render(tileTexture, renderer, world->tileClips); //renders the tiles to the renderer from the tile set vector
 			}
 
 			//movement function for the player, calculates the new position of the player and checks collision
-			Player.Move(m_deltaTime, world.tileSet, world.nextLevel);
+			Player.Move(m_deltaTime, world->tileSet, world->nextLevel);
 			//circle.move(tileSet, player);
 			Player.Render(playerTexture, renderer); //renders the player
 
@@ -241,7 +241,7 @@ void Manager::gameLoop()
 	}
 
 	//closes down all systems and deallocates the tiles
-	close(world.tileSet);
+	close(world->tileSet);
 
 }
 
@@ -296,7 +296,7 @@ void Manager::close(Tile* tiles[])
 
 
 	//deallocate tiles
-	for (int i = 0; i < TOTAL_TILES; i++)
+	for (int i = 0; i < world->TOTAL_TILES; i++)
 	{
 		if (tiles[i] == NULL) {
 			delete tiles[i];

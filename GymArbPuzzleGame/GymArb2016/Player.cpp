@@ -1,11 +1,8 @@
 //////////////////////////// ALL INCLUDED FILES ////////////////////////////////////////////////////////////
 #include "Player.h"
-#include <SDL/SDL_image.h>
-#include <iostream>
-#include <SDL/SDL_thread.h>
-#include <stdio.h>
+
 ///////////////////////// CONSTRUCTOR /////////////////////////////////////////////////
-Player::Player(SDL_Renderer* renderer, Sprite &playerTexture, float framesX, float framesY)
+Player::Player(SDL_Renderer* renderer, WorldManager *world, Sprite &playerTexture, float framesX, float framesY)
 {
 	SDL_Surface *surface = IMG_Load("assets/player/player.png"); //Creates a surface of the sprite sheet
 	if (surface == nullptr)
@@ -60,6 +57,8 @@ Player::Player(SDL_Renderer* renderer, Sprite &playerTexture, float framesX, flo
 	m_textureWidth = cropRect.w; //Sets the texture width equal to the sprite sheet's width
 	m_frameWidth = posRect.w = cropRect.w; // /= framesX; //Sets the width of each player frame
 	m_frameHeight = posRect.h = cropRect.h;// /= framesY; //Sets the height of each player frame
+
+	m_world = world;
 }
 
 ////////////////////////////////////// DESSTRUCTOR /////////////////////////////////////////////////////////
@@ -71,7 +70,6 @@ Player::~Player()
 
 void Player::ProcessInput(SDL_Event &evnt, float delta)
 {
-
 	///////////////////////////////////// KEY DOWN EVENTS //////////////////////////////////////////////
 
 	if (evnt.type == SDL_KEYDOWN && evnt.key.repeat == 0) {
@@ -163,25 +161,25 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 
 	posRect.x += m_velX * delta; //Changes horziontal position
 	posRect.y += m_velY * delta; //Changes vertical position
-	
+
 
 	m_velY += m_gravity * delta; //Applies gravity to the vertical speed
 
-	if (posRect.y > SCREEN_HEIGHT)
+	if (posRect.y > m_world->SCREEN_HEIGHT)
 		Respawn();
 	if (posRect.x <= 0)
 		posRect.x = 0;
-	if (posRect.x + posRect.w >= SCREEN_WIDTH)
-		posRect.x = SCREEN_WIDTH - posRect.w;
+	if (posRect.x + posRect.w >= m_world->SCREEN_WIDTH)
+		posRect.x = m_world->SCREEN_WIDTH - posRect.w;
 
 	onSpring = false;
 	////////////////////////////////// COLLISION CHECKING /////////////////////////////////////////////////////////
-	for (int i = 0; i < TOTAL_TILES; ++i) { //Loops through all tiles
-		if ((tiles[i]->getType() != TILE_NONE)) { //Checks collision if the tile type != 0 ( empty space ) 
+	for (int i = 0; i < m_world->TOTAL_TILES; ++i) { //Loops through all tiles
+		if ((tiles[i]->getType() != m_world->TILE_NONE)) { //Checks collision if the tile type != 0 ( empty space ) 
 
 				/////////////////////////// SAW COLLISION /////////////////////////////////////////////
 
-			if (tiles[i]->getType() == TILE_SAW_1) { //If the tile is a saw
+			if (tiles[i]->getType() == m_world->TILE_SAW_1) { //If the tile is a saw
 				if (circularCollision(tiles[i]->getBox(), posRect)) { //Checks circular collision with the saw
 					Mix_PlayChannel(-1, playerSaw, 0); //Plays saw sound if there is a collision
 					Respawn(); //Respawns the player
@@ -190,12 +188,12 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 			////////////////////////// COLLISION WITH A TILE //////////////////////////////////////////////////////////7
 			if (checkCollision(posRect, tiles[i]->getBox())) { //If there's a collision with the tile
 															/////////////////////// PORTAL COLLISION /////////////////////////////
-				if (tiles[i]->getType() == TILE_PORTAL) {
+				if (tiles[i]->getType() == m_world->TILE_PORTAL) {
 					nextLevel = true; //Changes to the next level
 					delete tiles[i];
 				}
 				///////////////////// SPIKE COLLISION //////////////////////////////
-				if (tiles[i]->getType() == TILE_SPIKES) {
+				if (tiles[i]->getType() == m_world->TILE_SPIKES) {
 					Respawn(); //The player dies and respawns
 				}
 
@@ -203,9 +201,9 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 				//checks if the player collides from the top of the tile
 				if (m_yPos + posRect.h <= tiles[i]->getBox().y) {
 
-					if (tiles[i]->getType() != TILE_MOVING_PLATFORM_STOP) {
+					if (tiles[i]->getType() != m_world->TILE_MOVING_PLATFORM_STOP) {
 						//if the tile is a bridge and "down" is pressed, the player will fall through
-						if (tiles[i]->getType() == TILE_BRIDGE && bFallThrough == true)
+						if (tiles[i]->getType() == m_world->TILE_BRIDGE && bFallThrough == true)
 						{
 							m_velY += m_gravity * delta; //Falls through the tile
 							bOnGround = false; //The player is not on the ground
@@ -220,12 +218,12 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 						m_velY = 0;
 						isBouncing = false;
 
-						if (tiles[i]->getType() >= TILE_ICE_WHOLE && tiles[i]->getType() <= TILE_ICE_BROKEN_3) {
+						if (tiles[i]->getType() >= m_world->TILE_ICE_WHOLE && tiles[i]->getType() <= m_world->TILE_ICE_BROKEN_3) {
 							tiles[i]->destroy(delta);
 						}
 
 						//if the tile is a moving platform, the player will get the same speed
-						if (tiles[i]->getType() == TILE_MOVING_PLATFORM) {
+						if (tiles[i]->getType() == m_world->TILE_MOVING_PLATFORM) {
 							onMovingPlatform = true; //The player is on a moving platform
 							platformSpeed = tiles[i]->getSpeed(); //Gets the platforms current velocity 
 						}
@@ -234,7 +232,7 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 						}
 
 						//if the tile is not a bridge
-						if (tiles[i]->getType() == TILE_SPRING) {
+						if (tiles[i]->getType() == m_world->TILE_SPRING) {
 							onSpring = true; //The player is currently on a spring
 							isBouncing = true; //The player will bounce
 							bOnGround = false;
@@ -248,9 +246,9 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 				else if (m_xPos - tiles[i]->getBox().w >= tiles[i]->getBox().x)
 				{
 					//Two if-statements checking if the tile is collidable from the left
-					if (tiles[i]->getType() != TILE_BRIDGE && tiles[i]->getType() != TILE_MOVING_PLATFORM_STOP) {
+					if (tiles[i]->getType() != m_world->TILE_BRIDGE && tiles[i]->getType() != m_world->TILE_MOVING_PLATFORM_STOP) {
 
-						if (tiles[i]->getType() != TILE_MOVING_PLATFORM) {
+						if (tiles[i]->getType() != m_world->TILE_MOVING_PLATFORM) {
 							posRect.x = tiles[i]->getBox().x + tiles[i]->getBox().w;
 						}
 					}
@@ -260,9 +258,9 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 				else if (m_xPos + posRect.w <= tiles[i]->getBox().x)
 				{
 					//Two if-statements checking if the tile is collidable from the right
-					if (tiles[i]->getType() != TILE_BRIDGE  && tiles[i]->getType() != TILE_MOVING_PLATFORM_STOP) {
+					if (tiles[i]->getType() != m_world->TILE_BRIDGE  && tiles[i]->getType() != m_world->TILE_MOVING_PLATFORM_STOP) {
 
-						if (tiles[i]->getType() != TILE_MOVING_PLATFORM) {
+						if (tiles[i]->getType() != m_world->TILE_MOVING_PLATFORM) {
 							posRect.x = tiles[i]->getBox().x - posRect.w;
 						}
 					}
@@ -273,9 +271,9 @@ void Player::Move(float delta, Tile* tiles[], bool &nextLevel)
 
 					// if the tile is not a bridge the player will collide 
 					//Two if-statements checking the the tile is collidable from the bottom 
-					if (tiles[i]->getType() != TILE_BRIDGE  && tiles[i]->getType() != TILE_MOVING_PLATFORM_STOP) {
+					if (tiles[i]->getType() != m_world->TILE_BRIDGE  && tiles[i]->getType() != m_world->TILE_MOVING_PLATFORM_STOP) {
 
-						if (tiles[i]->getType() != TILE_MOVING_PLATFORM) {
+						if (tiles[i]->getType() != m_world->TILE_MOVING_PLATFORM) {
 							posRect.y = tiles[i]->getBox().y + tiles[i]->getBox().h;
 							m_velY += -m_velY; //Reverses the y velocity, making the player "bounce"
 						}
@@ -321,15 +319,15 @@ SDL_Rect Player::GetBox() {
 }
 
 //Setters for the player
-void Player::SetStartX(int x){
+void Player::SetStartX(int x) {
 	startPosX = x; //Sets the start x position
 }
-void Player::SetStartY(int y){
+void Player::SetStartY(int y) {
 	startPosY = y; //Sets the start y position
 }
-void Player::SetBoxX(int x){
+void Player::SetBoxX(int x) {
 	posRect.x = x; //Sets the x position
 }
-void Player::SetBoxY(int y){
+void Player::SetBoxY(int y) {
 	posRect.y = y; //Sets the y position
 }
