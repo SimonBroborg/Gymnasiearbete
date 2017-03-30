@@ -1,6 +1,24 @@
-﻿  Manager.cpp
-c:\users\simon.broborg\documents\github\gymnasiearbete\level creator\gymarb2016\manager.cpp(271): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\level creator\gymarb2016\manager.cpp(394): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\level creator\gymarb2016\manager.cpp(399): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
-  GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\Level creator\Debug\GymArb2016.exe
-  GymArb2016.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\Level creator\Debug\GymArb2016.pdb (Partial PDB)
+﻿  main.cpp
+  Tile.cpp
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\tile.cpp(68): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+  Sprite.cpp
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\sprite.cpp(81): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Menu.cpp
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\menu.cpp(34): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\menu.cpp(43): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\menu.cpp(49): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\menu.cpp(51): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\menu.cpp(58): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\menu.cpp(75): warning C4018: '<': signed/unsigned mismatch
+  Manager.cpp
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\manager.cpp(271): warning C4244: '=': conversion from 'Uint32' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\manager.cpp(394): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\manager.cpp(399): warning C4244: 'return': conversion from 'const int' to 'float', possible loss of data
+  LevelCreator.cpp
+  Engine.cpp
+  Button.cpp
+d:\users\simon\github\gymnasiearbete\level creator\gymarb2016\button.cpp(15): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Generating Code...
+  LINK : D:\Users\Simon\Github\Gymnasiearbete\Level creator\Debug\GymArb2016.exe not found or not built by the last incremental link; performing full link
+  GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\Level creator\Debug\GymArb2016.exe
+  GymArb2016.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\Level creator\Debug\GymArb2016.pdb (Partial PDB)

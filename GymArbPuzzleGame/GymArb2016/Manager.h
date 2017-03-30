@@ -30,7 +30,7 @@ public:
 	float getHeight();
 	float getWidth();
 
-	bool loadMedia(Tile* tiles[], SDL_Renderer* renderer, SDL_Rect tileClips[TOTAL_TILE_SPRITES], std::string levelPath, int &playerX, int &playerY);
+	bool loadMedia(Tile* tiles[], SDL_Renderer* renderer, SDL_Rect tileClips[], std::string levelPath, int &playerX, int &playerY);
 
 	void close(Tile* tiles[]);
 
@@ -40,7 +40,7 @@ public:
 	SDL_Event evnt;
 
 
-
+	WorldManager *world; 
 	//scene textures
 	Sprite tileTexture; 
 	Sprite playerTexture;

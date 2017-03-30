@@ -1,6 +1,5 @@
 #include "WorldManager.h"
-#include <fstream>
-#include <iostream>
+
 
 WorldManager::WorldManager(SDL_Renderer* renderer)
 {
@@ -17,7 +16,7 @@ WorldManager::~WorldManager()
 
 
 //Renders the level
-void WorldManager::renderLevel(Sprite tileTexture, SDL_Rect tileClips[], SDL_Renderer* renderer) {
+void WorldManager::renderLevel(Sprite tileTexture, SDL_Rect tileClips[TOTAL_TILE_SPRITES], SDL_Renderer* renderer) {
 	//renders the level
 	for (int i = 0; i < TOTAL_TILES; ++i)
 	{
@@ -195,7 +194,7 @@ bool WorldManager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string lev
 				if (tileType == TILE_SAW_1) {
 					x -= TILE_WIDTH / 2;
 					y -= TILE_HEIGHT / 2;
-					tiles[i] = new Tile(x, y, tileClips[tileType].w, tileClips[tileType].h, tileType);
+					tiles[i] = new Tile(x, y, tileClips[tileType].w, tileClips[tileType].h, tileType, this);
 					x += TILE_WIDTH / 2;
 					y += TILE_HEIGHT / 2;
 				}
@@ -207,7 +206,7 @@ bool WorldManager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string lev
 				}
 				*/
 				else if ((tileType >= 0) && tileType < TOTAL_TILE_SPRITES) {
-					tiles[i] = new Tile(x, y, tileClips[tileType].w, tileClips[tileType].h, tileType);
+					tiles[i] = new Tile(x, y, tileClips[tileType].w, tileClips[tileType].h, tileType, this);
 				}
 
 				//if the til type is not recognized

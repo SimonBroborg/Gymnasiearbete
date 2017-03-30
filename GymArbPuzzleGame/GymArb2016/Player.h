@@ -4,17 +4,25 @@
 #include <string>
 #include <vector>
 #include "Sprite.h"
-#include "Engine.h"
-#include "Tile.h"
-#include "Circle.h"
+#include <SDL/SDL_image.h>
+#include <iostream>
+#include <SDL/SDL_thread.h>
+#include <stdio.h>
 
+
+#include "Entity.h"
+
+
+
+class WorldManager;
+class Tile;
 /////////////////////////////////////////////////// THE Player CLASS, INHERITS FROM Engine //////////////////////////////////////////////////////////
-class Player : public Engine
+class Player : public  Entity
 {
 //////////////////////////////////////////// PUBLIC ////////////////////////////////////////////////////////////////////
 public:
 	//Constructor, parameter for renderer, Sprite and the number of frames on x and y
-	Player(SDL_Renderer* renderer, Sprite &playerTexture, float framesX, float framesY);
+	Player(SDL_Renderer* renderer, WorldManager *world, Sprite &playerTexture, float framesX, float framesY);
 	//Destructor
 	~Player();
 
@@ -23,7 +31,7 @@ public:
 	void ProcessInput(SDL_Event &evnt, float delta); //Reads input from player
 	void Move(float delta, Tile* tiles[], bool &nextLevel); //Moves the player + checks tile collision
 	void Render(Sprite &playerTexture, SDL_Renderer* renderer); //Renders the player	
-
+	
 	//Getters
 	float GetVelX(); //gets horizontal velocity
 	float GetVelY(); //gets vertical velocity
@@ -85,7 +93,6 @@ private:
 	Mix_Chunk *playerSaw; //Sound when moving into a saw
 
 //////////////////////////////////// PRIVATE FUNCTIONS /////////////////////////////////////////////////
-
 	
 
 ///////////////////////// PLAYER TEXTURE AND ANIMATIONS //////////////////////////////////////////////////

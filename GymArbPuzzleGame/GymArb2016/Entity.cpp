@@ -1,13 +1,21 @@
 #include "Entity.h"
 
+<<<<<<< HEAD
 Entity::Entity(SDL_Renderer* renderer)
+=======
+
+
+Entity::Entity()
+>>>>>>> origin/master
 {
 	//Initialize the variables
-	m_renderer = renderer;
+	
 
 	m_texture = nullptr;
 
 	m_posRect.x = m_posRect.y = m_posRect.w = m_posRect.h = 0;
+
+	
 }
 
 
@@ -55,6 +63,139 @@ void Entity::free() {
 	}
 	//Deallocate the entity
 	delete this;
+}
+
+bool Entity::checkCollision(SDL_Rect a, SDL_Rect b)
+{
+	//The sides of the rectangles
+	int leftA, leftB;
+	int rightA, rightB;
+	int topA, topB;
+	int bottomA, bottomB;
+
+	//Calculate the sides of rect A
+	leftA = a.x;
+	rightA = a.x + a.w;
+	topA = a.y;
+	bottomA = a.y + a.h;
+
+	//Calculate the sides of rect B
+	leftB = b.x;
+	rightB = b.x + b.w;
+	topB = b.y;
+	bottomB = b.y + b.h;
+
+	//If any of the sides from A are outside of B
+	if (bottomA <= topB)
+	{
+		return false;
+	}
+
+	if (topA >= bottomB)
+	{
+		return false;
+	}
+
+	if (rightA <= leftB)
+	{
+		return false;
+	}
+
+	if (leftA >= rightB)
+	{
+		return false;
+	}
+
+	//If none of the sides from A are outside B
+	return true;
+}
+
+bool Entity::checkCircularCollision(SDL_Rect player, SDL_Rect circle, float velX, float velY)
+{
+	//Closest point on collision box
+	int cX, cY;
+
+	//Find closest x offset
+	if (player.x < circle.x)
+	{
+		cX = circle.x;
+	}
+	else if (player.x > circle.x + circle.w)
+	{
+		cX = circle.x + circle.w;
+	}
+	else
+	{
+		cX = player.x;
+	}
+	if (player.y < circle.y)
+	{
+		cY = circle.y;
+	}
+	else if (player.y > circle.y + circle.h)
+	{
+		cY = circle.y + circle.h;
+	}
+	else
+	{
+		cY = player.y;
+	}
+
+	//if the closest point is inside the circle
+	if (((cX - circle.x) * (cX - circle.x) + (cY - circle.y) * (cY - circle.y)) < circle.w / 2 * circle.w / 2)
+	{
+		//This rect and the circle have collided
+		return true;
+	}
+
+
+
+	//If the shapes have not collided
+	return false;
+}
+
+bool Entity::circularCollision(SDL_Rect circle, SDL_Rect rect)
+{
+
+	//Closest point on collision box
+	int cX, cY;
+
+	//Find closest x offset
+	if (circle.x + circle.w < rect.x)
+	{
+		cX = rect.x;
+	}
+	else if (circle.x + circle.w > rect.x + rect.w)
+	{
+		cX = rect.x + rect.w;
+	}
+	else
+	{
+		cX = circle.x + circle.w;
+	}
+
+	//Find closest y offset
+	if (circle.y + circle.h < rect.y)
+	{
+		cY = rect.y;
+	}
+	else if (circle.y + circle.h > rect.y + rect.h)
+	{
+		cY = rect.y + rect.h;
+	}
+	else
+	{
+
+		cY = circle.y + circle.h;
+	}
+	//If the closest point is inside the circle
+	/*if (distanceSquared(circle.x + circle.w, circle.y + circle.h, cX, cY) < circle.w / 2 * circle.w / 2)
+	{
+		//This box and the circle have collided
+		return true;
+	}*/
+
+	return false;
 }
 
 
