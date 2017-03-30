@@ -28,19 +28,18 @@ public:
 	//Renders the level
 	void renderLevel(Sprite tileTexture, SDL_Rect tileClips[TOTAL_TILE_SPRITES], SDL_Renderer* renderer);
 
-	void loadNextLevel(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
 
-	static const int TOTAL_LEVELS = 4;
+	static const int TOTAL_LEVELS = 5;
 	//Array which contains all the levels
 	std::vector<std::string>levels;
 	
-
+	std::string backgroundPath; 
 	//Loads the next level
 	void loadNextLevel(Player & player);
 
 	int playerStartX, playerStartY;
 
-	void setBackground(std::string path);
+	std::string getBackground();
 
 bool nextLevel; 
 SDL_Texture* backgroundTexture;

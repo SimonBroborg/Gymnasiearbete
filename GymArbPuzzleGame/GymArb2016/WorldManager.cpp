@@ -6,8 +6,9 @@ WorldManager::WorldManager(SDL_Renderer* renderer)
 {
 	gameRenderer = renderer;
 	currentLevel = 0;
-
-	levels = { "assets/levels/level1.map", "assets/levels/level2.map", "assets/levels/level3.map", "assets/levels/level4.map" };
+	backgroundTexture = nullptr; 
+	
+	levels = { "assets/levels/level1.map", "assets/levels/level2.map", "assets/levels/level3.map", "assets/levels/level4.map", "assets/levels/level5.map" };
 }
 
 WorldManager::~WorldManager()
@@ -30,8 +31,9 @@ void WorldManager::renderLevel(Sprite tileTexture, SDL_Rect tileClips[], SDL_Ren
 
 
 void WorldManager::loadNextLevel(Player &player) {
-	if (currentLevel < levels.size() -1)
-		setTiles(tileSet, tileClips, levels[currentLevel++], playerStartX, playerStartY);
+	if (currentLevel < levels.size())
+		currentLevel++;
+		setTiles(tileSet, tileClips, levels[currentLevel], playerStartX, playerStartY);
 	nextLevel = false;
 	player.SetStartX(playerStartX);
 	player.SetStartY(playerStartY);
@@ -39,11 +41,6 @@ void WorldManager::loadNextLevel(Player &player) {
 }
 
 
-void WorldManager::setBackground(std::string path) {
-	//loads the background from file path
-	backgroundTexture = IMG_LoadTexture(gameRenderer, path.c_str());
-
-}
 
 //Loads the tiles to the level
 bool WorldManager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string levelPath, int &playerX, int &playerY) {
@@ -176,9 +173,8 @@ bool WorldManager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string lev
 		for (int i = 0; i <= TOTAL_TILES; i++)
 		{
 			if (i == TOTAL_TILES) {
-				std::string path;
-				map >> path;
-				setBackground(path);
+				map >> backgroundPath;
+				backgroundTexture = IMG_LoadTexture(gameRenderer, backgroundPath.c_str());
 			}
 			else {
 				//determines what kind of tile will be made
@@ -241,4 +237,10 @@ bool WorldManager::setTiles(Tile* tiles[], SDL_Rect tileClips[], std::string lev
 
 	//If the tiles were loaded successfully
 	return tilesLoaded;
+}
+
+
+std::string WorldManager::getBackground() {
+	//loads the background from file path
+	return backgroundPath;
 }

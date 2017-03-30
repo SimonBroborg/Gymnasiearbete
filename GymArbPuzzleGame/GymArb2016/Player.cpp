@@ -24,7 +24,7 @@ Player::Player(SDL_Renderer* renderer, Sprite &playerTexture, float framesX, flo
 	//floats and doubles
 	m_velX = 0; //Starting with 0 horizontal velocity
 	m_velY = 0; //Starting with 0 vertical velocity
-	m_maxHorVel = 300; //Maximum x velocity
+	m_maxHorVel = 250; //Maximum x velocity
 
 	m_jumpHeight = 100;
 	m_timeToJumpApex = .4f;

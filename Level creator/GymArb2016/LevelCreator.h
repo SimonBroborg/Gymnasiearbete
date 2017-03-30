@@ -27,7 +27,7 @@ public:
 
 	void deleteTile(int mouseX, int mouseY);
 
-	void setBackground(std::string path);
+	bool setBackground(std::string path);
 
 	SDL_Texture* getBackground();
 private:

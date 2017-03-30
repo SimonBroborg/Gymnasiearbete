@@ -21,7 +21,7 @@ Tile::Tile(int x, int y, int w, int h, int tileType)
 	//get the tile type
 	m_type = tileType;
 	
-	maxHorSpeed = 100; 
+	maxHorSpeed = 200; 
 	m_velX = maxHorSpeed;
 	m_velY = 2; 
 	m_damage = 0; 

@@ -45,11 +45,12 @@ public:
 	Sprite inputTextTexture;
 	void loadNextLevel(Tile* tiles[], SDL_Rect tileClips[TOTAL_TILE_SPRITES]);
 
-	static const int TOTAL_LEVELS = 4;
+	static const int TOTAL_LEVELS = 5;
 	std::string levels[TOTAL_LEVELS]{ "../../GymArbPuzzleGame/GymArb2016/assets/levels/level1.map", 
 		"../../GymArbPuzzleGame/GymArb2016/assets/levels/level2.map" , 
 		"../../GymArbPuzzleGame/GymArb2016/assets/levels/level3.map", 
-		"../../GymArbPuzzleGame/GymArb2016/assets/levels/level4.map" }; //All the levels
+		"../../GymArbPuzzleGame/GymArb2016/assets/levels/level4.map",
+		"../../GymArbPuzzleGame/GymArb2016/assets/levels/level5.map" }; //All the levels
 	int currentLevel; //Checks the current level
 
 

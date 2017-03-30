@@ -54,7 +54,7 @@ void Manager::gameLoop()
 	//Creates the menu object
 	Menu menu(renderer, "menuBackground.png");
 
-
+	SDL_Rect backgroundRect;
 
 	WorldManager world(renderer);
 
@@ -64,11 +64,14 @@ void Manager::gameLoop()
 	}
 
 	world.setTiles(world.tileSet, world.tileClips, "assets/levels/level1.map", world.playerStartX, world.playerStartY);
+	//world.backgroundTexture = IMG_LoadTexture(renderer, world.getBackground().c_str());
 
 	//Loads the background music for the game
 	Mix_Music *bgm = Mix_LoadMUS("assets/sounds/japanese_flute_music.mp3");
 
-	//loads the background image for the game
+
+	float playerXPercent = 0;
+	float playerYPercent = 0;  
 	
 
 	//creates the buttons for the menu
@@ -204,8 +207,17 @@ void Manager::gameLoop()
 		//clears the window
 		SDL_RenderClear(renderer);
 
+		playerXPercent = (Player.GetBox().x + Player.GetBox().w / 2) / SCREEN_WIDTH;
+		playerYPercent = (Player.GetBox().y + Player.GetBox().h / 2)/ SCREEN_HEIGHT;
+
+		backgroundRect.x = 0 - SCREEN_WIDTH * 0.1 * playerXPercent;
+		backgroundRect.y = -SCREEN_HEIGHT * 0.1; //+ SCREEN_HEIGHT * 0.05 * playerYPercent;
+		
+		backgroundRect.w = SCREEN_WIDTH * 1.1;
+		backgroundRect.h = SCREEN_HEIGHT * 1.1;
+		
 		//copies the background to the renderer
-		SDL_RenderCopy(renderer, world.backgroundTexture, NULL, NULL); //copies the background to the renderer
+		SDL_RenderCopy(renderer, world.backgroundTexture, NULL, &backgroundRect); //copies the background to the renderer
 
 																 //moves the player and camera if menu is hidden
 		m_deltaTime = timer.getTicks() / 1000.f;
@@ -224,7 +236,6 @@ void Manager::gameLoop()
 			Player.Move(m_deltaTime, world.tileSet, world.nextLevel);
 			//circle.move(tileSet, player);
 			Player.Render(playerTexture, renderer); //renders the player
-
 
 		}
 		timer.start();

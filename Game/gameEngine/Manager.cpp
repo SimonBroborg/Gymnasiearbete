@@ -18,7 +18,7 @@ bool Manager::initSystems() {
 	}
 	else {
 		std::cout << "SDL_Init successful!" << std::endl;
-		globalWindow = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
+		globalWindow = SDL_CreateWindow("Elastic collision", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
 		if (globalWindow == nullptr) {
 			std::cout << "SDL_CreateWindow error: " << SDL_GetError();
 			return 1;
@@ -77,21 +77,34 @@ void Manager::run() {
 	loadGame();
 	std::vector<Circle> circles;
 	
-
+	float distance;
+	float radiDistance; 
 	srand(time(NULL));
-
+	bool collision; 
 	//creates the circles
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 9; i++)
 	{
-		Circle *circle = new Circle(globalRenderer,		SCREEN_WIDTH/2 , SCREEN_HEIGHT/2, 40, 40);
+		collision = false;
+		Circle *circle = new Circle(globalRenderer,rand() % (SCREEN_WIDTH - 40)+ 10, rand() % (SCREEN_HEIGHT - 40) + 10, rand() % 20 + 10, rand() % 360);
 		
-		circles.push_back(*circle);
+		for (int i = 0; i < circles.size(); i++) {
+			//the distance between the center points of the circles
+			distance = sqrt(pow(circle->m_xPos - circles[i].m_xPos, 2) + pow(circle->m_yPos - circles[i].m_yPos, 2));
+
+			//the lowest possible distance before collision between the ball
+			radiDistance = circle->m_radi + circles[i].m_radi;
+			if (distance <= radiDistance)
+				collision = true; 
+		}
+		if(!collision)
+			circles.push_back(*circle);
+		
 	}
 
-	rect.w = SCREEN_WIDTH / 3;
+	/*rect.w = SCREEN_WIDTH / 3;
 	rect.h = 50;
 	rect.x = SCREEN_WIDTH / 2;
-	rect.y = SCREEN_HEIGHT - rect.h;
+	rect.y = SCREEN_HEIGHT - rect.h;*/
 
 
 	SDL_Event evnt;
@@ -107,7 +120,10 @@ void Manager::run() {
 				bIsRunning = false;
 				break;
 
-
+			case SDL_MOUSEBUTTONDOWN:
+				circles[0].m_xPos = evnt.motion.x;
+				circles[0].m_yPos = evnt.motion.y;
+				break;
 				//makes it possible to move the ball to the left / right and jump
 			case SDL_KEYDOWN:
 				switch (evnt.key.keysym.scancode) {
@@ -192,7 +208,7 @@ void Manager::run() {
 				//the lowest possible distance before collision between the ball
 				radiDistance = circles[i].m_radi + circles[j].m_radi;
 
-				if (distance < radiDistance) {
+				if (distance <= radiDistance) {
 
 					//calculation of elastic collision for x and y 
 					float newVelX1 = (circles[i].m_velX * (circles[i].m_radi - circles[j].m_radi) + (2 * circles[j].m_radi * circles[j].m_velX)) / (circles[i].m_radi + circles[j].m_radi);

@@ -1,7 +1,5 @@
 #include "Entity.h"
 
-
-
 Entity::Entity(SDL_Renderer* renderer)
 {
 	//Initialize the variables

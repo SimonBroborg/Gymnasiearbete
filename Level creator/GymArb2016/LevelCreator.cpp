@@ -23,7 +23,7 @@ bool LevelCreator::setTiles(std::string levelPath)
 	tileClips[TILE_NONE].w = TILE_WIDTH;
 	tileClips[TILE_NONE].h = TILE_HEIGHT;
 
-	tileClips[TILE_PLAYER_SPAWN].x = 0;
+	tileClips[TILE_PLAYER_SPAWN].x = 0; 
 	tileClips[TILE_PLAYER_SPAWN].y = 0;
 	tileClips[TILE_PLAYER_SPAWN].w = TILE_HEIGHT;
 	tileClips[TILE_PLAYER_SPAWN].h = TILE_WIDTH;
@@ -257,9 +257,18 @@ void LevelCreator::renderLevel(Sprite tileTexture, SDL_Renderer* renderer) {
 	}
 }
 
-void LevelCreator::setBackground(std::string path) {
+bool LevelCreator::setBackground(std::string path) {
 	//loads the background from file path
+	SDL_Texture * tempBackground = backgroundTexture;
 	backgroundTexture = IMG_LoadTexture(gameRenderer, path.c_str());
+	if (backgroundTexture == nullptr) {
+		backgroundTexture = tempBackground;
+		SDL_DestroyTexture(tempBackground);
+		return false; 
+	}
+
+	SDL_DestroyTexture(tempBackground); 
+	return true; 
 }
 
 SDL_Texture* LevelCreator::getBackground() {

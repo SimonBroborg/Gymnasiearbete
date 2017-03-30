@@ -27,7 +27,7 @@ Circle::Circle(SDL_Renderer *renderer, float xPos, float yPos, float radi, float
 
 	
 	SDL_Surface *surface = IMG_Load("circle2.png");
-	if (surface == nullptr)
+	/*if (surface == nullptr)
 	{
 		std::cout << "Could not load image!" << std::endl;
 	}
@@ -36,7 +36,7 @@ Circle::Circle(SDL_Renderer *renderer, float xPos, float yPos, float radi, float
 
 	SDL_FreeSurface(surface);
 	
-	m_imgRect.w = m_imgRect.h = (m_radi +1) * 2 ;
+	m_imgRect.w = m_imgRect.h = (m_radi +1) * 2 ;*/
 	
 }
 
@@ -73,14 +73,15 @@ void Circle::move()
 	//checks if the circle collides on the bottom of the screen
 	if (m_yPos + m_radi + m_velY > game.SCREEN_HEIGHT) {
 		
-		//if the y vel is higher and 1.3 the ball with bounce back with half the y velocity
+		/*//if the y vel is higher and 1.3 the ball with bounce back with half the y velocity
 		if (m_velY >= 1) 
 			m_velY = -m_velY * 0.5;
 		//else the ball won't bounce
 		else {
 			m_velY = 0;
 			m_yPos = game.SCREEN_HEIGHT - m_radi;
-		}
+		}*/
+		m_velY *= -1; 
  	}
 
 	//checks if the circle collides on the left side of the screen
@@ -103,15 +104,15 @@ void Circle::move()
 	m_angle += m_velX;
 
 	//checks the speed of the x velocity and lowers it if its over 0.5 pixels / frame. 
-	if (m_velX < -0.5 || m_velX > 0.5)
-		m_velX *= 0.99;
+	//if (m_velX < -0.5 || m_velX > 0.5)
+	//	m_velX *= 0.99;
 
 	//else the speed equals 0 and the circle stops
-	else
-		m_velX = 0;
+	//else
+	//	m_velX = 0;
 
 	//applies gravity to the v velocity which makes the ball fall 
-	m_velY += m_gravity;
+	//m_velY += m_gravity;
 
 }
 

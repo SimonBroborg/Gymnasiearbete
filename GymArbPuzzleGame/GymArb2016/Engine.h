@@ -9,8 +9,8 @@ class Engine
 {
 public:
 	//Width and height of the game window
-	const int SCREEN_WIDTH = 1260;
-	const int SCREEN_HEIGHT = 720;
+	const float SCREEN_WIDTH = 1260;
+	const float SCREEN_HEIGHT = 720;
 
 
 	//the dimensions of the level
