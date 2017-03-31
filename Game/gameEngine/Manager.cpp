@@ -76,16 +76,23 @@ void Manager::run() {
 	initSystems();
 	loadGame();
 	std::vector<Circle> circles;
+
+	SDL_Rect rect; 
+	SDL_Rect rect2;
+	float velX1 = 4;
+	float velX2 = -4;
+
+	
 	
 	float distance;
 	float radiDistance; 
 	srand(time(NULL));
 	bool collision; 
 	//creates the circles
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		collision = false;
-		Circle *circle = new Circle(globalRenderer,rand() % (SCREEN_WIDTH - 40)+ 10, rand() % (SCREEN_HEIGHT - 40) + 10, rand() % 20 + 10, rand() % 360);
+		Circle *circle = new Circle(globalRenderer,rand() % (SCREEN_WIDTH - 40)+ 30, rand() % (SCREEN_HEIGHT - 90) + 30, rand() % 20 + 10, rand() % 360);
 		
 		for (int i = 0; i < circles.size(); i++) {
 			//the distance between the center points of the circles
@@ -101,10 +108,17 @@ void Manager::run() {
 		
 	}
 
-	/*rect.w = SCREEN_WIDTH / 3;
+	rect.w = 60;
 	rect.h = 50;
 	rect.x = SCREEN_WIDTH / 2;
-	rect.y = SCREEN_HEIGHT - rect.h;*/
+	rect.y = SCREEN_HEIGHT - rect.h;
+
+	rect2.w = 97.5;
+	rect2.h = 50;
+	rect2.x = 0;
+	rect2.y = SCREEN_HEIGHT - rect.h;
+
+
 
 
 	SDL_Event evnt;
@@ -120,43 +134,52 @@ void Manager::run() {
 				bIsRunning = false;
 				break;
 
-			case SDL_MOUSEBUTTONDOWN:
-				circles[0].m_xPos = evnt.motion.x;
-				circles[0].m_yPos = evnt.motion.y;
-				break;
 				//makes it possible to move the ball to the left / right and jump
-			case SDL_KEYDOWN:
-				switch (evnt.key.keysym.scancode) {
-					case SDL_SCANCODE_LEFT:
-						circles[0].m_velX = -5;
-						break;
-					case SDL_SCANCODE_RIGHT:
-						circles[0].m_velX = 5;
-						break;
-
-					case SDL_SCANCODE_SPACE:
-						circles[0].m_velY = -10;
-						break;
-
-				}
-				break;
+			
 			}
 			
 		}
+
+		rect.x += velX1;
+		rect2.x += velX2; 
+
+		if (rect.x < 0)
+			velX1 *= -1; 
+		if(rect.x + rect.w > SCREEN_WIDTH)
+			velX1 *= -1;
+		if (rect2.x < 0)
+			velX2 *= -1;
+		if (rect2.x + rect.w > SCREEN_WIDTH)
+			velX2 *= -1;
 
 
 		//sets the draw color to white
 		SDL_SetRenderDrawColor(globalRenderer, 255, 255, 255, 255);
 		//clear the renderer with the set draw color 
 		SDL_RenderClear(globalRenderer);
+		
 
+		if (!(rect.x + rect.w < rect2.x || rect.x > rect2.x + rect2.w)) {
+			float newVelX1 = (velX1 * (rect.w - rect2.w) + (2 * rect2.w * velX2)) / (rect.w + rect2.w);
+			float newVelX2 = (velX2 * (rect2.w - rect.w) + (2 * rect.w * velX1)) / (rect.w + rect2.w);
+
+			velX1 = newVelX1;
+			velX2 = newVelX2; 
+		}
+		
 		SDL_SetRenderDrawColor(globalRenderer, 255, 0, 0, 255);
+
 		SDL_RenderFillRect(globalRenderer, &rect);
 
+		SDL_SetRenderDrawColor(globalRenderer, 0, 0, 255, 255);
+		SDL_RenderFillRect(globalRenderer, &rect2);
+
+		SDL_SetRenderDrawColor(globalRenderer, 0, 255, 0, 255);
+
+		SDL_RenderDrawLine(globalRenderer, 0, SCREEN_HEIGHT -50, SCREEN_WIDTH, SCREEN_HEIGHT - 50); 
+
 		SDL_RenderCopy(globalRenderer, nullptr, &rect, NULL);
-
-
-
+		SDL_RenderCopy(globalRenderer, nullptr, &rect2, NULL);
 
 		//  circle collision with circle
 		for (int i = 0; i < circles.size(); i++)

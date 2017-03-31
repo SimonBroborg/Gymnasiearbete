@@ -71,7 +71,7 @@ void Circle::move()
 	}
 
 	//checks if the circle collides on the bottom of the screen
-	if (m_yPos + m_radi + m_velY > game.SCREEN_HEIGHT) {
+	if (m_yPos + m_radi + m_velY > game.SCREEN_HEIGHT - 50) {
 		
 		/*//if the y vel is higher and 1.3 the ball with bounce back with half the y velocity
 		if (m_velY >= 1) 

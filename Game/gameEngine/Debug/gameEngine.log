@@ -1,18 +1,19 @@
 ﻿  Manager.cpp
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(82): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(88): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(90): warning C4018: '<': signed/unsigned mismatch
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(124): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(125): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(162): warning C4018: '<': signed/unsigned mismatch
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(167): warning C4018: '<': signed/unsigned mismatch
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(202): warning C4018: '<': signed/unsigned mismatch
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(214): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(215): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(216): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(217): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(233): warning C4018: '<': signed/unsigned mismatch
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(255): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-c:\users\simon.broborg\documents\github\gymnasiearbete\game\gameengine\manager.cpp(264): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-  gameEngine.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\Game\Debug\gameEngine.exe
-  gameEngine.vcxproj -> C:\Users\Simon.Broborg\Documents\GitHub\Gymnasiearbete\Game\Debug\gameEngine.pdb (Partial PDB)
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(89): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(95): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(97): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(116): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(143): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(144): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(185): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(190): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(225): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(237): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(238): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(239): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(240): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(256): warning C4018: '<': signed/unsigned mismatch
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(278): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\users\simon\github\gymnasiearbete\game\gameengine\manager.cpp(287): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+  gameEngine.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\Game\Debug\gameEngine.exe
+  gameEngine.vcxproj -> D:\Users\Simon\Github\Gymnasiearbete\Game\Debug\gameEngine.pdb (Partial PDB)

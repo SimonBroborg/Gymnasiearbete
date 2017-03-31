@@ -28,7 +28,7 @@ public:
 	SDL_Window* globalWindow = NULL;
 	SDL_Renderer* globalRenderer = NULL; 
 
-	SDL_Rect rect; 
+	
 
 	bool checkCollision(SDL_Rect rect, Circle *circle);
 		
